@@ -1,0 +1,112 @@
+
+#include <cstdlib>
+#include "main.h"
+#include "Fractal.h"
+
+Fractal::Box bounds(-2, -2, 2, 2);
+Fractal* f = new Fractal(80, 10000, -1, 1, bounds);
+
+int main()
+{
+	//Train(200, false, 200, 0.5f);
+	FindMinimum(100, true, 250, 0.4f);
+	//FindRandom(1000, 1.0f);
+	//Benchmark(10);
+
+	delete f;
+	return 0;
+}
+
+void Train(int random, bool downhill, int limit, float cost)
+{
+	while (true)
+	{
+		std::cout << "next" << std::endl;
+
+		f->Randomize(random, Fractal::m);
+
+		for (int i = 0;; i++)
+		{
+			bool b = f->Cycle(downhill);
+			if (!b)
+				break;
+			if (i > limit)
+			{
+				f->Print();
+				std::cout << "limit exceeded" << std::endl;
+				break;
+			}
+		}
+		if (f->Cost() < cost)
+		{
+			f->Print();
+		}
+	}
+}
+
+void FindMinimum(int random, bool downhill, int limit, float init_cost)
+{
+	float min_cost = init_cost;
+	Fractal::Complex min_param[Fractal::m];
+	while (true)
+	{
+		std::cout << "next" << std::endl;
+
+		f->Randomize(random, Fractal::m);
+
+		for (int i = 0;; i++)
+		{
+			bool b = f->Cycle(downhill);
+			if (!b)
+				break;
+			if (i > limit)
+			{
+				f->Print();
+				std::cout << "limit exceeded" << std::endl;
+				break;
+			}
+		}
+		float cost = f->Cost();
+		if (cost < min_cost)
+		{
+			min_cost = cost;
+			for (int i = 0; i < Fractal::m; i++)
+			{
+				Fractal::Complex* params = f->GetParameters();
+				min_param[i] = params[i];
+			}
+			f->Print();
+		}
+
+	}
+}
+
+void FindRandom(int random, float cost)
+{
+	while (true)
+	{
+		std::cout << "next" << std::endl;
+
+		f->Randomize(random, Fractal::m);
+
+		if (f->Cost() < cost)
+		{
+			std::cout << "printing" << std::endl;
+			f->Print();
+		}
+	}
+}
+
+void Benchmark(int M)
+{
+	auto start = std::chrono::steady_clock::now();
+
+	for (int i = 0; i < M; i++)
+	{
+		std::cout << i << ", ";
+		f->Iterate();
+	}
+
+	auto end = std::chrono::steady_clock::now();
+	std::cout << "exec: " << (std::chrono::duration_cast<std::chrono::milliseconds>(end - start)).count() << "ms\n";
+}
