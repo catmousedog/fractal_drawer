@@ -10,7 +10,7 @@
 class Fractal
 {
 public:
-	static constexpr int m = 100, p = 200, pixels_size = p * p;
+	static constexpr int m = 40, p = 200, pixels_size = p * p;
 	static constexpr int thread_count = 100;
 
 	struct Box
@@ -113,7 +113,7 @@ private:
 
 	/* Variables */
 	int csteps=5;
-	float dstep = 0.01f, convergent_weight = 10.0f;
+	float dstep = 0.01f, convergent_weight = 3.0f;
 	std::mt19937 rng;
 	std::uniform_real_distribution<float> dist;
 	std::mutex mtx;

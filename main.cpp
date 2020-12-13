@@ -9,7 +9,8 @@ Fractal* f = new Fractal(80, 10000, -1, 1, bounds);
 int main()
 {
 	//Train(200, false, 200, 0.5f);
-	FindMinimum(100, true, 250, 0.4f);
+	//FindMinimum(100, false, 1000, 0.5f);
+	Walk(1, false, 1000);
 	//FindRandom(1000, 1.0f);
 	//Benchmark(10);
 
@@ -44,10 +45,8 @@ void Train(int random, bool downhill, int limit, float cost)
 	}
 }
 
-void FindMinimum(int random, bool downhill, int limit, float init_cost)
+void FindMinimum(int random, bool downhill, int limit, float min_cost)
 {
-	float min_cost = init_cost;
-	Fractal::Complex min_param[Fractal::m];
 	while (true)
 	{
 		std::cout << "next" << std::endl;
@@ -61,7 +60,6 @@ void FindMinimum(int random, bool downhill, int limit, float init_cost)
 				break;
 			if (i > limit)
 			{
-				f->Print();
 				std::cout << "limit exceeded" << std::endl;
 				break;
 			}
@@ -70,15 +68,23 @@ void FindMinimum(int random, bool downhill, int limit, float init_cost)
 		if (cost < min_cost)
 		{
 			min_cost = cost;
-			for (int i = 0; i < Fractal::m; i++)
-			{
-				Fractal::Complex* params = f->GetParameters();
-				min_param[i] = params[i];
-			}
 			f->Print();
 		}
 
 	}
+}
+
+void Walk(int random, bool downhill, int limit)
+{
+	f->Randomize(random, Fractal::m);
+
+	for (int i = 0; i < limit; i++)
+	{
+		std::cout << limit-i << ": ";
+		if (!f->Cycle(downhill))
+			break;
+	}
+	f->Print();
 }
 
 void FindRandom(int random, float cost)
