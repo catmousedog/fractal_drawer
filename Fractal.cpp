@@ -3,38 +3,24 @@
 #include <ctime>
 #include <assert.h>
 
+// Constructs the fractal and reads from desired.csv
 Fractal::Fractal(int it, int bail, float m, float M, Box box) :
-	iterations(it), bailout(bail), parameters(), bounds(box), pixels(), desired(), rng(time(0)), dist(m, M)
+	iterations(it), bailout(bail), poles(), bounds(box), pixels(), desired(), rng(time(0)), dist(m, M)
 {
 	dx = (float)(bounds.x1 - bounds.x0) / (float)p;
 	dy = (float)(bounds.y1 - bounds.y0) / (float)p;
 
+	//read from desired.csv and save the desired image
 	std::ifstream des("desired.csv");
 	std::string line;
 
-	//first line is amount of relevant pixels (not -1)
-	std::getline(des, line);
-	relevant = std::stof(line);
-
-	std::cout << "relevant pixels: " << relevant << std::endl;
-
-	coordinates = new Complex[relevant];
-	desired = new float[relevant];
-	pixels = new float[relevant];
-
-	//total / relevant counter
-	int t = 0, r = 0;
+	int t = 0;
 	while (std::getline(des, line))
 	{
 		float v = std::stof(line);
-		if (v >= 0)
-		{
-			assert(r < relevant);
-			coordinates[r].x = bounds.x0 + t / (float)p * dx;
-			coordinates[r].y = bounds.y0 + (t % p) * dy;
-			desired[r] = v;
-			r++;
-		}
+		coordinates[t].x = bounds.x0 + t / (float)p * dx;
+		coordinates[t].y = bounds.y0 + (t % p) * dy;
+		desired[t] = v;
 		t++;
 	}
 	des.close();
@@ -45,78 +31,81 @@ Fractal::Fractal(int it, int bail, float m, float M, Box box) :
 	//}
 }
 
-void Fractal::Randomize(int attempts, int limit)
+//
+//void Fractal::Randomize(int attempts, int limit)
+//{
+//	float cost;
+//	float min_cost = 1.0f;
+//	Pole min_params[N];
+//	std::cout << "randomize: ";
+//	for (int i = 0; i < attempts; i++)
+//	{
+//		std::cout << i << ", ";
+//		for (int j = 0; j < limit; j++)
+//		{
+//			poles[j].x = dist(rng);
+//			poles[j].y = dist(rng);
+//		}
+//		cost = Cost();
+//
+//		if (cost < min_cost)
+//		{
+//			min_cost = cost;
+//			for (int j = 0; j < limit; j++)
+//			{
+//				min_params[j] = poles[j];
+//			}
+//		}
+//	}
+//
+//	std::cout << std::endl;
+//
+//	//set minimum cost parameters
+//	for (int j = 0; j < N; j++)
+//		poles[j] = min_params[j];
+//}
+
+//Fractal function
+inline float Fractal::Func(Complex c) const
 {
-	float cost;
-	float min_cost = 1.0f;
-	Complex min_params[m];
-	std::cout << "randomize: ";
-	for (int i = 0; i < attempts; i++)
-	{
-		std::cout << i << ", ";
-		for (int j = 0; j < limit; j++)
-		{
-			parameters[j].x = dist(rng);
-			parameters[j].y = dist(rng);
-		}
-		cost = Cost();
-
-		if (cost < min_cost)
-		{
-			min_cost = cost;
-			for (int j = 0; j < limit; j++)
-			{
-				min_params[j] = parameters[j];
-			}
-		}
-	}
-
-	std::cout << std::endl;
-
-	//set minimum cost parameters
-	for (int j = 0; j < m; j++)
-		parameters[j] = min_params[j];
-}
-
-inline float Fractal::Func(float cx, float cy) const
-{
-	float x = cx, y = cy;
+	//use the more optimized pole
+	Pole q(c.x, c.y, 0);
 	for (int i = 0; i < iterations; i++)
 	{
-		float s = x * x + y * y;
+		float Z = q.x * q.x + q.y * q.y;
+		//float L = log(Z);
 
-		if (s > bailout)
+		if (Z > bailout)
 		{
 			return 1 - (float)i / (float)iterations;
 		}
 
-		float tx = x, ty = y;
+		//float tx = x, ty = y;
 		/** f(z) **/
+		Complex R(1, 0);
 
-		for (int n = 0; n < m; n++)
+		for (int j = 0; j < N; j++)
 		{
-			//z^n
-			//float a = pow(s, (float)n / 2.0f);
-			//float t = (float)n * atan2(y, x);
-			//tx += parameters[n].x * a * cos(t) + cx;
-			//ty += parameters[n].y * a * sin(t) + cy;
 
-			//almost e^iz
-			//float a = exp(-parameters[n].x * y);
-			//float t = parameters[n].x * x;
-			//tx += parameters[n].y * a * cos(t) + cx;
-			//ty += parameters[n].y * a * sin(t) + cy;
+			poles[j].poly(q);
 
-			//e^iz C included
-			float a = exp(-parameters[n].y * y);
-			float t = parameters[n].y * x;
-			tx += parameters[n].x * (a * cos(t) + cx);
-			ty += parameters[n].x * (a * sin(t) + cy);
+			//float P = poles[j].m;
+			//Complex z = (q - poles[j]);
+			//float A = exp(P * L / 2);
+			//float theta = atan2(z.y, z.x);
+			//z.x = A * cos(theta * P);
+			//z.y = A * sin(theta * P);
+
+			//R *= z;
 		}
 
+		R *= exp(C);
+		R += Complex(1, 2);
+		q = R;
+
 		/****/
-		x = tx;
-		y = ty;
+		//x = tx;
+		//y = ty;
 	}
 	return 0.0f;
 }
@@ -125,22 +114,19 @@ void Fractal::SubIterate(int start, int end)
 {
 	for (int i = start; i < end; i++)
 	{
-		Complex c = coordinates[i];
-		pixels[i] = Func(c.x, c.y);
+		pixels[i] = Func(coordinates[i]);
 	}
 }
 
 void Fractal::Iterate()
 {
-	int dp = relevant / thread_count;
-
 	//assign threads to their piece
 	for (int i = 0; i < thread_count - 1; i++)
 	{
-		threads[i] = std::thread(&Fractal::SubIterate, this, dp * i, dp * (i + 1));
+		threads[i] = std::thread(&Fractal::SubIterate, this, ppt * i, ppt * (i + 1));
 	}
 	//final thread is a little bigger
-	threads[thread_count - 1] = std::thread(&Fractal::SubIterate, this, dp * (thread_count - 1), relevant);
+	threads[thread_count - 1] = std::thread(&Fractal::SubIterate, this, ppt * (thread_count - 1), pixels_size);
 
 	//wait for threads
 	for (int i = 0; i < thread_count; i++)
@@ -148,12 +134,12 @@ void Fractal::Iterate()
 		threads[i].join();
 	}
 }
-
+/**
 float Fractal::Cost()
 {
 	Iterate();
 	float sum = 0.0f;
-	for (int i = 0; i < relevant; i++)
+	for (int i = 0; i < pixels_size; i++)
 	{
 		float p = pixels[i], d = desired[i];
 		float a = (p - d) * (p - d);
@@ -162,24 +148,24 @@ float Fractal::Cost()
 			a /= convergent_weight;
 		sum += a;
 	}
-	sum = sqrt(sum / (float)relevant);
+	sum = sqrt(sum / (float)pixels_size);
 	return sum;
 }
 
-Fractal::Complex Fractal::Derivative(int i, float cost)
+Complex Fractal::Derivative(int i, float cost)
 {
-	Complex p = parameters[i];
+	Complex p = poles[i];
 	Complex out;
 
 	//get d/dx
-	parameters[i].x += dstep;
+	poles[i].x += dstep;
 	out.x = (Cost() - cost) / dstep;
-	parameters[i].x = p.x;
+	poles[i].x = p.x;
 
 	//get d/dy
-	parameters[i].y += dstep;
+	poles[i].y += dstep;
 	out.y = (Cost() - cost) / dstep;
-	parameters[i].y = p.y;
+	poles[i].y = p.y;
 
 	return out;
 }
@@ -189,14 +175,14 @@ bool Fractal::Cycle(bool ForceDownhill)
 	auto start = std::chrono::steady_clock::now();
 
 	//make copy of parameters
-	Complex params[m];
-	for (int i = 0; i < m; i++)
-		params[i] = parameters[i];
+	Pole params[N];
+	for (int i = 0; i < N; i++)
+		params[i] = poles[i];
 
 	float cost = Cost();
 	//calculate negative gradient
-	Complex grad[m];
-	for (int i = 0; i < m; i++)
+	Pole grad[N];
+	for (int i = 0; i < N; i++)
 	{
 		grad[i] = -Derivative(i, cost);
 	}
@@ -208,8 +194,8 @@ bool Fractal::Cycle(bool ForceDownhill)
 	do {
 
 		//apply gradient
-		for (int i = 0; i < m; i++)
-			parameters[i] = params[i] + grad[i] * power;
+		for (int i = 0; i < N; i++)
+			poles[i] = params[i] + grad[i] * power;
 
 		cost_end = Cost();
 
@@ -237,9 +223,9 @@ bool Fractal::Cycle(bool ForceDownhill)
 			if (ForceDownhill)
 			{
 				//reset parameters to lowest
-				for (int i = 0; i < m; i++)
+				for (int i = 0; i < N; i++)
 				{
-					parameters[i] = params[i];
+					poles[i] = params[i];
 				}
 				//stop cycling
 				return false;
@@ -261,7 +247,7 @@ bool Fractal::Cycle(bool ForceDownhill)
 
 inline bool Fractal::InCoordinates(float x, float y)
 {
-	for (int r = 0; r < relevant; r++)
+	for (int r = 0; r < pixels_size; r++)
 	{
 		if (coordinates[r].x == x && coordinates[r].y == y)
 		{
@@ -305,10 +291,11 @@ void Fractal::Print()
 
 	std::ofstream par;
 	par.open("parameters_" + s);
-	for (Complex m : parameters)
+	for (Pole m : poles)
 	{
 		par << m.string() << std::endl;
 	}
 	par << Cost();
 	par.close();
 }
+**/

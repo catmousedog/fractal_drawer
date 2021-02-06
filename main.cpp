@@ -10,21 +10,22 @@ int main()
 {
 	//Train(200, false, 200, 0.5f);
 	//FindMinimum(100, false, 1000, 0.5f);
-	Walk(1, false, 1000);
+	//Walk(1, false, 1000);
 	//FindRandom(1000, 1.0f);
 	//Benchmark(10);
+	f->Func(Complex(1, 1));
 
-	delete f;
+	//delete f;
 	return 0;
 }
-
+/**
 void Train(int random, bool downhill, int limit, float cost)
 {
 	while (true)
 	{
 		std::cout << "next" << std::endl;
 
-		f->Randomize(random, Fractal::m);
+		f->Randomize(random, Fractal::poles);
 
 		for (int i = 0;; i++)
 		{
@@ -51,7 +52,7 @@ void FindMinimum(int random, bool downhill, int limit, float min_cost)
 	{
 		std::cout << "next" << std::endl;
 
-		f->Randomize(random, Fractal::m);
+		f->Randomize(random, Fractal::poles);
 
 		for (int i = 0;; i++)
 		{
@@ -76,7 +77,7 @@ void FindMinimum(int random, bool downhill, int limit, float min_cost)
 
 void Walk(int random, bool downhill, int limit)
 {
-	f->Randomize(random, Fractal::m);
+	f->Randomize(random, Fractal::poles);
 
 	for (int i = 0; i < limit; i++)
 	{
@@ -93,7 +94,7 @@ void FindRandom(int random, float cost)
 	{
 		std::cout << "next" << std::endl;
 
-		f->Randomize(random, Fractal::m);
+		f->Randomize(random, Fractal::poles);
 
 		if (f->Cost() < cost)
 		{
@@ -116,3 +117,4 @@ void Benchmark(int M)
 	auto end = std::chrono::steady_clock::now();
 	std::cout << "exec: " << (std::chrono::duration_cast<std::chrono::milliseconds>(end - start)).count() << "ms\n";
 }
+**/
