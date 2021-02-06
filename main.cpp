@@ -15,7 +15,7 @@ int main()
 	//Benchmark(10);
 	f->Func(Complex(1, 1));
 
-	delete f;
+	//delete f;
 	return 0;
 }
 /**
