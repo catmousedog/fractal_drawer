@@ -23,6 +23,6 @@ struct Pole : Complex
 	}
 	inline std::string string()
 	{
-		return "p: " + std::to_string(x) + " | " + std::to_string(y) + " | " = std::to_string(m);
+		return "p: " + std::to_string(x) + " | " + std::to_string(y) + " | " + std::to_string(m);
 	}
 };

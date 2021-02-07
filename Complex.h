@@ -25,7 +25,7 @@ struct Complex
 	}
 	Complex operator-(const Complex c) const
 	{
-		return *this + (-c);
+		return Complex(x - c.x, y - c.y);
 	}
 	Complex operator*(const Complex c) const
 	{
@@ -62,10 +62,16 @@ struct Complex
 	}
 	Complex& operator*=(const Complex c)
 	{
-		float tx = x;
-		x *= x * c.x - y * c.y;
-		y *= tx * c.y + y * c.x;
+		float tx = x * c.x - y * c.y;
+		y = x * c.y + y * c.x;
+		x = tx;
 		return *this;
+	}
+	bool IsZero()
+	{
+		if (x == 0 && y == 0)
+			return true;
+		return false;
 	}
 	Complex() : x(0), y(0)
 	{

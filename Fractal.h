@@ -10,7 +10,7 @@ class Fractal
 {
 public:
 	//amount of poles
-	static constexpr int N = 40;
+	static constexpr int N = 2;
 	//amount of pixels
 	static constexpr int p = 200, pixels_size = p * p;
 	static constexpr int thread_count = 100;
@@ -49,8 +49,8 @@ public:
 
 	Fractal(int it, int bail, Dist dist, Box box);
 	/* Functions */
-	//randomize parameters
-	void Randomize(int attempts);
+	//randomize poles and return the minimal cost after given attempts
+	float Randomize(int attempts);
 	//the fractal function
 	inline float Func(Complex c) const;
 	//iterates over all the pixels and assigns their value
@@ -62,18 +62,19 @@ public:
 	//returns the real derivative of the exponent of the i'th' pole
 	float PowerDerivative(int i, float cost);
 	//does one training cycle for the position of the i'th' pole
-	//returns true if the step was downhill (New_Cost < Prev_Cost)
-	//if ForceDownhill is set to true it will always take a step so that: New_Cost <= Prev_Cost
-	bool PosCycle(int i, float cost, bool ForceDownhill);
+	//returns the new_cost after the cycle: 
+	//	new_cost < cost: the step was downhill
+	//	new_cost >= cost: the step was not downhill and ForceDownhill was false (poles have changed)
+	//	new_cost == -1.0f:  the step was not downhill and ForceDownhill was set true (poles haven't changed)
+	float PosCycle(int i, float cost, bool ForceDownhill);
 	//does one training cycle for the exponent of the i'th' pole
 	//returns true if the step was downhill (New_Cost < Prev_Cost)
 	//if ForceDownhill is set to true it will always take a step so that: New_Cost <= Prev_Cost
 	bool PowerCycle(int i, float cost, bool ForceDownhill);
 	//print pixels and parameters to csv files
 	void Print();
-
 	/* Getters & Setters */
-	//Complex* GetParameters() { return parameters; }
+	Pole* GetPoles() { return poles; }
 private:
 
 	/* Variables */

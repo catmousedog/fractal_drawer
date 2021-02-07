@@ -24,15 +24,10 @@ Fractal::Fractal(int it, int bail, Dist dist, Box box) :
 		t++;
 	}
 	des.close();
-
-	//for (int i = 0; i < relevant; i++)
-	//{
-	//	std::cout << coordinates[i].x << " | " << coordinates[i].y << " : " << desired[i] << std::endl;
-	//}
 }
 
 //
-void Fractal::Randomize(int attempts)
+float Fractal::Randomize(int attempts)
 {
 	float cost;
 	float min_cost = 1.0f;
@@ -60,6 +55,8 @@ void Fractal::Randomize(int attempts)
 	//set minimum cost parameters
 	for (int j = 0; j < N; j++)
 		poles[j] = min_params[j];
+
+	return min_cost;
 }
 
 //Fractal function
@@ -67,12 +64,9 @@ inline float Fractal::Func(Complex q) const
 {
 	for (int i = 0; i < iterations; i++)
 	{
-		float Z = q.x * q.x + q.y * q.y;
-		//float L = log(Z);
-
-		if (Z > bailout)
+		if (q.AbsSquared() > bailout)
 		{
-			return 1 - (float)i / (float)iterations;
+			return (iterations - i) / (float)iterations;
 		}
 
 		Complex R(1, 0);
@@ -165,22 +159,26 @@ float Fractal::PowerDerivative(int i, float cost)
 	return out;
 }
 
-bool Fractal::PosCycle(int i, float cost, bool ForceDownhill)
+float Fractal::PosCycle(int i, float cost, bool ForceDownhill)
 {
 	Pole copy = poles[i];
 
 	Complex grad = -PosDerivative(i, cost);
 
-	float new_cost, stepsize = 1;
-	for (int j = 0; j < cost_steps; j++)
+	float new_cost = -1, stepsize = 1;
+	for (int j = 0; stepsize > 0.000001f; j++)
 	{
+		if (grad.IsZero())
+		{
+
+		}
 		poles[i] = copy;
 		poles[i] += grad * stepsize;
 		Iterate();
 		new_cost = Cost();
 		if (new_cost < cost)
 		{
-			return true;
+			return new_cost;
 		}
 		stepsize *= 0.1f;
 	}
@@ -192,9 +190,9 @@ bool Fractal::PosCycle(int i, float cost, bool ForceDownhill)
 	else
 	{
 		//continue with the non-downhill step
-		return true;
+		return new_cost;
 	}
-	return false;
+	return -1.0f;
 }
 
 bool Fractal::PowerCycle(int i, float cost, bool ForceDownhill)
@@ -253,9 +251,9 @@ void Fractal::Print()
 	std::ofstream par;
 	par.open("parameters_" + s);
 	par << "Cost: " << Cost() << std::endl;
-	for (Pole m : poles)
+	for (Pole p : poles)
 	{
-		par << m.string() << std::endl;
+		par << p.string() << std::endl;
 	}
 	par.close();
 }
