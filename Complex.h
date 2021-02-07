@@ -31,6 +31,10 @@ struct Complex
 	{
 		return Complex(x * c.x - y * c.y, x * c.y + y * c.x);
 	}
+	Complex operator*(const float a) const
+	{
+		return Complex(x * a, y * a);
+	}
 	Complex operator/(const Complex c) const
 	{
 		return *this * ~c / Complex(c.AbsSquared(), 0);

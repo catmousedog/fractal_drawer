@@ -17,6 +17,7 @@ public:
 	//pixels per thread
 	static constexpr int ppt = pixels_size / thread_count;
 
+	//bounds in the complex plane
 	struct Box
 	{
 		float x0, y0, x1, y1;
@@ -33,39 +34,62 @@ public:
 		}
 	};
 
-	Fractal(int it, int bail, float m, float M, Box box);
+	//distributions used to randomize poles
+	struct Dist
+	{
+
+		std::uniform_real_distribution<float> Distx;
+		std::uniform_real_distribution<float> Disty;
+		std::uniform_real_distribution<float> Distm;
+
+		Dist(float mx, float Mx, float my, float My, float mm, float Mm) : Distx(mx, Mx), Disty(my, My), Distm(mm, Mm)
+		{
+		}
+	};
+
+	Fractal(int it, int bail, Dist dist, Box box);
 	/* Functions */
 	//randomize parameters
-	//void Randomize(int attempts, int limit);
+	void Randomize(int attempts);
 	//the fractal function
 	inline float Func(Complex c) const;
-	//applies the Iterator changing the pixels[] member
+	//iterates over all the pixels and assigns their value
 	void Iterate();
-	//returns the sum of all energies for the current pixels[]
+	//returns the total normalised energy of the current pixels
 	float Cost();
-	//returns the complex derivative of the 'i'th parameter
-	Complex Derivative(int i, float cost);
-
-	
-	//does one training cycle and returns true if the Cycle was successful
-	bool Cycle(bool ForceDownhill);
+	//returns the complex derivative of the position of the i'th' pole
+	Complex PosDerivative(int i, float cost);
+	//returns the real derivative of the exponent of the i'th' pole
+	float PowerDerivative(int i, float cost);
+	//does one training cycle for the position of the i'th' pole
+	//returns true if the step was downhill (New_Cost < Prev_Cost)
+	//if ForceDownhill is set to true it will always take a step so that: New_Cost <= Prev_Cost
+	bool PosCycle(int i, float cost, bool ForceDownhill);
+	//does one training cycle for the exponent of the i'th' pole
+	//returns true if the step was downhill (New_Cost < Prev_Cost)
+	//if ForceDownhill is set to true it will always take a step so that: New_Cost <= Prev_Cost
+	bool PowerCycle(int i, float cost, bool ForceDownhill);
 	//print pixels and parameters to csv files
 	void Print();
 
 	/* Getters & Setters */
 	//Complex* GetParameters() { return parameters; }
-	inline bool InCoordinates(float x, float y);
 private:
 
 	/* Variables */
 
 	//constant used in the fractal function as e^C
 	const float C = 0;
-	int csteps = 5;
-	float dstep = 0.01f, convergent_weight = 3.0f;
-	//randomizers
+	//amount of increasingly smaller steps taken to find an efficient step (lower cost)
+	int cost_steps = 5;
+	//stepsize to determine the positional derivative of the poles
+	float pos_step = 0.01f;
+	//stepsize to determine the exponent derivative of the poles
+	float power_step = 0.01f;
+	//randomizer
 	std::mt19937 rng;
-	std::uniform_real_distribution<float> dist;
+	//float distributions for poles
+	Dist dist;
 	//thread lock
 	std::mutex mtx;
 	//threads
