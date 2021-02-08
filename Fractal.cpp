@@ -2,6 +2,9 @@
 #include <cmath>
 #include <ctime>
 #include <assert.h>
+#include <array>
+#include <algorithm>
+#include <numeric>
 
 // Constructs the fractal and reads from desired.csv
 Fractal::Fractal(int it, int bail, Dist dist, Box box) :
@@ -40,6 +43,7 @@ float Fractal::Randomize(int attempts)
 			poles[j].y = dist.Disty(rng);
 			poles[j].m = dist.Distm(rng);
 		}
+		Iterate();
 		cost = Cost();
 
 		if (cost <= min_cost)
@@ -126,105 +130,239 @@ float Fractal::Cost()
 	return sum;
 }
 
-Complex Fractal::PosDerivative(int i, float cost)
+#ifdef _GRADIENT_DESCENT_
+//square root of machine epsilon, stepsize of derivative
+const float e = sqrt(std::numeric_limits<float>::epsilon());
+
+Vector Fractal::PosDerivative(int i)
 {
 	Complex copy = poles[i];
-	Complex out;
+	Vector out;
+	float cost1, cost2;
 
-	//get d/dx
-	poles[i].x += pos_step;
-	Iterate();
-	out.x = (Cost() - cost) / pos_step;
-	poles[i].x = copy.x;
+	if (poles[i].x != 0)
+	{
+		//first term
+		poles[i].x *= 1 + e;
+		Iterate();
+		cost1 = Cost();
+		poles[i].x = copy.x;
+		//second term
+		poles[i].x *= 1 - e;
+		cost2 = Cost();
+		poles[i].x = copy.x;
+		//d/dx
+		out.x = (cost2 - cost1) / (2 * poles[i].x * e);
+	}
+	else
+	{
+		//first term
+		poles[i].x = e;
+		Iterate();
+		cost1 = Cost();
+		poles[i].x = copy.x;
+		//second term
+		poles[i].x = -e;
+		cost2 = Cost();
+		poles[i].x = copy.x;
+		//d/dx
+		out.x = (cost2 - cost1) / (2 * e);
+	}
 
-	//get d/dy
-	poles[i].y += pos_step;
-	Iterate();
-	out.y = (Cost() - cost) / pos_step;
-	poles[i].y = copy.y;
+	if (poles[i].y != 0)
+	{
+		//first term
+		poles[i].y *= 1 + e;
+		Iterate();
+		cost1 = Cost();
+		poles[i].y = copy.y;
+		//second term
+		poles[i].y *= 1 - e;
+		cost2 = Cost();
+		poles[i].y = copy.y;
+		//d/dy
+		out.y = (cost2 - cost1) / (2 * poles[i].y * e);
+	}
+	else
+	{
+		//first term
+		poles[i].y = e;
+		Iterate();
+		cost1 = Cost();
+		poles[i].y = copy.y;
+		//second term
+		poles[i].y = -e;
+		cost2 = Cost();
+		poles[i].y = copy.y;
+		//d/dy
+		out.y = (cost2 - cost1) / (2 * e);
+	}
+
 
 	return out;
 }
 
-float Fractal::PowerDerivative(int i, float cost)
+float Fractal::PowerDerivative(int i)
 {
 	float m = poles[i].m;
 	float out = 0;
+	float cost1, cost2;
 
-	poles[i].m += power_step;
-	Iterate();
-	out = (Cost() - cost) / power_step;
-	poles[i].m = m;
+	if (poles[i].m != 0)
+	{
+		//first term
+		poles[i].m *= 1 + e;
+		Iterate();
+		cost1 = Cost();
+		poles[i].m = m;
+		//second term
+		poles[i].m *= 1 - e;
+		cost2 = Cost();
+		poles[i].m = m;
+		//d/dx
+		out = (cost2 - cost1) / (2 * poles[i].m * e);
+	}
+	else
+	{
+		//first term
+		poles[i].m = e;
+		Iterate();
+		cost1 = Cost();
+		poles[i].m = m;
+		//second term
+		poles[i].m = -e;
+		cost2 = Cost();
+		poles[i].m = m;
+		//d/dx
+		out = (cost2 - cost1) / (2 * e);
+	}
 
 	return out;
 }
 
-float Fractal::PosCycle(int i, float cost, bool ForceDownhill)
+float Fractal::PosMinimize(int i, float cost, bool ForceDownhill)
 {
 	Pole copy = poles[i];
+	Vector grad = -PosDerivative(i);
 
-	Complex grad = -PosDerivative(i, cost);
-
-	float new_cost = -1, stepsize = 1;
-	for (int j = 0; stepsize > 0.000001f; j++)
+	if (grad.IsZero())
 	{
-		if (grad.IsZero())
-		{
+		std::cout << "gradient is zero" << std::endl;
+		return -1.0f;
+	}
 
-		}
-		poles[i] = copy;
-		poles[i] += grad * stepsize;
+	//backtracking line search
+	float stepsize = 1.0f, c = 0.5f, reduction = 0.5f;
+	float new_cost;
+	while (true)
+	{
+		poles[i] = copy + grad * stepsize;
 		Iterate();
 		new_cost = Cost();
-		if (new_cost < cost)
-		{
-			return new_cost;
-		}
-		stepsize *= 0.1f;
+
+		if (new_cost - cost > -c * stepsize * sqrt(grad.AbsSquared()))
+			break;
+
+		stepsize *= reduction;
 	}
+
+	std::cout << "backtrack " << grad.string() << " " << stepsize << std::endl;
+
+	//downhill
+	if (new_cost < cost)
+	{
+		return new_cost;
+	}
+	//not downhill
 	if (ForceDownhill)
 	{
-		//reset if no downhill step was found
+		//don't take step
 		poles[i] = copy;
+		return -1.0f;
 	}
 	else
 	{
 		//continue with the non-downhill step
 		return new_cost;
 	}
-	return -1.0f;
 }
+#else
+float Fractal::PosMinimize(int i, float cost, bool ForceDownhill)
+{
+	//3 Dimensional parameter => 4 poles
 
-bool Fractal::PowerCycle(int i, float cost, bool ForceDownhill)
+	// initial pole
+	float x = 0, y = 0, m = 0;
+	float dx = 0.3f, dy = 0.3f, dm = 0.1f;
+	//other poles
+	std::array<Pole, 4> polytope;
+	polytope[0] = Pole(x, y, m);
+	polytope[1] = Pole(x + dx, y, m);
+	polytope[2] = Pole(x, y + dy, m);
+	polytope[3] = Pole(x, y, m + dm);
+	//sort poles
+
+
+	Pole centroid(0, 0, 0);
+	for (int i = 0; i < 3; i++)
+	{
+		centroid.y += polytope[i].y;
+		centroid.m += polytope[i].m;
+		centroid.x += polytope[i].x;
+	}
+	centroid.x / 3.0f;
+	centroid.y / 3.0f;
+	centroid.m / 3.0f;
+
+	return 0;
+	}
+#endif
+
+float Fractal::PowerMinimize(int i, float cost, bool ForceDownhill)
 {
 	float copy = poles[i].m;
+	float grad = -PowerDerivative(i);
 
-	float grad = -PowerDerivative(i, cost);
-
-	float new_cost, stepsize = 1;
-	for (int j = 0; j < cost_steps; j++)
+	if (grad == 0.0f)
 	{
-		poles[i].m = copy;
-		poles[i].m += grad * stepsize;
+		std::cout << "gradient is zero" << std::endl;
+		return -1.0f;
+	}
+
+	//backtracking line search
+	float stepsize = 1.0f, c = 0.5f, reduction = 0.5f;
+	float new_cost;
+	while (true)
+	{
+		poles[i].m = copy + grad * stepsize;
 		Iterate();
 		new_cost = Cost();
-		if (new_cost < cost)
-		{
-			return true;
-		}
-		stepsize *= 0.1f;
+
+		if (new_cost - cost > -c * stepsize * grad)
+			break;
+
+		stepsize *= reduction;
 	}
+
+	std::cout << "backtrack " << grad << " " << stepsize << std::endl;
+
+	//downhill
+	if (new_cost < cost)
+	{
+		return new_cost;
+	}
+	//not downhill
 	if (ForceDownhill)
 	{
-		//reset if no downhill step was found
+		//don't take step
 		poles[i].m = copy;
+		return -1.0f;
 	}
 	else
 	{
 		//continue with the non-downhill step
-		return true;
+		return new_cost;
 	}
-	return false;
 }
 
 void Fractal::Print()

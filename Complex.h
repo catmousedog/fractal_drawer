@@ -1,11 +1,31 @@
 #pragma once
 
-#include <string>
+#include "Vector.h"
 
 struct Complex
 {
 	float x, y;
 
+	Complex() : x(0), y(0)
+	{
+	}
+	Complex(float X, float Y) : x(X), y(Y)
+	{
+	}
+	Complex(const Complex& c)
+	{
+		x = c.x;
+		y = c.y;
+	}
+
+	bool IsZero() const
+	{
+		return x == 0 && y == 0;
+	}
+	float AbsSquared() const
+	{
+		return x * x + y * y;
+	}
 	Complex operator-() const
 	{
 		return Complex(-x, -y);
@@ -14,26 +34,17 @@ struct Complex
 	{
 		return Complex(x, -y);
 	}
-	//squared abs value
-	float AbsSquared() const
+	Complex operator+(const Complex v) const
 	{
-		return x * x + y * y;
+		return Complex(v.x + x, v.y + y);
 	}
-	Complex operator+(const Complex c) const
+	Complex operator-(const Complex v) const
 	{
-		return Complex(x + c.x, y + c.y);
-	}
-	Complex operator-(const Complex c) const
-	{
-		return Complex(x - c.x, y - c.y);
+		return Complex(v.x - x, v.y - y);
 	}
 	Complex operator*(const Complex c) const
 	{
 		return Complex(x * c.x - y * c.y, x * c.y + y * c.x);
-	}
-	Complex operator*(const float a) const
-	{
-		return Complex(x * a, y * a);
 	}
 	Complex operator/(const Complex c) const
 	{
@@ -54,10 +65,10 @@ struct Complex
 		}
 		return c;
 	}
-	Complex& operator+=(const Complex c)
+	Complex& operator+=(const Complex v)
 	{
-		x += c.x;
-		y += c.y;
+		x += v.x;
+		y += v.y;
 		return *this;
 	}
 	Complex& operator*=(const Complex c)
@@ -67,27 +78,39 @@ struct Complex
 		x = tx;
 		return *this;
 	}
-	bool IsZero()
-	{
-		if (x == 0 && y == 0)
-			return true;
-		return false;
-	}
-	Complex() : x(0), y(0)
-	{
-	}
-	Complex(float X, float Y) : x(X), y(Y)
-	{
-	}
-	// copy constructor;
-	Complex(const Complex& c)
-	{
-		x = c.x;
-		y = c.y;
-	}
 	std::string string()
 	{
 		return "c: " + std::to_string(x) + " | " + std::to_string(y);
 	}
 };
 
+
+struct Pole : Complex
+{
+	float m;
+
+	Pole() : m(0)
+	{
+	}
+	Pole(float X, float Y, float M) : Complex(X, Y), m(M)
+	{
+	}
+	Pole(const Pole& p) : Complex(p), m(p.m)
+	{
+	}
+
+	//evaluates a complex number in the polynomial belonging to this pole
+	Complex poly(Complex q) const
+	{
+		q += -*this;
+		return q ^ m;
+	}
+	Pole operator+(const Vector v)
+	{
+		return Pole(x + v.x, y + v.y, m);
+	}
+	inline std::string string()
+	{
+		return "p: " + std::to_string(x) + " | " + std::to_string(y) + " | " + std::to_string(m);
+	}
+};
