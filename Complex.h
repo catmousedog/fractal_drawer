@@ -4,12 +4,12 @@
 
 struct Complex
 {
-	float x, y;
+	double x, y;
 
 	Complex() : x(0), y(0)
 	{
 	}
-	Complex(float X, float Y) : x(X), y(Y)
+	Complex(double X, double Y) : x(X), y(Y)
 	{
 	}
 	Complex(const Complex& c)
@@ -22,7 +22,7 @@ struct Complex
 	{
 		return x == 0 && y == 0;
 	}
-	float AbsSquared() const
+	double AbsSquared() const
 	{
 		return x * x + y * y;
 	}
@@ -50,10 +50,10 @@ struct Complex
 	{
 		return *this * ~c / Complex(c.AbsSquared(), 0);
 	}
-	Complex operator^(const float P) const
+	Complex operator^(const double P) const
 	{
-		float A = exp(P * log(AbsSquared()) / 2);
-		float theta = atan2(y, x);
+		double A = exp(P * log(AbsSquared()) / 2);
+		double theta = atan2(y, x);
 		return Complex(A * cos(theta * P), A * sin(theta * P));
 	}
 	Complex operator^(const int P) const
@@ -73,7 +73,7 @@ struct Complex
 	}
 	Complex& operator*=(const Complex c)
 	{
-		float tx = x * c.x - y * c.y;
+		double tx = x * c.x - y * c.y;
 		y = x * c.y + y * c.x;
 		x = tx;
 		return *this;
@@ -87,12 +87,12 @@ struct Complex
 
 struct Pole : Complex
 {
-	float m;
+	double m;
 
 	Pole() : m(0)
 	{
 	}
-	Pole(float X, float Y, float M) : Complex(X, Y), m(M)
+	Pole(double X, double Y, double M) : Complex(X, Y), m(M)
 	{
 	}
 	Pole(const Pole& p) : Complex(p), m(p.m)
@@ -111,6 +111,6 @@ struct Pole : Complex
 	}
 	inline std::string string()
 	{
-		return "p: " + std::to_string(x) + " | " + std::to_string(y) + " | " + std::to_string(m);
+		return "poles.add(new Pole(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(m) + "));";
 	}
 };

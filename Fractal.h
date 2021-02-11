@@ -13,7 +13,7 @@ class Fractal
 {
 public:
 	//amount of poles
-	static constexpr int N = 3;
+	static constexpr int N = 10;
 	//amount of pixels
 	static constexpr int p = 200, pixels_size = p * p;
 	static constexpr int thread_count = 100;
@@ -23,15 +23,15 @@ public:
 	//bounds in the complex plane
 	struct Box
 	{
-		float x0, y0, x1, y1;
-		Box(float x0, float y0, float x1, float y1) : x0(x0), y0(y0), x1(x1), y1(y1)
+		double x0, y0, x1, y1;
+		Box(double x0, double y0, double x1, double y1) : x0(x0), y0(y0), x1(x1), y1(y1)
 		{
 		}
-		inline float Width()
+		inline double Width()
 		{
 			return x1 - x0;
 		}
-		inline float Height()
+		inline double Height()
 		{
 			return y1 - y0;
 		}
@@ -41,11 +41,11 @@ public:
 	struct Dist
 	{
 
-		std::uniform_real_distribution<float> Distx;
-		std::uniform_real_distribution<float> Disty;
-		std::uniform_real_distribution<float> Distm;
+		std::uniform_real_distribution<double> Distx;
+		std::uniform_real_distribution<double> Disty;
+		std::uniform_real_distribution<double> Distm;
 
-		Dist(float mx, float Mx, float my, float My, float mm, float Mm) : Distx(mx, Mx), Disty(my, My), Distm(mm, Mm)
+		Dist(double mx, double Mx, double my, double My, double mm, double Mm) : Distx(mx, Mx), Disty(my, My), Distm(mm, Mm)
 		{
 		}
 	};
@@ -53,27 +53,27 @@ public:
 	Fractal(int it, int bail, Dist dist, Box box);
 	/* Functions */
 	//randomize poles and return the minimal cost after given attempts
-	float Randomize(int attempts);
+	double Randomize(int attempts);
 	//the fractal function
-	inline float Func(Complex c) const;
+	inline double Func(Complex c) const;
 	//iterates over all the pixels and assigns their value
 	void Iterate();
 	//returns the total normalised energy of the current pixels
-	float Cost();
+	double Cost();
 	//returns the complex derivative of the position of the i'th' pole
 	Vector PosDerivative(int i);
 	//returns the real derivative of the exponent of the i'th' pole
-	float PowerDerivative(int i);
+	double PowerDerivative(int i);
 	//does one training cycle for the position of the i'th' pole
 	//returns the new_cost after the cycle: 
 	//	new_cost < cost: the step was downhill
 	//	new_cost >= cost: the step was not downhill and ForceDownhill was false (poles have changed)
 	//	new_cost == -1.0f:  the step was not downhill and ForceDownhill was set true (poles haven't changed)
-	float PosMinimize(int i, float cost, bool ForceDownhill);
+	double PosMinimize(int i, double cost, bool ForceDownhill);
 	//does one training cycle for the exponent of the i'th' pole
 	//returns true if the step was downhill (New_Cost < Prev_Cost)
 	//if ForceDownhill is set to true it will always take a step so that: New_Cost <= Prev_Cost
-	float PowerMinimize(int i, float cost, bool ForceDownhill);
+	double PowerMinimize(int i, double cost, bool ForceDownhill);
 	//print pixels and parameters to csv files
 	void Print();
 	/* Getters & Setters */
@@ -83,16 +83,16 @@ private:
 	/* Variables */
 
 	//constant used in the fractal function as e^C
-	const float C = 0;
+	const double C = 0;
 	//amount of increasingly smaller steps taken to find an efficient step (lower cost)
 	int cost_steps = 5;
 	//stepsize to determine the positional derivative of the poles
-	float pos_step = 0.01f;
+	double pos_step = 0.01;
 	//stepsize to determine the exponent derivative of the poles
-	float power_step = 0.01f;
+	double power_step = 0.01;
 	//randomizer
 	std::mt19937 rng;
-	//float distributions for poles
+	//double distributions for poles
 	Dist dist;
 	//thread lock
 	std::mutex mtx;
@@ -101,17 +101,17 @@ private:
 	//fractal properties
 	int iterations, bailout;
 	//distance per pixel
-	float dx, dy;
+	double dx, dy;
 	//area where the fractal is generated
 	Box bounds;
 	//array of all the coordinates inside the bounds
 	Complex coordinates[pixels_size];
 
 	//array of all values inside the bounds
-	float pixels[pixels_size];
+	double pixels[pixels_size];
 
 	//array of all desired values
-	float desired[pixels_size];
+	double desired[pixels_size];
 
 	//poles, both numerator and denominator
 	Pole poles[N];

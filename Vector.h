@@ -5,12 +5,12 @@
 
 struct Vector
 {
-	float x, y;
+	double x, y;
 
 	Vector() : x(0), y(0)
 	{
 	}
-	Vector(float x, float y) : x(x), y(y)
+	Vector(double x, double y) : x(x), y(y)
 	{
 	}
 	Vector(const Vector& v) : x(v.x), y(v.y)
@@ -21,7 +21,7 @@ struct Vector
 	{
 		return x == 0 && y == 0;
 	}
-	float AbsSquared() const
+	double AbsSquared() const
 	{
 		return x * x + y * y;
 	}
@@ -37,11 +37,11 @@ struct Vector
 	{
 		return Vector(v.x - x, v.y - y);
 	}
-	float operator*(const Vector v) const
+	double operator*(const Vector v) const
 	{
 		return v.x * x + v.y * y;
 	}
-	Vector operator*(const float a) const
+	Vector operator*(const double a) const
 	{
 		return Vector(x * a, y * a);
 	}

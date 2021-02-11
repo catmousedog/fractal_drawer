@@ -10,39 +10,29 @@ Fractal f(20, 10000, dist, bounds);
 int main()
 {
 	ForceDownhill = true;
-	MinCost = 0.30f;
-	//Train(200, false, 200, 0.5f);
-	//FindMinimum(100, false, 1000, 0.5f);
-	//Walk(1, false, 1000);
-	//FindRandom(1000, 1.0f);
-	//Benchmark(10);
+	MinCost = 0.30;
 
-	//f.GetPoles()[0] = Pole(1.00000, 0.00000, 4);
-	//f.GetPoles()[1] = Pole(-1.00000, 0.00000, -1);
-	//f.Iterate();
-	//f.Print();
 
-	while (true)
-	{
-		std::cout << std::endl;
-		for (int i = 0; i < Fractal::N; i++)
-		{
-			TrainPosOne(i);
-		}
-	}
 
-	//delete f;
+	//while (true)
+	//{
+	//	std::cout << std::endl;
+	//	for (int i = 0; i < Fractal::N; i++)
+	//	{
+	//		TrainPosOne(i);
+	//	}
+	//}
 	return 0;
 }
 
 void TrainPosOne(int i)
 {
 	std::cout << "TrainPosOne " << i << std::endl;
-	float cost = f.Randomize(100);
-	
+	double cost = f.Randomize(10);
+
 	std::cout << "Randomize: " << cost << std::endl;
 
-	float new_cost = -1.0f;
+	double new_cost = -1.0;
 	for (int j = 0;; j++)
 	{
 		new_cost = f.PosMinimize(i, cost, ForceDownhill);
@@ -65,7 +55,7 @@ void TrainPosOne(int i)
 			std::cout << j << "\t uphill: " << new_cost << std::endl;
 		}
 	}
-	//check if previous cost can be printed as new_cost is -1.0f
+	//check if previous cost can be printed as new_cost is -1.0
 	if (cost < MinCost)
 	{
 		std::cout << "printing" << std::endl;
@@ -88,7 +78,7 @@ void TrainAllOne() {}
 void TrainAllAll() {}
 
 /**
-void Train(int random, bool downhill, int limit, float cost)
+void Train(int random, bool downhill, int limit, double cost)
 {
 	while (true)
 	{
@@ -115,7 +105,7 @@ void Train(int random, bool downhill, int limit, float cost)
 	}
 }
 
-void FindMinimum(int random, bool downhill, int limit, float min_cost)
+void FindMinimum(int random, bool downhill, int limit, double min_cost)
 {
 	while (true)
 	{
@@ -134,7 +124,7 @@ void FindMinimum(int random, bool downhill, int limit, float min_cost)
 				break;
 			}
 		}
-		float cost = f->Cost();
+		double cost = f->Cost();
 		if (cost < min_cost)
 		{
 			min_cost = cost;
@@ -157,7 +147,7 @@ void Walk(int random, bool downhill, int limit)
 	f->Print();
 }
 
-void FindRandom(int random, float cost)
+void FindRandom(int random, double cost)
 {
 	while (true)
 	{

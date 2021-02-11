@@ -3,7 +3,7 @@
 //whether the steps should always be forced downhill or not at all
 bool ForceDownhill;
 //the minimum cost before the poles can be worth wile saving
-float MinCost;
+double MinCost;
 
 //train the position of one pole
 void TrainPosOne(int i);
@@ -19,8 +19,8 @@ void TrainAllOne();
 void TrainAllAll();
 
 
-//void Train(int, bool, int, float);
-//void FindMinimum(int, bool, int, float);
+//void Train(int, bool, int, double);
+//void FindMinimum(int, bool, int, double);
 //void Walk(int, bool, int);
-//void FindRandom(int, float);
+//void FindRandom(int, double);
 //void Benchmark(int M);
