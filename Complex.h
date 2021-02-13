@@ -2,6 +2,16 @@
 
 #include "Vector.h"
 
+#ifndef INTEGER_EXPONENT
+#define INTEGER_EXPONENT true
+#endif
+
+#if INTEGER_EXPONENT
+#define EXPONENT_TYPE int
+#else
+#define EXPONENT_TYPE double
+#endif
+
 struct Complex
 {
 	double x, y;
@@ -42,13 +52,17 @@ struct Complex
 	{
 		return Complex(v.x - x, v.y - y);
 	}
+	Complex operator*(const double a) const
+	{
+		return Complex(x * a, y * a);
+	}
 	Complex operator*(const Complex c) const
 	{
 		return Complex(x * c.x - y * c.y, x * c.y + y * c.x);
 	}
 	Complex operator/(const Complex c) const
 	{
-		return *this * ~c / Complex(c.AbsSquared(), 0);
+		return (*this * (~c)) * (1 / c.AbsSquared());
 	}
 	Complex operator^(const double P) const
 	{
@@ -58,12 +72,24 @@ struct Complex
 	}
 	Complex operator^(const int P) const
 	{
-		Complex c(x, y);
-		for (int i = 0; i < P - 1; i++)
+		if (P > 0)
 		{
-			c *= c;
+			Complex c(*this);
+			for (int i = 0; i < P - 1; i++)
+				c *= *this;
+			return c;
 		}
-		return c;
+		else if (P < 0)
+		{
+			Complex c(1, 0);
+			for (int i = 0; i < -P; i++)
+				c /= *this;
+			return c;
+		}
+		else // P==0
+		{
+			return Complex(1, 0);
+		}
 	}
 	Complex& operator+=(const Complex v)
 	{
@@ -73,9 +99,12 @@ struct Complex
 	}
 	Complex& operator*=(const Complex c)
 	{
-		double tx = x * c.x - y * c.y;
-		y = x * c.y + y * c.x;
-		x = tx;
+		*this = *this * c;
+		return *this;
+	}
+	Complex& operator/=(const Complex c)
+	{
+		*this = *this / c;
 		return *this;
 	}
 	std::string string()
@@ -84,15 +113,14 @@ struct Complex
 	}
 };
 
-
 struct Pole : Complex
 {
-	double m;
+	EXPONENT_TYPE m;
 
-	Pole() : m(0)
+	Pole() : m(EXPONENT_TYPE(0))
 	{
 	}
-	Pole(double X, double Y, double M) : Complex(X, Y), m(M)
+	Pole(double X, double Y, EXPONENT_TYPE M) : Complex(X, Y), m(M)
 	{
 	}
 	Pole(const Pole& p) : Complex(p), m(p.m)

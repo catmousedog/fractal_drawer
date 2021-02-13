@@ -7,7 +7,7 @@
 #include <mutex>
 #include <random>
 
-#define _GRADIENT_DESCENT_ true
+#define GRADIENT_DESCENT true
 
 class Fractal
 {
@@ -41,12 +41,36 @@ public:
 	struct Dist
 	{
 
+		double mx, Mx;
 		std::uniform_real_distribution<double> Distx;
+		double my, My;
 		std::uniform_real_distribution<double> Disty;
+#if INTEGER_EXPONENT
+		int mm, Mm;
+		std::uniform_int_distribution<int> Distm;
+#else
+		double mm, Mm;
 		std::uniform_real_distribution<double> Distm;
+#endif
 
-		Dist(double mx, double Mx, double my, double My, double mm, double Mm) : Distx(mx, Mx), Disty(my, My), Distm(mm, Mm)
+
+		Dist(double mx, double Mx, double my, double My, EXPONENT_TYPE mm, EXPONENT_TYPE Mm) : Distx(mx, Mx), Disty(my, My), Distm(mm, Mm)
 		{
+			this->mx = mx;
+			this->Mx = Mx;
+			this->my = my;
+			this->My = My;
+			this->mm = mm;
+			this->Mm = Mm;
+		}
+		Dist(const Dist& dist) : Distx(dist.mx, dist.Mx), Disty(dist.my, dist.My), Distm(dist.mm, dist.Mm)
+		{
+			mx = dist.mx;
+			Mx = dist.Mx;
+			my = dist.my;
+			My = dist.My;
+			mm = dist.mm;
+			Mm = dist.Mm;
 		}
 	};
 
