@@ -1,5 +1,4 @@
 #include "Fractal.h"
-#include "Utils.h"
 #include <cmath>
 #include <ctime>
 #include <assert.h>
@@ -8,7 +7,7 @@
 #include <numeric>
 
 // Constructs the fractal and reads from desired.csv
-Fractal::Fractal(int it, int bail, Dist dist, Box box) : 
+Fractal::Fractal(int it, int bail, Dist dist, Box box) :
 	iterations(it), bailout(bail), poles(), bounds(box), pixels(), desired(), rng(static_cast<unsigned int>(time(0))), dist(dist)
 {
 	dx = (double)(bounds.Width()) / (double)p;
@@ -132,182 +131,82 @@ double Fractal::Cost()
 }
 
 #if GRADIENT_DESCENT
-//cube root of machine epsilon, stepsize of derivative
-//const double e = cbrt(std::numeric_limits<double>::epsilon());
-const double pos_e = 0.15;
+const double pos_h = 0.1;
 
-Vector Fractal::PosDerivative(int i)
+Vector Fractal::PosDerivative(int i, double cost)
 {
 	Complex copy = poles[i];
 	Vector out;
 	double cost1, cost2;
 
-	if (poles[i].x != 0)
-	{
-		double h = pos_e;
-		//first term
-		poles[i].x += h;
-		Iterate();
-		cost1 = Cost();
-		poles[i].x = copy.x;
-		//second term
-		poles[i].x -= h;
-		Iterate();
-		cost2 = Cost();
-		poles[i].x = copy.x;
-		//d/dx
-		out.x = (cost2 - cost1) / (2.0 * h);
-	}
+	//first term
+	poles[i].x += pos_h;
+	Iterate();
+	cost1 = Cost();
+	poles[i].x = copy.x;
+	//second term
+	poles[i].x -= pos_h;
+	Iterate();
+	cost2 = Cost();
+	poles[i].x = copy.x;
+	//d/dx
+	if (cost <= cost1 && cost <= cost2)
+		//valley
+		out.x = 0;
 	else
-	{
-		//first term
-		poles[i].x = pos_e;
-		Iterate();
-		cost1 = Cost();
-		poles[i].x = copy.x;
-		//second term
-		poles[i].x = -pos_e;
-		Iterate();
-		cost2 = Cost();
-		poles[i].x = copy.x;
-		//d/dx
-		out.x = (cost2 - cost1) / (2 * pos_e);
-	}
+		out.x = (cost2 - cost1) / double(2.0 * pos_h);
 
-	if (poles[i].y != 0)
-	{
-		double h = pos_e * poles[i].y;
-		//first term
-		poles[i].y += h;
-		Iterate();
-		cost1 = Cost();
-		poles[i].y = copy.y;
-		//second term
-		poles[i].y -= h;
-		Iterate();
-		cost2 = Cost();
-		poles[i].y = copy.y;
-		//d/dy
-		out.y = (cost2 - cost1) / (2 * h);
-	}
+	//first term
+	poles[i].y += pos_h;
+	Iterate();
+	cost1 = Cost();
+	poles[i].y = copy.y;
+	//second term
+	poles[i].y -= pos_h;
+	Iterate();
+	cost2 = Cost();
+	poles[i].y = copy.y;
+	//d/dy
+	if (cost <= cost1 && cost <= cost2)
+		//valley
+		out.y = 0;
 	else
-	{
-		//first term
-		poles[i].y = pos_e;
-		Iterate();
-		cost1 = Cost();
-		poles[i].y = copy.y;
-		//second term
-		poles[i].y = -pos_e;
-		Iterate();
-		cost2 = Cost();
-		poles[i].y = copy.y;
-		//d/dy
-		out.y = (cost2 - cost1) / (2 * pos_e);
-	}
-
+		out.y = (cost2 - cost1) / double(2.0 * pos_h);
 
 	return out;
 }
 
-//cube root of machine epsilon, stepsize of derivative
-//const double e = cbrt(std::numeric_limits<double>::epsilon());
 #if INTEGER_EXPONENT
-const int power_e = 1;
+const int power_h = 1;
 #else
-const double power_e = 0.15;
+const double power_h = 0.1;
 #endif
-double Fractal::PowerDerivative(int i)
+double Fractal::ExponentDerivative(int i, double cost)
 {
 	EXPONENT_TYPE m = poles[i].m;
 	double out = 0;
 	double cost1, cost2;
 
-	if (poles[i].m != 0)
-	{
-#if INTEGER_EXPONENT
-		int h = power_e;
-#else
-		double h = power_e * poles[i].m;
-#endif
-		//first term
-		poles[i].m += h;
-		Iterate();
-		cost1 = Cost();
-		poles[i].m = m;
-		//second term
-		poles[i].m -= h;
-		Iterate();
-		cost2 = Cost();
-		poles[i].m = m;
-		//d/dx
-		out = (cost2 - cost1) / double(2 * h);
-	}
+	//first term
+	poles[i].m += power_h;
+	Iterate();
+	cost1 = Cost();
+	poles[i].m = m;
+	//second term
+	poles[i].m -= power_h;
+	Iterate();
+	cost2 = Cost();
+	poles[i].m = m;
+	//d/dm
+	if (cost <= cost1 && cost <= cost2)
+		//valley
+		out = 0;
 	else
-	{
-		//first term
-		poles[i].m = power_e;
-		Iterate();
-		cost1 = Cost();
-		poles[i].m = m;
-		//second term
-		poles[i].m = -power_e;
-		Iterate();
-		cost2 = Cost();
-		poles[i].m = m;
-		//d/dx
-		out = (cost2 - cost1) / (2 * power_e);
-	}
+		out = (cost2 - cost1) / double(2 * power_h);
 
 	return out;
 }
 
-double Fractal::PosMinimize(int i, double cost, bool ForceDownhill)
-{
-	Pole copy = poles[i];
-	Vector grad = -PosDerivative(i);
-
-	if (grad.IsZero())
-	{
-		std::cout << "gradient is zero" << std::endl;
-		return -1.0;
-	}
-
-	//backtracking line search
-	double stepsize = 1.0, c = 0.5, reduction = 0.5;
-	double new_cost;
-	while (true)
-	{
-		poles[i] = copy + grad * stepsize;
-		Iterate();
-		new_cost = Cost();
-
-		if (new_cost - cost > -c * stepsize * sqrt(grad.AbsSquared()))
-			break;
-
-		stepsize *= reduction;
-	}
-
-	std::cout << "backtrack " << grad.string() << " " << stepsize << std::endl;
-
-	//downhill
-	if (new_cost < cost)
-	{
-		return new_cost;
-	}
-	//not downhill
-	if (ForceDownhill)
-	{
-		//don't take step
-		poles[i] = copy;
-		return -1.0;
-	}
-	else
-	{
-		//continue with the non-downhill step
-		return new_cost;
-	}
-}
 #else
 //simplex algorithm
 double Fractal::PosMinimize(int i, double cost, bool ForceDownhill)
@@ -340,63 +239,6 @@ double Fractal::PosMinimize(int i, double cost, bool ForceDownhill)
 	return 0;
 }
 #endif
-
-double Fractal::PowerMinimize(int i, double cost, bool ForceDownhill)
-{
-	EXPONENT_TYPE copy = poles[i].m;
-	double grad = -PowerDerivative(i);
-
-	if (grad == 0.0)
-	{
-		std::cout << "gradient is zero" << std::endl;
-		return -1.0;
-	}
-
-	//backtracking line search
-	double stepsize = 1.0;
-	double c = 0.5, reduction = 0.5;
-	double new_cost;
-	while (true)
-	{
-		//integer derivative
-#if INTEGER_EXPONENT
-		poles[i].m = copy + sgn(grad);
-		Iterate();
-		new_cost = Cost();
-		break;
-#endif
-		//normal double procedure
-		poles[i].m = copy + grad * stepsize;
-
-		Iterate();
-		new_cost = Cost();
-
-		if (new_cost - cost > -c * stepsize * grad)
-			break;
-
-		stepsize *= reduction;
-	}
-
-	std::cout << "backtrack " << grad << " " << stepsize << std::endl;
-
-	//downhill
-	if (new_cost < cost)
-	{
-		return new_cost;
-	}
-	//not downhill
-	if (ForceDownhill)
-	{
-		//don't take step
-		poles[i].m = copy;
-		return -1.0;
-	}
-	else
-	{
-		//continue with the non-downhill step
-		return new_cost;
-	}
-}
 
 void Fractal::Print()
 {

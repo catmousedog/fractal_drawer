@@ -57,3 +57,12 @@ struct Vector
 		return "v: " + std::to_string(x) + " | " + std::to_string(y);
 	}
 };
+
+inline int sgn(double v)
+{
+	return (v > 0) - (v < 0);
+}
+inline Vector sgn(Vector v)
+{
+	return Vector(sgn(v.x), sgn(v.y));
+}

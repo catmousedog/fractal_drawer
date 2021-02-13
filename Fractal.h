@@ -7,7 +7,9 @@
 #include <mutex>
 #include <random>
 
+#ifndef GRADIENT_DESCENT
 #define GRADIENT_DESCENT true
+#endif
 
 class Fractal
 {
@@ -36,7 +38,6 @@ public:
 			return y1 - y0;
 		}
 	};
-
 	//distributions used to randomize poles
 	struct Dist
 	{
@@ -85,27 +86,16 @@ public:
 	//returns the total normalised energy of the current pixels
 	double Cost();
 	//returns the complex derivative of the position of the i'th' pole
-	Vector PosDerivative(int i);
+	Vector PosDerivative(int i, double cost);
 	//returns the real derivative of the exponent of the i'th' pole
-	double PowerDerivative(int i);
-	//does one training cycle for the position of the i'th' pole
-	//returns the new_cost after the cycle: 
-	//	new_cost < cost: the step was downhill
-	//	new_cost >= cost: the step was not downhill and ForceDownhill was false (poles have changed)
-	//	new_cost == -1.0f:  the step was not downhill and ForceDownhill was set true (poles haven't changed)
-	double PosMinimize(int i, double cost, bool ForceDownhill);
-	//does one training cycle for the exponent of the i'th' pole
-	//returns true if the step was downhill (New_Cost < Prev_Cost)
-	//if ForceDownhill is set to true it will always take a step so that: New_Cost <= Prev_Cost
-	double PowerMinimize(int i, double cost, bool ForceDownhill);
+	double ExponentDerivative(int i, double cost);
 	//print pixels and parameters to csv files
 	void Print();
 	/* Getters & Setters */
 	Pole* GetPoles() { return poles; }
-private:
 
+protected:
 	/* Variables */
-
 	//constant used in the fractal function as e^C
 	const double C = 0;
 	//amount of increasingly smaller steps taken to find an efficient step (lower cost)
@@ -130,16 +120,12 @@ private:
 	Box bounds;
 	//array of all the coordinates inside the bounds
 	Complex coordinates[pixels_size];
-
 	//array of all values inside the bounds
 	double pixels[pixels_size];
-
 	//array of all desired values
 	double desired[pixels_size];
-
 	//poles, both numerator and denominator
 	Pole poles[N];
-
 	/* Functions */
 	//Iterates over a portion of the total pixels
 	void SubIterate(int start, int end);
