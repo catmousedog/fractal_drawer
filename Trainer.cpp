@@ -104,12 +104,12 @@ double Trainer::ExponentMinimize(int i, double cost, bool ForceDownhill)
 
 	if (grad == 0.0)
 	{
-		std::cout << "gradient is zero" << std::endl;
+		std::cout << "minimum reached" << std::endl;
 		return -1.0;
 	}
 
 	//backtracking line search
-	double stepsize = 1.0;
+	double stepsize = 1.0; //whole number
 	double c = 0.5, reduction = 0.5;
 	double new_cost;
 	while (true)

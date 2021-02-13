@@ -86,8 +86,10 @@ public:
 	//returns the total normalised energy of the current pixels
 	double Cost();
 	//returns the complex derivative of the position of the i'th' pole
+	//returns 0 if the current position is in a minimum
 	Vector PosDerivative(int i, double cost);
 	//returns the real derivative of the exponent of the i'th' pole
+	//returns 0 if the current exponent is in a minimum
 	double ExponentDerivative(int i, double cost);
 	//print pixels and parameters to csv files
 	void Print();

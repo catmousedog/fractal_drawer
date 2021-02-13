@@ -131,8 +131,8 @@ double Fractal::Cost()
 }
 
 #if GRADIENT_DESCENT
-const double pos_h = 0.1;
-
+//position epsilon: the smallest stepsize for the position of the poles
+const double pos_eps = 4.51E13 * std::numeric_limits<double>::epsilon();
 Vector Fractal::PosDerivative(int i, double cost)
 {
 	Complex copy = poles[i];
@@ -140,12 +140,12 @@ Vector Fractal::PosDerivative(int i, double cost)
 	double cost1, cost2;
 
 	//first term
-	poles[i].x += pos_h;
+	poles[i].x += pos_eps;
 	Iterate();
 	cost1 = Cost();
 	poles[i].x = copy.x;
 	//second term
-	poles[i].x -= pos_h;
+	poles[i].x -= pos_eps;
 	Iterate();
 	cost2 = Cost();
 	poles[i].x = copy.x;
@@ -154,32 +154,45 @@ Vector Fractal::PosDerivative(int i, double cost)
 		//valley
 		out.x = 0;
 	else
-		out.x = (cost2 - cost1) / double(2.0 * pos_h);
+		out.x = (cost2 - cost1) / double(2.0 * pos_eps);
 
 	//first term
-	poles[i].y += pos_h;
+	poles[i].y += pos_eps;
 	Iterate();
 	cost1 = Cost();
 	poles[i].y = copy.y;
 	//second term
-	poles[i].y -= pos_h;
+	poles[i].y -= pos_eps;
 	Iterate();
 	cost2 = Cost();
 	poles[i].y = copy.y;
 	//d/dy
 	if (cost <= cost1 && cost <= cost2)
+	{
 		//valley
 		out.y = 0;
+	}
 	else
-		out.y = (cost2 - cost1) / double(2.0 * pos_h);
+	{
+		out.y = (cost2 - cost1) / double(2.0 * pos_eps);
+	}
+
+	// symmetrix maximum
+	if (out.x == 0 && out.y == 0)
+	{
+		//step towards origin
+		out.x = -pos_eps * sgn(copy.x);
+		out.y = -pos_eps * sgn(copy.y);
+	}
 
 	return out;
 }
 
+//exponent epsilon: the smallest stepsize for the exponent of the poles
 #if INTEGER_EXPONENT
-const int power_h = 1;
+const int exponent_eps = 1;
 #else
-const double power_h = 0.1;
+const double exponent_eps = 4.51E13 * std::numeric_limits<double>::epsilon();
 #endif
 double Fractal::ExponentDerivative(int i, double cost)
 {
@@ -188,22 +201,32 @@ double Fractal::ExponentDerivative(int i, double cost)
 	double cost1, cost2;
 
 	//first term
-	poles[i].m += power_h;
+	poles[i].m += exponent_eps;
 	Iterate();
 	cost1 = Cost();
 	poles[i].m = m;
 	//second term
-	poles[i].m -= power_h;
+	poles[i].m -= exponent_eps;
 	Iterate();
 	cost2 = Cost();
 	poles[i].m = m;
 	//d/dm
 	if (cost <= cost1 && cost <= cost2)
+	{
 		//valley
 		out = 0;
+	}
 	else
-		out = (cost2 - cost1) / double(2 * power_h);
+	{
+		out = (cost2 - cost1) / double(2 * exponent_eps);
+	}
 
+	// symmetrix maximum
+	if (out == 0)
+	{
+		//step towards origin
+		out = -exponent_eps * sgn(m);
+	}
 	return out;
 }
 
@@ -237,7 +260,7 @@ double Fractal::PosMinimize(int i, double cost, bool ForceDownhill)
 	centroid.m / 3.0;
 
 	return 0;
-}
+	}
 #endif
 
 void Fractal::Print()

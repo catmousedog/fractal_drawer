@@ -27,15 +27,17 @@ public:
 	void TrainAllOne();
 	//train both the position and exponent of all poles
 	void TrainAllAll();
-	//does one training cycle for the position of the i'th' pole
-	//returns the new_cost after the cycle: 
+	//takes one step for the position of the i'th' pole
+	//returns the new_cost after the step: 
 	//	new_cost < cost: the step was downhill
-	//	new_cost >= cost: the step was not downhill and ForceDownhill was false (poles have changed)
-	//	new_cost == -1.0f:  the step was not downhill and ForceDownhill was set true (poles haven't changed)
+	//	new_cost >= cost: the step was non-downhill (ForceDownhill was false and the poles have changed)
+	//	new_cost == -1.0f:  no downhill step could be taken (ForceDownhill was set true and the poles haven't changed)
 	double PosMinimize(int i, double cost, bool ForceDownhill);
-	//does one training cycle for the exponent of the i'th' pole
-	//returns true if the step was downhill (New_Cost < Prev_Cost)
-	//if ForceDownhill is set to true it will always take a step so that: New_Cost <= Prev_Cost
+	//takes one step for the exponent of the i'th' pole
+	//returns the new_cost after the step: 
+	//	new_cost < cost: the step was downhill
+	//	new_cost >= cost: the step was non-downhill (ForceDownhill was false and the poles have changed)
+	//	new_cost == -1.0f:  no downhill step could be taken (ForceDownhill was set true and the poles haven't changed)
 	double ExponentMinimize(int i, double cost, bool ForceDownhill);
 };
 
