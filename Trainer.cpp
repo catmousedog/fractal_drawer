@@ -12,7 +12,7 @@ void Trainer::TrainPosOne(int i)
 	double new_cost = -1.0;
 	for (int j = 0;; j++)
 	{
-		new_cost = PosMinimize(i, cost, ForceDownhill);
+		new_cost = PosMinimize(i, cost, ForceDownhill, Vector(0, 0));
 		// could not find downhill step
 		if (new_cost < 0)
 		{
@@ -50,39 +50,35 @@ void Trainer::TrainAllOne() {}
 
 void Trainer::TrainAllAll() {}
 
-double Trainer::PosMinimize(int i, double cost, bool ForceDownhill)
+Trainer::StepData<Vector> Trainer::PosMinimize(int i, double cost, bool ForceDownhill, Vector PrevStep)
 {
 	Pole copy = poles[i];
 	Vector grad = -PosDerivative(i, cost);
 
 	if (grad.IsZero())
 	{
-		std::cout << "gradient is zero" << std::endl;
-		return -1.0;
+		std::cout << "minimum reached" << std::endl;
+		ConditionalPrint(cost);
+		return StepData<Vector>(-1.0, Vector());
 	}
 
-	//backtracking line search
-	double stepsize = 1, c = 0.5, reduction = 0.5;
-	double new_cost;
-	while (true)
-	{
-		poles[i] = copy + grad * stepsize;
+	double new_cost = -2.0;
+	Vector s = sgn(PrevStep);
+	Vector stepsize = PrevStep + s.TermMultiply(pos_eps_vec);
+
+	do {
+		poles[i] += s.TermMultiply(stepsize);
 		Iterate();
 		new_cost = Cost();
+		if (new_cost < cost)
+		{
+			return StepData<Vector>(new_cost, stepsize);
+		}
 
-		if (new_cost - cost > -c * stepsize * sqrt(grad.AbsSquared()))
-			break;
+		stepsize -= pos_eps_vec;
+	} while (abs(stepsize.x) >= pos_eps && abs(stepsize.y) >= pos_eps);
 
-		stepsize *= reduction;
-	}
-
-	std::cout << "backtrack " << grad.string() << " " << stepsize << std::endl;
-
-	//downhill
-	if (new_cost < cost)
-	{
-		return new_cost;
-	}
+	std::cout << "NOT DOWNHILL" << std::endl;
 	//not downhill
 	if (ForceDownhill)
 	{
@@ -97,7 +93,7 @@ double Trainer::PosMinimize(int i, double cost, bool ForceDownhill)
 	}
 }
 
-double Trainer::ExponentMinimize(int i, double cost, bool ForceDownhill)
+Trainer::StepData<double> Trainer::ExponentMinimize(int i, double cost, bool ForceDownhill, double PrevStep)
 {
 	EXPONENT_TYPE copy = poles[i].m;
 	double grad = -ExponentDerivative(i, cost);
@@ -105,49 +101,40 @@ double Trainer::ExponentMinimize(int i, double cost, bool ForceDownhill)
 	if (grad == 0.0)
 	{
 		std::cout << "minimum reached" << std::endl;
-		return -1.0;
+		ConditionalPrint(cost);
+		return StepData<double>(-1.0, 0.0);
 	}
 
-	//backtracking line search
-	double stepsize = 1.0; //whole number
-	double c = 0.5, reduction = 0.5;
-	double new_cost;
-	while (true)
-	{
-#if INTEGER_EXPONENT
-		poles[i].m = copy + sgn(grad);
+	double new_cost = -2.0;
+	double s = sgn(PrevStep);
+	double stepsize = PrevStep + s * exponent_eps;
+
+	do {
+		poles[i].m += s * stepsize;
 		Iterate();
 		new_cost = Cost();
-		break;
-#endif
-		poles[i].m = copy + grad * stepsize;
+		if (new_cost < cost)
+		{
+			return StepData<double>(new_cost, stepsize);
+		}
 
-		Iterate();
-		new_cost = Cost();
+		stepsize -= exponent_eps;
+	} while (stepsize >= exponent_eps);
 
-		if (new_cost - cost > -c * stepsize * grad)
-			break;
-
-		stepsize *= reduction;
-	}
-
-	std::cout << "backtrack " << grad << " " << stepsize << std::endl;
-
-	//downhill
-	if (new_cost < cost)
-	{
-		return new_cost;
-	}
+	std::cout << "NOT DOWNHILL" << std::endl;
 	//not downhill
 	if (ForceDownhill)
 	{
 		//don't take step
 		poles[i].m = copy;
-		return -1.0;
+		std::cout << "no downhill step found" << std::endl;
+		ConditionalPrint(cost);
+		return StepData<double>(-1.0, 0.0);
 	}
 	else
 	{
 		//continue with the non-downhill step
-		return new_cost;
+		return StepData<double>(new_cost, stepsize);;
 	}
 }
+

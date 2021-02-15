@@ -21,6 +21,15 @@ public:
 	static constexpr int thread_count = 100;
 	//pixels per thread
 	static constexpr int ppt = pixels_size / thread_count;
+	//position epsilon: the smallest stepsize for the position of the poles
+	const double pos_eps = 4.51E13 * std::numeric_limits<double>::epsilon();
+	Vector pos_eps_vec = Vector(pos_eps, pos_eps);
+	//exponent epsilon: the smallest stepsize for the exponent of the poles
+#if INTEGER_EXPONENT
+	const int exponent_eps = 1;
+#else
+	const double exponent_eps = 4.51E13 * std::numeric_limits<double>::epsilon();
+#endif
 
 	//bounds in the complex plane
 	struct Box

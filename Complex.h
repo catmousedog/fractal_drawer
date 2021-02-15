@@ -44,11 +44,11 @@ struct Complex
 	{
 		return Complex(x, -y);
 	}
-	Complex operator+(const Complex v) const
+	Complex operator+(const Complex& v) const
 	{
 		return Complex(v.x + x, v.y + y);
 	}
-	Complex operator-(const Complex v) const
+	Complex operator-(const Complex& v) const
 	{
 		return Complex(v.x - x, v.y - y);
 	}
@@ -56,11 +56,11 @@ struct Complex
 	{
 		return Complex(x * a, y * a);
 	}
-	Complex operator*(const Complex c) const
+	Complex operator*(const Complex& c) const
 	{
 		return Complex(x * c.x - y * c.y, x * c.y + y * c.x);
 	}
-	Complex operator/(const Complex c) const
+	Complex operator/(const Complex& c) const
 	{
 		return (*this * (~c)) * (1 / c.AbsSquared());
 	}
@@ -91,18 +91,18 @@ struct Complex
 			return Complex(1, 0);
 		}
 	}
-	Complex& operator+=(const Complex v)
+	Complex& operator+=(const Complex& v)
 	{
 		x += v.x;
 		y += v.y;
 		return *this;
 	}
-	Complex& operator*=(const Complex c)
+	Complex& operator*=(const Complex& c)
 	{
 		*this = *this * c;
 		return *this;
 	}
-	Complex& operator/=(const Complex c)
+	Complex& operator/=(const Complex& c)
 	{
 		*this = *this / c;
 		return *this;
@@ -128,14 +128,19 @@ struct Pole : Complex
 	}
 
 	//evaluates a complex number in the polynomial belonging to this pole
-	Complex poly(Complex q) const
+	Complex poly(Complex& q) const
 	{
 		q += -*this;
 		return q ^ m;
 	}
-	Pole operator+(const Vector v)
+	Pole operator+(const Vector& v)
 	{
 		return Pole(x + v.x, y + v.y, m);
+	}
+	Pole& operator+=(const Vector& v)
+	{
+		*this = *this + v;
+		return *this;
 	}
 	inline std::string string()
 	{

@@ -10,7 +10,7 @@ public:
 	//the minimum cost before the poles can be worth wile saving
 	double MinCost;
 
-	Trainer(bool ForceDownhill, double MinCost, int it, int bail, Dist dist, Box box) : 
+	Trainer(bool ForceDownhill, double MinCost, int it, int bail, Dist dist, Box box) :
 		Fractal(it, bail, dist, box), ForceDownhill(ForceDownhill), MinCost(MinCost)
 	{
 	}
@@ -27,17 +27,33 @@ public:
 	void TrainAllOne();
 	//train both the position and exponent of all poles
 	void TrainAllAll();
+	//data of step taken through PosMinimize or ExponentMinimize
+	template<typename T>
+	struct StepData
+	{
+		double new_cost;
+		T PrevStep;
+
+		StepData(double new_cost, T PrevStep) : new_cost(new_cost), PrevStep(PrevStep)
+		{
+		}
+	};
 	//takes one step for the position of the i'th' pole
 	//returns the new_cost after the step: 
 	//	new_cost < cost: the step was downhill
 	//	new_cost >= cost: the step was non-downhill (ForceDownhill was false and the poles have changed)
 	//	new_cost == -1.0f:  no downhill step could be taken (ForceDownhill was set true and the poles haven't changed)
-	double PosMinimize(int i, double cost, bool ForceDownhill);
+	StepData<Vector> PosMinimize(int i, double cost, bool ForceDownhill, Vector PrevStep);
 	//takes one step for the exponent of the i'th' pole
 	//returns the new_cost after the step: 
 	//	new_cost < cost: the step was downhill
 	//	new_cost >= cost: the step was non-downhill (ForceDownhill was false and the poles have changed)
 	//	new_cost == -1.0f:  no downhill step could be taken (ForceDownhill was set true and the poles haven't changed)
-	double ExponentMinimize(int i, double cost, bool ForceDownhill);
+	StepData<double> ExponentMinimize(int i, double cost, bool ForceDownhill, double PrevStep);
+	void ConditionalPrint(double cost)
+	{
+		if (cost < MinCost)
+			Print();
+	}
 };
 

@@ -29,15 +29,15 @@ struct Vector
 	{
 		return Vector(-x, -y);
 	}
-	Vector operator+(const Vector v) const
+	Vector operator+(const Vector& v) const
 	{
 		return Vector(v.x + x, v.y + y);
 	}
-	Vector operator-(const Vector v) const
+	Vector operator-(const Vector& v) const
 	{
 		return Vector(v.x - x, v.y - y);
 	}
-	double operator*(const Vector v) const
+	double operator*(const Vector& v) const
 	{
 		return v.x * x + v.y * y;
 	}
@@ -45,13 +45,21 @@ struct Vector
 	{
 		return Vector(x * a, y * a);
 	}
-	Vector& operator+=(const Vector v)
+	Vector TermMultiply(const Vector& v) const
+	{
+		return Vector(x * v.x, y * v.y);
+	}
+	Vector& operator+=(const Vector& v)
 	{
 		x += v.x;
 		y += v.y;
 		return *this;
 	}
-
+	Vector& operator-=(const Vector& v)
+	{
+		*this += (-v);
+		return *this;
+	}
 	std::string string()
 	{
 		return "v: " + std::to_string(x) + " | " + std::to_string(y);
@@ -62,7 +70,7 @@ inline int sgn(double v)
 {
 	return (v > 0) - (v < 0);
 }
-inline Vector sgn(Vector v)
+inline Vector sgn(Vector& v)
 {
 	return Vector(sgn(v.x), sgn(v.y));
 }

@@ -131,8 +131,6 @@ double Fractal::Cost()
 }
 
 #if GRADIENT_DESCENT
-//position epsilon: the smallest stepsize for the position of the poles
-const double pos_eps = 4.51E13 * std::numeric_limits<double>::epsilon();
 Vector Fractal::PosDerivative(int i, double cost)
 {
 	Complex copy = poles[i];
@@ -188,12 +186,6 @@ Vector Fractal::PosDerivative(int i, double cost)
 	return out;
 }
 
-//exponent epsilon: the smallest stepsize for the exponent of the poles
-#if INTEGER_EXPONENT
-const int exponent_eps = 1;
-#else
-const double exponent_eps = 4.51E13 * std::numeric_limits<double>::epsilon();
-#endif
 double Fractal::ExponentDerivative(int i, double cost)
 {
 	EXPONENT_TYPE m = poles[i].m;
