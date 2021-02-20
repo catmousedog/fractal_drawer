@@ -21,7 +21,7 @@ Fractal::Fractal(int it, int bail, Dist dist, Box box) :
 	while (std::getline(des, line))
 	{
 		double v = std::stof(line);
-		coordinates[t].x = bounds.x0 + t / (double)p * dx;
+		coordinates[t].x = bounds.x0 + (t / p) * dx;
 		coordinates[t].y = bounds.y0 + (t % p) * dy;
 		desired[t] = v;
 		t++;
