@@ -128,18 +128,16 @@ struct Complex
 	}
 };
 
-#define TYPE double
-
 struct Pole : Complex
 {
 
-	TYPE m;
+	int m;
 
-	Pole() : m(TYPE(0))
+	Pole() : m(0)
 	{
 	}
 
-	Pole(double x_, double y_, TYPE m_) : Complex(x_, y_), m(m_)
+	Pole(double x_, double y_, int m_) : Complex(x_, y_), m(m_)
 	{
 	}
 
@@ -148,7 +146,7 @@ struct Pole : Complex
 	}
 
 	//evaluates a complex number in the polynomial belonging to this pole
-	Complex poly(Complex q, const TYPE a) const
+	Complex poly(Complex q, const int a) const
 	{
 		q -= *this;
 		return q ^ (a * m);
@@ -171,4 +169,34 @@ struct Pole : Complex
 		//return "poles.add(new Pole(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(m) + "));";
 	}
 
+};
+
+struct Top : Pole
+{
+	Top()
+	{
+	}
+
+	Top(double x, double y, int m) : Pole(x, y, abs(m))
+	{
+	}
+
+	Top(const Top& p) : Pole(p.x, p.y, abs(p.m))
+	{
+	}
+};
+
+struct Bottom : Pole
+{
+	Bottom()
+	{
+	}
+
+	Bottom(double x, double y, int m) : Pole(x, y, -abs(m))
+	{
+	}
+
+	Bottom(const Bottom& p) : Pole(p.x, p.y, -abs(p.m))
+	{
+	}
 };

@@ -2,7 +2,7 @@
 
 // Constructs the fractal and reads from desired.csv
 Fractal2::Fractal2(int it, int bail, Box box) :
-	iterations(it), bailout(bail), bounds(box), top(), bottom(), pixels(), coordinates()
+	iterations(it), bailout(bail), bounds(box)
 {
 	dx = (double)(bounds.Width()) / (double)p;
 	dy = (double)(bounds.Height()) / (double)p;
@@ -16,13 +16,15 @@ Fractal2::Fractal2(int it, int bail, Box box) :
 }
 
 //Fractal function
-inline double Fractal2::Func(Complex q) const
+inline void Fractal2::Func(const int j, Complex q)
 {
 	for (int i = 0; i < iterations; i++)
 	{
 		if (q.AbsSquared() > bailout)
 		{
-			return (iterations - i) / (float)iterations;
+			pixels[j] = (iterations - i) / (double)iterations;
+			potential[j] = 0.5 * log(q.AbsSquared()) * pow(degree, -i);
+			return;
 		}
 
 		Complex R(1, 0);
@@ -40,19 +42,21 @@ inline double Fractal2::Func(Complex q) const
 
 		q = R;
 	}
-	return 0.0;
+	pixels[j] = 0.0;
+	potential[j] = 0.5 * log(q.AbsSquared()) * pow(degree, -iterations);
 }
 
 inline void Fractal2::SubIterate(int start, int end)
 {
 	for (int i = start; i < end; i++)
 	{
-		pixels[i] = Func(coordinates[i]);
+		Func(i, coordinates[i]);
 	}
 }
 
 void Fractal2::Iterate()
 {
+	degree = GetDegree();
 	//assign threads to their piece
 	for (int i = 0; i < thread_count - 1; i++)
 	{

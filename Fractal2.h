@@ -7,20 +7,22 @@
 
 class Fractal2
 {
-protected:
-	/* Variables */
+private:
 	//constant used in the fractal function as e^C
 	double C = 0;
 
 	//constant used in top and bottom exponent
-	TYPE tau = 1, beta = 1;
+	int tau = 1, beta = 1;
 
 	//fractal properties
 	int iterations, bailout;
 
+	//temporary variable used during Iterate()
+	int degree;
+
 public:
 	//amount of poles
-	static constexpr int T = 4, B = 0;
+	static constexpr int T = 8, B = 2;
 
 	//amount of pixels
 	static constexpr int p = 200, pixels_size = p * p;
@@ -50,10 +52,8 @@ public:
 
 	Fractal2(int it, int bail, Box box);
 
-	/* Functions */
-
 	//the fractal function
-	inline double Func(Complex c) const;
+	inline void Func(int i, Complex c);
 
 	//iterates over all the pixels and assigns their value
 	void Iterate();
@@ -70,14 +70,23 @@ public:
 
 	double* GetPixels() { return pixels; }
 
-	TYPE GetTau() { return tau; }
+	int GetDegree()
+	{
+		int d = 0;
+		for (int i = 0; i < T; i++)
+		{
+			d += top[i].m;
+		}
+		for (int i = 0; i < B; i++)
+		{
+			d -= bottom[i].m;
+		}
+		return d;
+	}
 
-	TYPE GetBeta() { return beta; }
-
-	void SetTau(TYPE t) { tau = t; }
-
-	void SetBeta(TYPE b) { beta = b; }
-
+	double& GetC() { return C; }
+	int& GetTau() { return tau; }
+	int& GetBeta() { return beta; }
 
 private:
 	//distance per pixel
@@ -95,8 +104,11 @@ private:
 	//array of all the coordinates inside the bounds
 	Complex coordinates[pixels_size];
 
-	//array of all values inside the bounds
+	//array of all iterated values inside the bounds
 	double pixels[pixels_size];
+
+	//array of all potentials inside the bounds
+	double potential[pixels_size];
 
 	//top poles
 	Pole top[T];
@@ -108,6 +120,8 @@ private:
 	//Iterates over a portion of the total pixels
 	void SubIterate(int start, int end);
 
+	friend class Drawer;
+	friend class Optimizer;
 };
 
 
