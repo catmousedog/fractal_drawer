@@ -1,100 +1,96 @@
 #pragma once
 
 #include "Drawer.h"
-#include <iostream>
+#include "Randomizer.h"
 
 double a = 2;
 Fractal2::Box bounds(-a, -a, a, a);
-Fractal2 f(50, 10000, bounds);
+Fractal2 f(20, 10000, bounds);
 Optimizer op(f);
-Drawer drawer(f, op);
+Drawer d(f, op);
+Randomizer r(f, op, -2, 8);
 
 int main()
 {
 
-	f.GetTop()[0] = Top(0, 0, 2);
-	f.GetTop()[1] = Top(-1, -1, 2);
-	f.GetTop()[2] = Pole(1, 1, 2);
-	//f.GetTop()[3] = Pole(-1.551590, -0.439766, 2);
-	//f.GetTop()[4] = Pole(1.365934, -0.503206, 2);
-	//f.GetTop()[5] = Pole(0.659970, 0.184494, 5);
-	//f.GetTop()[6] = Pole(-0.814998, 0.210838, 5);
-	//f.GetTop()[7] = Pole(-0.190373, -0.634208, 4);
-	//f.GetBottom()[0] = Bottom(1, 1, -1);
-	//f.GetBottom()[1] = Pole(-0.415733, 0.444055, -5);
+	//ENERGY TEST
+	//for (int i = 0; i < Fractal2::pixels_size; i++)
+	//{
+	//	double x = f.GetCoordinates()[i].x;
+	//	double y = f.GetCoordinates()[i].y;
+	//	if (x * x + y * y < 1)
+	//		f.GetPixels()[i] = 1;
+	//	else
+	//		f.GetPixels()[i] = 0;
+	//	
+	//}
+	//std::cout << op.NormEnergy() << std::endl;
+	//return 0;
 
-	f.Iterate();
+	//r(10);
+	//f.out();
+	//f.Iterate();
+	//std::cout << op.NormEnergy() << std::endl;
+	//d.Draw();
 
-	std::cout << op.Energy() << std::endl;
-	std::cout << op.dEdC() << std::endl;
-	drawer.Draw();
+	//GRAPH
+	//int& m = f.GetPoles()[2].m;
+	//int M = 2;
+	//int b = m - M;
+	//m = b;
+	//std::vector<double> x, y;
+	//double E;
+	//for (int i = 0; i < 2 * M + 1; i++)
+	//{
+	//	f.Iterate();
+	//	E = op.NormEnergy();
 
-	double& c = f.GetC();
-	std::vector<double> x, y;
+	//	x.push_back((m - b) / double(2 * M));
+	//	y.push_back(E);
+	//	std::cout << x.at(i) << ", " << y.at(i) << std::endl;
+	//	m++;
+	//}
+	//d.Graph(x, y, b, m, 0, 1);
+	//return 0;
 
-	double cmin = 1;
-	double cmax = 3;
-	double n = 100;
-	double step = (cmax - c) / n;
-	c = cmin;
-	for (int i = 0; c < cmax; i++)
+	double M = 30;
+	//OPTIMIZE
+	while (true)
 	{
+		r(10);
 		f.Iterate();
-		x.push_back(i / (double)n);
-		y.push_back(op.Energy());
-		//drawer.Draw();
-		c += step;
-	}
+		double E = op.Energy();
+		//counter of how many times nothing changed, if equal to N => terminate
+		int terminate = 0;
+		for (int i = 0; i < M; i++)
+		{
+			std::cout << M - i << std::endl << std::endl;
+			for (int j = 0; j < Fractal2::N; j++)
+			{
+				int& m = f.GetPoles()[j].m;
+				int M = m;
+				E = op.OptimizeE(m, E);
+				f.Iterate();
+				if (m - M == 0)
+					terminate++;
+				else
+					terminate = 0;
+				std::cout << E / double(Fractal2::pixels_size) << ", " << j << " += " << m - M << std::endl;
 
-	drawer.Graph(x, y, cmin, cmax);
+				if (terminate == Fractal2::N)
+					break;
+			}
+			if (terminate == Fractal2::N)
+				break;
+		}
+		//if (E < 0.05)
+		//{
+			f.out();
+			f.Print();
+			d.Draw();
+		//}
+	}
 
 	return 0;
 }
 
-//void test()
-//{
-//	trainer.GetPoles()[0] = Pole(-0.415733, 0.444055, -5);
-//	trainer.GetPoles()[1] = Pole(-1.413471, -0.143818, 0);
-//	trainer.GetPoles()[2] = Pole(1.710551, 1.352028, -2);
-//	trainer.GetPoles()[3] = Pole(-1.906499, -1.822334, 1);
-//	trainer.GetPoles()[4] = Pole(-1.194207, -0.628537, 4);
-//	trainer.GetPoles()[5] = Pole(-1.551590, -0.439766, 2);
-//	trainer.GetPoles()[6] = Pole(1.365934, -0.503206, 2);
-//	trainer.GetPoles()[7] = Pole(0.659970, 0.184494, 5);
-//	trainer.GetPoles()[8] = Pole(-0.814998, 0.210838, 5);
-//	trainer.GetPoles()[9] = Pole(-0.190373, -0.634208, 4);
-//	int M = 0;
-//	EXPONENT_TYPE& v = trainer.GetPoles()[M].m; //choose
-//
-//	std::string s;
-//	for (int i = 0;; i++)
-//	{
-//		std::ifstream pot("data/coords_" + std::to_string(i) + ".csv");
-//		if (!pot.good())
-//		{
-//			s = std::to_string(i) + ".csv";
-//			break;
-//		}
-//	}
-//	std::ofstream coords;
-//	coords.open("data/coords_" + s);
-//	std::ofstream costs;
-//	costs.open("data/costs_" + s);
-//	std::ofstream ders;
-//	ders.open("data/ders_" + s);
-//
-//	for (v = -10; v <= 10; v += 1)
-//	{
-//		trainer.Iterate();
-//		double cost = trainer.Cost();
-//		//double der = f.PosDerivative(M).x; //position
-//		double der = trainer.ExponentDerivative(M, cost); //exponent
-//		std::cout << v << "\t " << cost << std::endl;
-//		coords << v << std::endl;
-//		costs << cost << std::endl;
-//		ders << der << std::endl;
-//	}
-//	coords.close();
-//	costs.close();
-//	ders.close();
-//}

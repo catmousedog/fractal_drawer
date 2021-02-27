@@ -4,6 +4,7 @@
 #include <fstream>
 #include <mutex>
 #include <pch.h>
+#include <iostream>
 
 class Fractal2
 {
@@ -22,7 +23,7 @@ private:
 
 public:
 	//amount of poles
-	static constexpr int T = 8, B = 2;
+	static constexpr int N = 20;
 
 	//amount of pixels
 	static constexpr int p = 200, pixels_size = p * p;
@@ -61,10 +62,18 @@ public:
 	//print pixels and parameters to csv files
 	void Print();
 
-	/* Getters & Setters */
-	Pole* GetTop() { return top; }
+	//cout
+	void out()
+	{
+		for (int i = 0; i < N; i++)
+		{
+			std::cout << "test(" << poles[i].string() << ");" << std::endl;
+		}
+		std::cout << std::endl;
+	}
 
-	Pole* GetBottom() { return bottom; }
+	/* Getters & Setters */
+	Pole* GetPoles() { return poles; }
 
 	Complex* GetCoordinates() { return coordinates; }
 
@@ -73,14 +82,9 @@ public:
 	int GetDegree()
 	{
 		int d = 0;
-		for (int i = 0; i < T; i++)
-		{
-			d += top[i].m;
-		}
-		for (int i = 0; i < B; i++)
-		{
-			d -= bottom[i].m;
-		}
+		for (int i = 0; i < N; i++)
+			d += poles[i].m;
+
 		return d;
 	}
 
@@ -111,10 +115,7 @@ private:
 	double potential[pixels_size];
 
 	//top poles
-	Pole top[T];
-
-	//bottom poles
-	Pole bottom[B];
+	Pole poles[N];
 
 	/* Functions */
 	//Iterates over a portion of the total pixels
@@ -122,6 +123,7 @@ private:
 
 	friend class Drawer;
 	friend class Optimizer;
+	friend class Randomizer;
 };
 
 

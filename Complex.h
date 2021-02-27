@@ -20,52 +20,52 @@ struct Complex
 		y = c.y;
 	}
 
-	bool IsZero() const
+	inline bool IsZero() const
 	{
 		return x == 0 && y == 0;
 	}
 
-	double AbsSquared() const
+	inline double AbsSquared() const
 	{
 		return x * x + y * y;
 	}
 
-	Complex operator-() const
+	inline Complex operator-() const
 	{
 		return Complex(-x, -y);
 	}
 
-	Complex operator~() const
+	inline Complex operator~() const
 	{
 		return Complex(x, -y);
 	}
 
-	Complex operator+(const Complex& v) const
+	inline Complex operator+(const Complex& v) const
 	{
 		return Complex(v.x + x, v.y + y);
 	}
 
-	Complex operator-(const Complex& v) const
+	inline Complex operator-(const Complex& v) const
 	{
 		return Complex(v.x - x, v.y - y);
 	}
 
-	Complex operator*(const double a) const
+	inline Complex operator*(const double a) const
 	{
 		return Complex(x * a, y * a);
 	}
 
-	Complex operator*(const Complex& c) const
+	inline Complex operator*(const Complex& c) const
 	{
 		return Complex(x * c.x - y * c.y, x * c.y + y * c.x);
 	}
 
-	Complex operator/(const Complex& c) const
+	inline Complex operator/(const Complex& c) const
 	{
 		return (*this * (~c)) * (1 / c.AbsSquared());
 	}
 
-	Complex operator^(const double P) const
+	inline Complex operator^(const double P) const
 	{
 		//double A = exp(P * log(AbsSquared()) / 2);
 		double A = pow(AbsSquared(), P / 2);
@@ -73,56 +73,65 @@ struct Complex
 		return Complex(A * cos(theta * P), A * sin(theta * P));
 	}
 
-	Complex operator^(const int P) const
-	{
-		if (P > 0)
-		{
-			Complex c(*this);
-			for (int i = 0; i < P - 1; i++)
-				c *= *this;
-			return c;
-		}
-		else
-		{
-			Complex c(1, 0);
-			for (int i = 0; i < -P; i++)
-				c /= *this;
-			return c;
-		}
-	}
+	//Complex operator^(const int P) const
+	//{
+	//	if (P > 0)
+	//	{
+	//		Complex c(*this);
+	//		for (int i = 0; i < P - 1; i++)
+	//			c *= *this;
+	//		return c;
+	//	}
+	//	else if (P == 0)
+	//	{
+	//		return Complex(1, 0);
+	//	}
+	//	else
+	//	{
+	//		Complex t(1, 0);
+	//		for (int i = 0; i < -P; i++)
+	//			t *= *this;
+	//		return Complex(1, 0) / t;
+	//	}
+	//}
 
-	Complex& operator=(const Complex& c)
+	inline Complex& operator=(const Complex& c)
 	{
 		x = c.x;
 		y = c.y;
 		return *this;
 	}
-	Complex& operator+=(const Complex& c)
+	inline Complex& operator+=(const Complex& c)
 	{
 		x += c.x;
 		y += c.y;
 		return *this;
 	}
 
-	Complex& operator-=(const Complex& c)
+	inline Complex& operator-=(const Complex& c)
 	{
-		*this += -c;
+		x -= c.x;
+		y -= c.y;
 		return *this;
 	}
 
-	Complex& operator*=(const Complex& c)
+	inline Complex& operator*=(const Complex& c)
 	{
-		*this = *this * c;
+		double tx = x * c.x - y * c.y;
+		this->y = x * c.y + y * c.x;
+		this->x = tx;
 		return *this;
+		//*this = *this * c;
+		//return *this;
 	}
 
-	Complex& operator/=(const Complex& c)
+	inline Complex& operator/=(const Complex& c)
 	{
 		*this = *this / c;
 		return *this;
 	}
 
-	std::string string()
+	inline std::string string()
 	{
 		return std::to_string(x) + ", " + std::to_string(y);
 	}
@@ -146,18 +155,18 @@ struct Pole : Complex
 	}
 
 	//evaluates a complex number in the polynomial belonging to this pole
-	Complex poly(Complex q, const int a) const
+	inline Complex poly(Complex q, const int a) const
 	{
 		q -= *this;
 		return q ^ (a * m);
 	}
 
-	Pole operator+(const Vector& v)
+	inline Pole operator+(const Vector& v)
 	{
 		return Pole(x + v.x, y + v.y, m);
 	}
 
-	Pole& operator+=(const Vector& v)
+	inline Pole& operator+=(const Vector& v)
 	{
 		*this = *this + v;
 		return *this;
@@ -170,33 +179,33 @@ struct Pole : Complex
 	}
 
 };
-
-struct Top : Pole
-{
-	Top()
-	{
-	}
-
-	Top(double x, double y, int m) : Pole(x, y, abs(m))
-	{
-	}
-
-	Top(const Top& p) : Pole(p.x, p.y, abs(p.m))
-	{
-	}
-};
-
-struct Bottom : Pole
-{
-	Bottom()
-	{
-	}
-
-	Bottom(double x, double y, int m) : Pole(x, y, -abs(m))
-	{
-	}
-
-	Bottom(const Bottom& p) : Pole(p.x, p.y, -abs(p.m))
-	{
-	}
-};
+//
+//struct Top : Pole
+//{
+//	Top()
+//	{
+//	}
+//
+//	Top(double x, double y, int m) : Pole(x, y, abs(m))
+//	{
+//	}
+//
+//	Top(const Top& p) : Pole(p.x, p.y, abs(p.m))
+//	{
+//	}
+//};
+//
+//struct Bottom : Pole
+//{
+//	Bottom()
+//	{
+//	}
+//
+//	Bottom(double x, double y, int m) : Pole(x, y, -abs(m))
+//	{
+//	}
+//
+//	Bottom(const Bottom& p) : Pole(p.x, p.y, -abs(p.m))
+//	{
+//	}
+//};

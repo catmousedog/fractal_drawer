@@ -8,8 +8,9 @@ class Drawer
 {
 private:
 
-	const int graphwidth=800, graphheight=600;
+	const int graphwidth = 800, graphheight = 600;
 	const unsigned char black[1] = { 0 };
+	const unsigned char gray[1] = { 50 };
 
 	Fractal2& f;
 	Optimizer& op;
@@ -21,6 +22,6 @@ public:
 
 	void Draw();
 
-	void Graph(std::vector<double> x, std::vector<double> y, double xmin, double xmax);
+	void Graph(std::vector<double> x, std::vector<double> y, double xmin, double xmax, double ymin, double ymax);
 };
 

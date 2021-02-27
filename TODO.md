@@ -1,5 +1,6 @@
 TODO
 
-make Main function to gradient descent and record its current position -> plot and see if it actually reaches a minimum
+- fix pseudo gradient for integer exponent, don't move if in valley (move towards origin if constant?)
+- calculate full pseudo gradient for integer exponent and then take full step
 
-fix the pos_eps_vec as it can not be const and depends on the initial PrevStep taken. -> it needs to substract S -= e towards the origin
+### Create new branch using analytical gradient using the potential L and calculate analytical derivatives

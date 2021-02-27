@@ -11,7 +11,7 @@ private:
 	Fractal2& f;
 
 	//inverse signed distance function
-	double isdf[Fractal2::pixels_size];
+	double desired[Fractal2::pixels_size];
 
 	//step function constant, higher means closer to a step function
 	double alpha = 1.0;
@@ -25,11 +25,19 @@ public:
 
 	double Energy();
 
-	double SDF(int i) { return isdf[i]; }
+	double NormEnergy() { return Energy() * norm; }
 
-	double dEdC();
+	//optimize the given exponent also takes the energy of the current state
+	//if a more optimal exponent was found it will be changed to that value
+	//but Iterate will not have been called
+	//returns the energy of the new state
+	double OptimizeE(int& m, double E);
 
-	double dEdT(int i);
+	//tau
+	void OptimizeT();
+
+	//beta
+	void OptimizeB();
 
 	friend class Drawer;
 };

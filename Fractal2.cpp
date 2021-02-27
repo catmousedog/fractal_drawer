@@ -29,13 +29,9 @@ inline void Fractal2::Func(const int j, Complex q)
 
 		Complex R(1, 0);
 		/** f(z) **/
-		for (int j = 0; j < T; j++)
+		for (int j = 0; j < N; j++)
 		{
-			R *= top[j].poly(q, tau);
-		}
-		for (int j = 0; j < B; j++)
-		{
-			R *= bottom[j].poly(q, beta);
+			R *= poles[j].poly(q, tau);
 		}
 		R *= Complex(exp(C), 0);
 		/****/
@@ -95,13 +91,9 @@ void Fractal2::Print()
 
 	std::ofstream par;
 	par.open("data/parameters_" + s);
-	for (int i = 0; i < T; i++)
+	for (int i = 0; i < N; i++)
 	{
-		par << top[i].string() << std::endl;
-	}
-	for (int i = 0; i < B; i++)
-	{
-		par << bottom[i].string() << std::endl;
+		par << poles[i].string() << std::endl;
 	}
 	par.close();
 }
