@@ -2,11 +2,14 @@
 
 double Randomizer::operator()(int i)
 {
+	//first cycle
 	RandomizeE();
 	RandomizeP();
-	Pole* minPoles = f.GetPoles();
 	f.Iterate();
+	Pole* minPoles = f.GetPoles();
 	double Emin = op.Energy();
+
+	//other cycles
 	for (int j = 0; j < i - 1; j++)
 	{
 		RandomizeE();

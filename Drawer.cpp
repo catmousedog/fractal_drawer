@@ -1,11 +1,8 @@
 #include "Drawer.h"
-#include "CImg.h"
 #include <assert.h>
 
-void Drawer::Draw()
+void Drawer::Draw(cimg_library::CImg<unsigned char>& img)
 {
-	cimg_library::CImg<unsigned char> img(Fractal2::p, Fractal2::p, 1, 1, 255);
-
 	unsigned char color[1] = { 0 };
 
 	for (int i = 0; i < Fractal2::pixels_size; i++)
@@ -15,8 +12,6 @@ void Drawer::Draw()
 	}
 
 	img.draw_axes((float)f.bounds.x0, (float)f.bounds.x1, (float)f.bounds.y1, (float)f.bounds.y0, gray, 1.0f, 5, 5, 0, 0, ~0u, ~0u, 8);
-
-	img.display();
 }
 
 void Drawer::Graph(std::vector<double> X, std::vector<double> Y, double xmin, double xmax, double ymin, double ymax)

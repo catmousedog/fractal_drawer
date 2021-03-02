@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Fractal2.h"
 #include "Optimizer.h"
 #include <vector>
 
@@ -20,7 +19,16 @@ public:
 	{
 	}
 
-	void Draw();
+	//create and draw the fractal on the new image
+	void Draw()
+	{
+		cimg_library::CImg<unsigned char> img(Fractal2::p, Fractal2::p, 1, 1, 255);
+		Draw(img);
+		img.display();
+	}
+
+	//draw the fractal on the given image
+	void Draw(cimg_library::CImg<unsigned char>& img);
 
 	void Graph(std::vector<double> x, std::vector<double> y, double xmin, double xmax, double ymin, double ymax);
 };

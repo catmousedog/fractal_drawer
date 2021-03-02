@@ -66,11 +66,7 @@ struct Vector
 	}
 };
 
-inline int sgn(double v)
-{
-	return (v > 0) - (v < 0);
-}
-inline Vector sgn(Vector& v)
-{
-	return Vector(sgn(v.x), sgn(v.y));
-}
+//inline Vector sgn(const Vector& v)
+//{
+//	return Vector(sgn(v.x), sgn(v.y));
+//}

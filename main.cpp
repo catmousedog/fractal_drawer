@@ -1,18 +1,18 @@
 #pragma once
 
+#include "Main.h"
 #include "Drawer.h"
 #include "Randomizer.h"
 
 double a = 2;
 Fractal2::Box bounds(-a, -a, a, a);
-Fractal2 f(20, 10000, bounds);
-Optimizer op(f);
-Drawer d(f, op);
-Randomizer r(f, op, -2, 8);
+Fractal2 fractal(20, 10000, bounds);
+Optimizer optimizer(fractal);
+Drawer drawer(fractal, optimizer);
+Randomizer random(fractal, optimizer, -2, 8);
 
 int main()
 {
-
 	//ENERGY TEST
 	//for (int i = 0; i < Fractal2::pixels_size; i++)
 	//{
@@ -53,44 +53,56 @@ int main()
 	//d.Graph(x, y, b, m, 0, 1);
 	//return 0;
 
-	double M = 30;
-	//OPTIMIZE
-	while (true)
-	{
-		r(10);
-		f.Iterate();
-		double E = op.Energy();
-		//counter of how many times nothing changed, if equal to N => terminate
-		int terminate = 0;
-		for (int i = 0; i < M; i++)
-		{
-			std::cout << M - i << std::endl << std::endl;
-			for (int j = 0; j < Fractal2::N; j++)
-			{
-				int& m = f.GetPoles()[j].m;
-				int M = m;
-				E = op.OptimizeE(m, E);
-				f.Iterate();
-				if (m - M == 0)
-					terminate++;
-				else
-					terminate = 0;
-				std::cout << E / double(Fractal2::pixels_size) << ", " << j << " += " << m - M << std::endl;
-
-				if (terminate == Fractal2::N)
-					break;
-			}
-			if (terminate == Fractal2::N)
-				break;
-		}
-		//if (E < 0.05)
-		//{
-			f.out();
-			f.Print();
-			d.Draw();
-		//}
-	}
+	Descend1(30, 0.0);
 
 	return 0;
 }
 
+void Descend1(int M, double Emin)
+{
+	for (int a=0; a<25; a++)
+	{
+		std::cout << a << std::endl;
+		//false if should be terminated
+		bool running = true;
+		//counter of how many times nothing changed, if equal to N => terminate
+		int unchanged = 0;
+
+		random(10);
+		for (int i = 0; i < M && running; i++)
+		{
+			std::cout << M - i << std::endl;
+			for (int j = 0; j < Fractal2::N && running; j++)
+			{
+				int& m = fractal.GetPoles()[j].m;
+				int grad = optimizer.GradientE(j);
+
+				if (grad != 0)
+				{
+					m += grad;
+					unchanged = 0;
+				}
+				else
+				{
+					unchanged++;
+				}
+				fractal.Iterate();
+				double NE = optimizer.NormEnergy(); //saves op.energy internally
+				std::cout << NE << ", " << j << " += " << grad << std::endl;
+
+				if (unchanged >= Fractal2::N)
+					running = false;
+			}
+		}
+		Print(optimizer.NormEnergy()); 
+	}
+}
+
+void Print(double E)
+{
+	if (E < Emin)
+	{
+		fractal.Print();
+		//drawer.Draw();
+	}
+}

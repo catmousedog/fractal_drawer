@@ -1,6 +1,7 @@
 #include "Optimizer.h"
+#include "Fractal2.h"
+#include <pch.h>
 #include <cmath>
-//#include <algorithm>
 
 Optimizer::Optimizer(Fractal2& f) : f(f), desired()
 {
@@ -19,18 +20,92 @@ Optimizer::Optimizer(Fractal2& f) : f(f), desired()
 	}
 	des.close();
 
-	//for (int i = 0; i < Fractal2::pixels_size; i++)
-	//{
-	//	double x = f.coordinates[i].x;
-	//	double y = f.coordinates[i].y;
-	//	if (x * x + y * y < 1)
-	//		desired[i] = 0.0;
-	//	else
-	//		desired[i] = 1.0;
-	//}
-
 	//normalistation
 	norm = 1 / (double)Fractal2::pixels_size;
+}
+
+int Optimizer::GradientE(int i)
+{
+	int& m = f.poles[i].m;
+	int M = m;
+
+	//E
+	double E = energy, E1, E2;
+
+	int grad = Max;
+	int dist = 0;
+	//stop if gradient is not an extremum or min_distance attempts were made
+	while (dist <= min_distance && grad != Left && grad != Right)
+	{
+		dist++;
+
+		//E1
+		m = M - dist;
+		f.Iterate();
+		E1 = Energy();
+		//E2
+		m = M + dist;
+		f.Iterate();
+		E2 = Energy();
+
+		grad = compare(E1, E, E2);
+	}
+
+	if (grad == Left)
+	{
+		//momentum
+		double MomentumE;
+		int i = 0;
+		while (true) {
+			m = M - dist - ++i;
+			f.Iterate();
+			MomentumE = Energy();
+			if (MomentumE >= E1)
+				break;
+			if (i >= 2)
+			{
+				i++; //increase i by one so the second to last step was the current last step
+				break;
+			}
+
+			E1 = MomentumE;
+		}
+		m = M; //reset
+		return -dist - i + 1; //second to last step was downhill
+	}
+	else if (grad == Right)
+	{
+		//momentum
+		double MomentumE;
+		int i = 0;
+		while (true) {
+			m = M + dist + ++i;
+			f.Iterate();
+			MomentumE = Energy();
+			if (MomentumE >= E2)
+				break;
+			if (i >= 2)
+			{
+				i++; //increase i by one so the second to last step was the current last step
+				break;
+			}
+
+			E2 = MomentumE;
+		}
+		m = M; //reset
+		return dist + i - 1; //second to last step was downhill
+	}
+	else if (grad == Min)
+	{
+		m = M; //reset
+		return 0;
+	}
+	else if (grad == Max) //very unlikely
+	{
+		m = M; //reset
+		//towards origin
+		return -sgn(m) * min_distance;
+	}
 }
 
 double Optimizer::OptimizeE(int& m, double E)
@@ -44,6 +119,8 @@ double Optimizer::OptimizeE(int& m, double E)
 	m = M + 1;
 	f.Iterate();
 	double E2 = Energy();
+
+
 
 	double Emin = std::min(std::min(E, E2), E1);
 	if (Emin == E1)
@@ -90,7 +167,7 @@ double Optimizer::Energy()
 		double a = desired[i] - f.pixels[i];
 		sum += a * a;
 	}
-	//return sqrt(sum);
+	energy = sum;
 	return sum;
 }
 

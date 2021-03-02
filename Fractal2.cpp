@@ -94,6 +94,7 @@ void Fractal2::Print()
 	for (int i = 0; i < N; i++)
 	{
 		par << poles[i].string() << std::endl;
+		std::cout << poles[i].string() << std::endl;
 	}
 	par.close();
 }
