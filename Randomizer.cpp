@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Randomizer.h"
 
 double Randomizer::operator()(int i)
@@ -6,7 +8,7 @@ double Randomizer::operator()(int i)
 	RandomizeE();
 	RandomizeP();
 	f.Iterate();
-	Pole* minPoles = f.GetPoles();
+	Pole* minPoles = f.poles;
 	double Emin = op.Energy();
 
 	//other cycles
@@ -19,7 +21,7 @@ double Randomizer::operator()(int i)
 		if (E < Emin)
 		{
 			std::cout << i - j << ", " << E << std::endl;
-			minPoles = f.GetPoles();
+			minPoles = f.poles;
 			Emin = E;
 		}
 		else
@@ -27,6 +29,12 @@ double Randomizer::operator()(int i)
 			std::cout << i - j << std::endl;
 		}
 	}
+	for (int i = 0; i < Fractal2::N; i++)
+	{
+		f.poles[i] = minPoles[i];
+	}
+	op.SetEnergy(Emin);
+	
 	return Emin;
 }
 

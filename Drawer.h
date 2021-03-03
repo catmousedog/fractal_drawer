@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Optimizer.h"
+#include "CImg.h"
+#include <assert.h>
 #include <vector>
 
 class Drawer
@@ -12,10 +14,9 @@ private:
 	const unsigned char gray[1] = { 50 };
 
 	Fractal2& f;
-	Optimizer& op;
 
 public:
-	Drawer(Fractal2& f, Optimizer& op) : f(f), op(op)
+	Drawer(Fractal2& f) : f(f)
 	{
 	}
 

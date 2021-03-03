@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Fractal2.h"
 
 // Constructs the fractal and reads from desired.csv

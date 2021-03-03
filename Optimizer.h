@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Fractal2.h"
+#include "Util.h"
+#include <cmath>
 
 class Optimizer
 {
@@ -16,15 +18,27 @@ private:
 	//step function constant, higher means closer to a step function
 	double alpha = 1.0;
 
-	//amount of steps it should take around a minimum to find another lower minimum
-	//also applies to maximum, in the latter a step is always taken
-	int min_distance = 2;
+	//max steps it should look to find a lower energy if no minimum was found
+	// [1, [
+	int minimum_steps = 2;
+
+	//max steps to take using momentum
+	// [0, [
+	int momentum_steps = 3;
 
 	//normalisation constant
 	double norm;
 
 	//current energy when last calculated
 	double energy = 0.0;
+
+	//stepsizes
+	int stepm = 1;
+	double stepx = 0.1, stepy = 0.1;
+
+	//gradient for coordinate
+	template<typename T>
+	T GradientC(T& c, T step);
 
 public:
 
@@ -34,21 +48,27 @@ public:
 
 	double NormEnergy() { return Energy() * norm; }
 
-	//returns the optimal step that needs to be taken for the i'th' exponent
-	//the op.energy is ambigious after calling this method
 	int GradientE(int i);
 
-	//optimize the given exponent also takes the energy of the current state
-	//if a more optimal exponent was found it will be changed to that value
-	//but Iterate will not have been called
-	//returns the energy of the new state
-	double OptimizeE(int& m, double E);
+	double GradientX(int i);
+
+	double GradientY(int i);
 
 	//tau
 	void OptimizeT();
 
 	//beta
 	void OptimizeB();
+
+	//to set energy without recalculating it
+	void SetEnergy(double energy) { (*this).energy = energy; }
+
+	void setSteps(int m, double x, double y)
+	{
+		stepm = m;
+		stepx = x;
+		stepy = y;
+	}
 
 	friend class Drawer;
 };

@@ -1,7 +1,6 @@
+#pragma once
+
 #include "Optimizer.h"
-#include "Fractal2.h"
-#include <pch.h>
-#include <cmath>
 
 Optimizer::Optimizer(Fractal2& f) : f(f), desired()
 {
@@ -24,27 +23,25 @@ Optimizer::Optimizer(Fractal2& f) : f(f), desired()
 	norm = 1 / (double)Fractal2::pixels_size;
 }
 
-int Optimizer::GradientE(int i)
+template<typename T>
+T Optimizer::GradientC(T& c, T step)
 {
-	int& m = f.poles[i].m;
-	int M = m;
-
-	//E
+	double C = c;
 	double E = energy, E1, E2;
 
 	int grad = Max;
-	int dist = 0;
+	T dist = 0;
 	//stop if gradient is not an extremum or min_distance attempts were made
-	while (dist <= min_distance && grad != Left && grad != Right)
+	while (dist <= minimum_steps && grad != Left && grad != Right)
 	{
-		dist++;
+		dist += step;
 
 		//E1
-		m = M - dist;
+		c = C - dist;
 		f.Iterate();
 		E1 = Energy();
 		//E2
-		m = M + dist;
+		c = C + dist;
 		f.Iterate();
 		E2 = Energy();
 
@@ -53,110 +50,66 @@ int Optimizer::GradientE(int i)
 
 	if (grad == Left)
 	{
-		//momentum
-		double MomentumE;
-		int i = 0;
-		while (true) {
-			m = M - dist - ++i;
+		double MomentumE = 0.0;
+		int j = 0;
+		for (int i = 1; i <= momentum_steps; i++)
+		{
+			c = C - dist - i * step;
 			f.Iterate();
 			MomentumE = Energy();
 			if (MomentumE >= E1)
 				break;
-			if (i >= 2)
-			{
-				i++; //increase i by one so the second to last step was the current last step
-				break;
-			}
-
+			j = i;
 			E1 = MomentumE;
 		}
-		m = M; //reset
-		return -dist - i + 1; //second to last step was downhill
+
+		c = C; //reset
+		return -dist - j * step;
 	}
 	else if (grad == Right)
 	{
-		//momentum
-		double MomentumE;
-		int i = 0;
-		while (true) {
-			m = M + dist + ++i;
+		double MomentumE = 0.0;
+		int j = 0;
+		for (int i = 1; i <= momentum_steps; i++)
+		{
+			c = C + dist + i * step;
 			f.Iterate();
 			MomentumE = Energy();
 			if (MomentumE >= E2)
 				break;
-			if (i >= 2)
-			{
-				i++; //increase i by one so the second to last step was the current last step
-				break;
-			}
-
+			j = i;
 			E2 = MomentumE;
 		}
-		m = M; //reset
-		return dist + i - 1; //second to last step was downhill
+
+		c = C; //reset
+		return dist + j * step;
 	}
 	else if (grad == Min)
 	{
-		m = M; //reset
+		c = C; //reset
 		return 0;
 	}
 	else if (grad == Max) //very unlikely
 	{
-		m = M; //reset
+		c = C; //reset
 		//towards origin
-		return -sgn(m) * min_distance;
+		return (-sgn(c) * minimum_steps) * step;
 	}
 }
 
-double Optimizer::OptimizeE(int& m, double E)
+int Optimizer::GradientE(int i)
 {
-	int M = m;
-	//E1
-	m = M - 1;
-	f.Iterate();
-	double E1 = Energy();
-	//E2
-	m = M + 1;
-	f.Iterate();
-	double E2 = Energy();
+	return GradientC<int>(f.poles[i].m, stepm);
+}
 
+double Optimizer::GradientX(int i)
+{
+	return GradientC<double>(f.poles[i].x, stepx);
+}
 
-
-	double Emin = std::min(std::min(E, E2), E1);
-	if (Emin == E1)
-	{
-		m = M - 1;
-		return E1;
-	}
-	else if (Emin == E2)
-	{
-		m = M + 1;
-		return E2;
-	}
-	//check 2 further
-	//E1
-	m = M - 2;
-	f.Iterate();
-	E1 = Energy();
-	//E2
-	m = M + 2;
-	f.Iterate();
-	E2 = Energy();
-
-	Emin = std::min(E1, std::min(E, E2));
-	if (Emin == E1)
-	{
-		m = M - 2;
-		return E1;
-	}
-	else if (Emin == E2)
-	{
-		m = M + 2;
-		return E2;
-	}
-
-	m = M;
-	return E;
+double Optimizer::GradientY(int i)
+{
+	return GradientC<double>(f.poles[i].y, stepy);
 }
 
 double Optimizer::Energy()

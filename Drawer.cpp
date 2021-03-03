@@ -1,5 +1,6 @@
+#pragma once
+
 #include "Drawer.h"
-#include <assert.h>
 
 void Drawer::Draw(cimg_library::CImg<unsigned char>& img)
 {

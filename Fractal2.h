@@ -3,7 +3,8 @@
 #include "Complex.h"
 #include <fstream>
 #include <mutex>
-#include <pch.h>
+//#include "CImg.h"
+//#include "Util.h"
 #include <iostream>
 
 class Fractal2
