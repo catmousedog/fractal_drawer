@@ -50,3 +50,5 @@ bool Descend();
 bool Descend(int i);
 
 void Print(double E);
+
+void Benchmark();

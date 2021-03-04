@@ -29,8 +29,9 @@ T Optimizer::GradientC(T& c, T step)
 	if (step == 0)
 		return 0;
 
+	f.Iterate(); //remove this by evaluating all gradients at the same point
 	double C = c;
-	double E = energy, E1, E2;
+	double E = Energy(), E1, E2;
 
 	int grad = Max;
 	T dist = 0;
@@ -57,7 +58,7 @@ T Optimizer::GradientC(T& c, T step)
 		int j = 0;
 		for (int i = 1; i <= momentum_steps; i++)
 		{
-			c = C - dist - i * step;
+			c = C - dist - (i * step);
 			f.Iterate();
 			MomentumE = Energy();
 			if (MomentumE >= E1)
@@ -67,7 +68,7 @@ T Optimizer::GradientC(T& c, T step)
 		}
 
 		c = C; //reset
-		return -dist - j * step;
+		return -dist - (j * step);
 	}
 	else if (grad == Right)
 	{
@@ -123,7 +124,6 @@ double Optimizer::Energy()
 		double a = desired[i] - f.pixels[i];
 		sum += a * a;
 	}
-	energy = sum;
 	return sum;
 }
 

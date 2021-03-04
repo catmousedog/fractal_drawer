@@ -29,8 +29,6 @@ double Randomizer::operator()(int R)
 	{
 		f.poles[i] = minPoles[i];
 	}
-	op.SetEnergy(Emin);
-
 	return Emin;
 }
 

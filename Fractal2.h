@@ -4,6 +4,8 @@
 #include <fstream>
 #include <mutex>
 #include <iostream>
+#include <vector>
+#include <execution>
 
 class Fractal2
 {
@@ -22,13 +24,13 @@ private:
 
 public:
 	//amount of poles
-	static constexpr int N = 20;
+	static constexpr int N = 10;
 
 	//amount of pixels
 	static constexpr int p = 200, pixels_size = p * p;
 
 	//thread count
-	static constexpr int thread_count = 100;
+	static constexpr int thread_count = 80;
 
 	//pixels per thread
 	static constexpr int ppt = pixels_size / thread_count;

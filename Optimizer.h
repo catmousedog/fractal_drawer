@@ -18,14 +18,11 @@ private:
 	//normalisation constant
 	double norm;
 
-	//current energy when last calculated
-	double energy = 0.0;
-
 	//max steps it should look to find a lower energy if no minimum was found // [1, [
-	int minimum_steps = 2;
+	int minimum_steps = 1;
 
 	//max steps to take using momentum //[0, [
-	int momentum_steps = 3;
+	int momentum_steps = 0;
 
 	//stepsize exponent //[0, [
 	int stepm = 1;
@@ -59,9 +56,6 @@ public:
 
 	//beta
 	void OptimizeB();
-
-	//to set energy without recalculating it
-	void SetEnergy(double energy) { (*this).energy = energy; }
 
 	void SetSteps(int min, int mom)
 	{

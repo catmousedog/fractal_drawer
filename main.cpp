@@ -150,7 +150,32 @@ str Draw(deq arg)
 int main()
 {
 	//pre console start
+	random(100);
+	optimizer.SetStepSize(0.2, 0.2, 1);
+	DescendM(10);
+	//std::cout << "fast exponent" << std::endl;
+	//optimizer.SetSteps(2, 0);
+	//optimizer.SetStepSize(0, 0, 2);
+	//DescendM(5);
+	//std::cout << "exponent end" << std::endl;
+	//optimizer.SetSteps(2, 2);
+	//optimizer.SetStepSize(0, 0, 1);
+	//DescendM(2);
+	//std::cout << "fast position" << std::endl;
+	//optimizer.SetSteps(3, 0);
+	//optimizer.SetStepSize(0.25, 0.25, 0);
+	//DescendM(4);
+	//std::cout << "position end" << std::endl;
+	//optimizer.SetSteps(2, 2);
+	//optimizer.SetStepSize(0.1, 0.1, 0);
+	//DescendM(3);
+	//std::cout << "all end" << std::endl;
+	//optimizer.SetSteps(2, 2);
+	//optimizer.SetStepSize(0.1, 0.1, 1);
+	//DescendM(2);
 
+	fractal.out(optimizer.NormEnergy());
+	drawer.Draw();
 
 	//console start
 	std::map<str, fp> commands;
@@ -219,22 +244,22 @@ bool Descend()
 bool Descend(int i)
 {
 	bool changed = false;
-	//x
-	double& x = fractal.GetPoles()[i].x;
-	double gradx = optimizer.GradientX(i);
-	if (gradx != 0)
-	{
-		changed = true;
-		x += gradx;
-	}
-	//y
-	double& y = fractal.GetPoles()[i].y;
-	double grady = optimizer.GradientY(i);
-	if (grady != 0)
-	{
-		changed = true;
-		y += grady;
-	}
+	////x
+	//double& x = fractal.GetPoles()[i].x;
+	//double gradx = optimizer.GradientX(i);
+	//if (gradx != 0)
+	//{
+	//	changed = true;
+	//	x += gradx;
+	//}
+	////y
+	//double& y = fractal.GetPoles()[i].y;
+	//double grady = optimizer.GradientY(i);
+	//if (grady != 0)
+	//{
+	//	changed = true;
+	//	y += grady;
+	//}
 	//exponent
 	int& m = fractal.GetPoles()[i].m;
 	int gradm = optimizer.GradientE(i);
@@ -245,7 +270,7 @@ bool Descend(int i)
 	}
 	//iterate
 	fractal.Iterate();
-	//NormEnergy() saves optimizer.energy internally so the Gradient can access it
+	double gradx = 0, grady = 0;
 	std::cout << i << ": " << optimizer.NormEnergy() << " += (" << gradx << ", " << grady << ", " << gradm << ")\n";
 
 	return changed;
@@ -299,3 +324,27 @@ void Print(double E)
 	//}
 	//d.Graph(x, y, b, m, 0, 1);
 	//return 0;
+
+void Benchmark()
+{
+	std::mt19937 rng(123);
+
+	std::uniform_real_distribution<double> Distx(bounds.x0, bounds.x1);
+	std::uniform_real_distribution<double> Disty(bounds.y0, bounds.y1);
+	std::uniform_int_distribution<int> Distm(2, 8);
+
+	for (int i = 0; i < Fractal2::N; i++)
+	{
+		fractal.GetPoles()[i] = Pole(Distx(rng), Disty(rng), Distm(rng));
+	}
+	fractal.out(0);
+
+	auto b = std::chrono::steady_clock::now();
+
+	DescendM(1);
+
+	auto e = std::chrono::steady_clock::now();
+
+	std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count() << " ms" << std::endl;
+}
+

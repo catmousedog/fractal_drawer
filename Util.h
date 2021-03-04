@@ -6,7 +6,7 @@
 
 enum gradient
 {
-	Left, Right, Min, Max
+	Left = -1, Right = 1, Min = 0, Max = 2
 };
 
 int compare(double E1, double E, double E2);
