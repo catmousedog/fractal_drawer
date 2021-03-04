@@ -170,6 +170,13 @@ struct Pole : Complex
 		*this = *this + v;
 		return *this;
 	}
+	inline Pole& operator+=(const Pole& p)
+	{
+		x += p.x;
+		y += p.y;
+		m += p.m;
+		return *this;
+	}
 
 	inline std::string string()
 	{

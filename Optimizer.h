@@ -35,7 +35,7 @@ private:
 
 	//gradient for coordinate
 	template<typename T>
-	T GradientC(T& c, T step);
+	T GradientC(T& c, T step, double E);
 
 public:
 
@@ -45,11 +45,11 @@ public:
 
 	double NormEnergy() { return Energy() * norm; }
 
-	int GradientE(int i);
+	int GradientE(int i, double E);
 
-	double GradientX(int i);
+	double GradientX(int i, double E);
 
-	double GradientY(int i);
+	double GradientY(int i, double E);
 
 	//tau
 	void OptimizeT();
@@ -79,6 +79,8 @@ public:
 	double GetStepY() { return stepy; }
 
 	int GetStepM() { return stepm; }
+
+	double GetNorm() { return norm; }
 
 	friend class Drawer;
 };

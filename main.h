@@ -12,21 +12,23 @@ double Emin = 1.0;
 typedef std::deque<std::string> deq;
 typedef std::string str, (*fp)(deq);
 
-str Step(deq arg);
+str CMD_Step(deq arg);
 
-str Random(deq arg);
+str CMD_Pole(deq arg);
 
-str Iterate(deq arg);
+str CMD_Random(deq arg);
 
-str Descend(deq arg);
+str CMD_Iterate(deq arg);
 
-str DescendM(deq arg);
+str CMD_Descend(deq arg);
 
-str Train(deq arg);
+str CMD_DescendM(deq arg);
 
-str Print(deq arg);
+str CMD_Train(deq arg);
 
-str Draw(deq arg);
+str CMD_Print(deq arg);
+
+str CMD_Draw(deq arg);
 
 /* FUNCTIONS */
 
@@ -42,12 +44,7 @@ bool DescendM(int M);
 
 //descend once
 //returns false if nothing changed
-bool Descend();
-
-//descend a single pole once
-//calls Iterate() and Energy()
-//returns false if nothing changed
-bool Descend(int i);
+int Descend(int terminate);
 
 void Print(double E);
 

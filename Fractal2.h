@@ -4,8 +4,6 @@
 #include <fstream>
 #include <mutex>
 #include <iostream>
-#include <vector>
-#include <execution>
 
 class Fractal2
 {
@@ -24,7 +22,7 @@ private:
 
 public:
 	//amount of poles
-	static constexpr int N = 10;
+	static constexpr int N = 12;
 
 	//amount of pixels
 	static constexpr int p = 200, pixels_size = p * p;
@@ -66,10 +64,6 @@ public:
 	//cout
 	void out(double E)
 	{
-		//for (int i = 0; i < N; i++)
-		//{
-		//	std::cout << "test(" << poles[i].string() << ");" << std::endl;
-		//}
 		std::cout << E << std::endl;
 		for (int i = 0; i < N; i++)
 		{
@@ -120,7 +114,7 @@ private:
 	//array of all potentials inside the bounds
 	double potential[pixels_size];
 
-	//top poles
+	//poles
 	Pole poles[N];
 
 	/* Functions */

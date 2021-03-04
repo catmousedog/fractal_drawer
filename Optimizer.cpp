@@ -24,19 +24,18 @@ Optimizer::Optimizer(Fractal2& f) : f(f), desired()
 }
 
 template<typename T>
-T Optimizer::GradientC(T& c, T step)
+T Optimizer::GradientC(T& c, T step, double E)
 {
 	if (step == 0)
 		return 0;
 
-	f.Iterate(); //remove this by evaluating all gradients at the same point
 	double C = c;
-	double E = Energy(), E1, E2;
+	double E1, E2;
 
 	int grad = Max;
 	T dist = 0;
 	//stop if gradient is not an extremum or min_distance attempts were made
-	while (dist <= minimum_steps && grad != Left && grad != Right)
+	for (int i = 0; i < minimum_steps && grad != Left && grad != Right; i++)
 	{
 		dist += step;
 
@@ -101,19 +100,19 @@ T Optimizer::GradientC(T& c, T step)
 	}
 }
 
-int Optimizer::GradientE(int i)
+int Optimizer::GradientE(int i, double E)
 {
-	return GradientC<int>(f.poles[i].m, stepm);
+	return GradientC<int>(f.poles[i].m, stepm, E);
 }
 
-double Optimizer::GradientX(int i)
+double Optimizer::GradientX(int i, double E)
 {
-	return GradientC<double>(f.poles[i].x, stepx);
+	return GradientC<double>(f.poles[i].x, stepx, E);
 }
 
-double Optimizer::GradientY(int i)
+double Optimizer::GradientY(int i, double E)
 {
-	return GradientC<double>(f.poles[i].y, stepy);
+	return GradientC<double>(f.poles[i].y, stepy, E);
 }
 
 double Optimizer::Energy()
@@ -122,6 +121,8 @@ double Optimizer::Energy()
 	for (int i = 0; i < Fractal2::pixels_size; i++)
 	{
 		double a = desired[i] - f.pixels[i];
+		if (f.pixels[i] < desired[i])
+			a *= 0.6;
 		sum += a * a;
 	}
 	return sum;

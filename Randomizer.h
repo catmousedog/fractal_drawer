@@ -63,10 +63,17 @@ public:
 	double operator()(int R);
 
 	//randomize exponents
+	double RandomizeE(int R);
+
+	//randomize pos
+	double RandomizeP(int R);
+
+	//randomize exponents
 	void RandomizeE();
 
 	//randomize pos
 	void RandomizeP();
+
 
 };
 

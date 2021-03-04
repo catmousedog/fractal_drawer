@@ -6,10 +6,10 @@ double a = 2;
 Fractal2::Box bounds(-a, -a, a, a);
 Fractal2 fractal(20, 10000, bounds);
 Optimizer optimizer(fractal);
-Drawer drawer(fractal);
+Drawer drawer(fractal, optimizer);
 Randomizer random(fractal, optimizer, -2, 8);
 
-str Step(deq arg)
+str CMD_Step(deq arg)
 {
 	if (arg.size() == 2)
 	{
@@ -43,14 +43,54 @@ str Step(deq arg)
 		std::to_string(optimizer.GetStepM());
 }
 
-str Random(deq arg)
+str CMD_Pole(deq arg)
 {
-	if (arg.size() > 0)
+	if (arg.size() == 4)
+	{
+		try
+		{
+			int i = std::stoi(arg.at(0));
+			double x = std::stod(arg.at(1));
+			double y = std::stod(arg.at(2));
+			int m = std::stoi(arg.at(3));
+			fractal.GetPoles()[i].x = x;
+			fractal.GetPoles()[i].y = y;
+			fractal.GetPoles()[i].m = m;
+		}
+		catch (const std::exception&)
+		{
+		}
+	}
+	return "done";
+}
+
+str CMD_Random(deq arg)
+{
+	if (arg.size() == 1)
 	{
 		try
 		{
 			int a = std::stoi(arg.front());
 			random(a);
+		}
+		catch (const std::exception&)
+		{
+		}
+	}
+	else if (arg.size() == 2)
+	{
+		try
+		{
+			int a = std::stoi(arg.at(1));
+			if (arg.at(0) == "exp")
+			{
+
+				random.RandomizeE(a);
+			}
+			else if (arg.at(0) == "pos")
+			{
+				random.RandomizeP(a);
+			}
 		}
 		catch (const std::exception&)
 		{
@@ -63,39 +103,23 @@ str Random(deq arg)
 	return "done";
 }
 
-str Iterate(deq arg)
+str CMD_Iterate(deq arg)
 {
 	fractal.Iterate();
 	return "done";
 }
 
-str Descend(deq arg)
+str CMD_Descend(deq arg)
 {
-	bool changed = false;
-	if (arg.size() > 0)
-	{
-		try
-		{
-			int i = std::stoi(arg.front());
-			changed = Descend(i);
-		}
-		catch (const std::exception&)
-		{
-		}
-	}
-	else
-	{
-		changed = Descend();
-	}
-	if (changed)
+	if (Descend(0) != 0)
 		return "changed";
 	return "unchanged";
 }
 
-str DescendM(deq arg)
+str CMD_DescendM(deq arg)
 {
 	bool changed = false;
-	if (arg.size() > 2)
+	if (arg.size() == 1)
 	{
 		try
 		{
@@ -111,7 +135,7 @@ str DescendM(deq arg)
 	return "unchanged";
 }
 
-str Train(deq arg)
+str CMD_Train(deq arg)
 {
 	if (arg.size() > 2)
 	{
@@ -129,8 +153,9 @@ str Train(deq arg)
 	return "done";
 }
 
-str Print(deq arg)
+str CMD_Print(deq arg)
 {
+	fractal.Iterate();
 	double E = optimizer.NormEnergy();
 	if (arg.size() > 0 && arg.front() == "file")
 	{
@@ -141,8 +166,9 @@ str Print(deq arg)
 	return "printed to console";
 }
 
-str Draw(deq arg)
+str CMD_Draw(deq arg)
 {
+	fractal.Iterate();
 	drawer.Draw();
 	return "";
 }
@@ -150,42 +176,45 @@ str Draw(deq arg)
 int main()
 {
 	//pre console start
-	random(100);
-	optimizer.SetStepSize(0.2, 0.2, 1);
-	DescendM(10);
-	//std::cout << "fast exponent" << std::endl;
-	//optimizer.SetSteps(2, 0);
-	//optimizer.SetStepSize(0, 0, 2);
-	//DescendM(5);
-	//std::cout << "exponent end" << std::endl;
-	//optimizer.SetSteps(2, 2);
-	//optimizer.SetStepSize(0, 0, 1);
-	//DescendM(2);
-	//std::cout << "fast position" << std::endl;
-	//optimizer.SetSteps(3, 0);
-	//optimizer.SetStepSize(0.25, 0.25, 0);
-	//DescendM(4);
-	//std::cout << "position end" << std::endl;
-	//optimizer.SetSteps(2, 2);
-	//optimizer.SetStepSize(0.1, 0.1, 0);
-	//DescendM(3);
-	//std::cout << "all end" << std::endl;
-	//optimizer.SetSteps(2, 2);
-	//optimizer.SetStepSize(0.1, 0.1, 1);
-	//DescendM(2);
-
-	fractal.out(optimizer.NormEnergy());
-	drawer.Draw();
+	//fractal.GetPoles()[0] = Pole(-0.060000, -1.230000, 1.000000);
+	//fractal.GetPoles()[1] = Pole(-0.880000, -0.750000, 1.000000);
+	//fractal.GetPoles()[2] = Pole(-0.040000, 0.330000, 1.000000);
+	//fractal.GetPoles()[3] = Pole(0.490000, -0.510000, 1.000000);
+	//fractal.GetPoles()[4] = Pole(1.190000, -1.210000, 1.000000);
+	//fractal.GetPoles()[5] = Pole(0.810000, -0.290000, 1.000000);
+	//fractal.GetPoles()[6] = Pole(-1.070000, 1.050000, 1.000000);
+	//fractal.GetPoles()[7] = Pole(-1.690000, 0.870000, 1.000000);
+	//fractal.GetPoles()[8] = Pole(-0.480000, 1.120000, 1.000000);
+	//fractal.GetPoles()[9] = Pole(0.030000, 0.970000, 1.000000);
+	//fractal.GetPoles()[10] = Pole(1.160000, -0.560000, 1.000000);
+	//fractal.GetPoles()[11] = Pole(1.460000, -0.860000, 1.000000);
+	//fractal.GetPoles()[12] = Pole(0.810000, -0.960000, 1.000000);
+	//fractal.GetPoles()[13] = Pole(0.210000, -0.130000, 1.000000);
+	//fractal.GetPoles()[14] = Pole(-0.390000, 0.150000, 1.000000);
+	//fractal.GetPoles()[15] = Pole(-0.950000, -0.180000, 1.000000);
+	//fractal.GetPoles()[16] = Pole(-0.500000, -1.030000, 1.000000);
+	//fractal.GetPoles()[17] = Pole(-0.410000, 0.620000, 1.000000);
+	//fractal.GetPoles()[18] = Pole(-0.730000, 0.860000, 1.000000);
+	//fractal.GetPoles()[19] = Pole(-1.410000, 1.150000, 1.000000);
+	//fractal.GetPoles()[20] = Pole(-0.260000, -0.540000, -1.000000);
+	//fractal.GetPoles()[21] = Pole(1.060000, -0.770000, -1.000000);
+	//fractal.GetPoles()[22] = Pole(-1.070000, 0.470000, -1.000000);
+	//fractal.GetPoles()[23] = Pole(0.020000, 0.670000, -1.000000);
+	//fractal.GetPoles()[24] = Pole(0.410000, 0.670000, 1.000000);
+	//fractal.GetPoles()[25] = Pole(0.590000, 0.180000, -1.000000);
+	random(10);
 
 	//console start
 	std::map<str, fp> commands;
-	commands["step"] = Step;
-	commands["random"] = Random;
-	commands["iterate"] = Iterate;
-	commands["descend"] = Descend;
-	commands["train"] = Train;
-	commands["print"] = Print;
-	commands["draw"] = Draw;
+	commands["step"] = CMD_Step;
+	commands["pole"] = CMD_Pole;
+	commands["random"] = CMD_Random;
+	commands["iterate"] = CMD_Iterate;
+	commands["descend"] = CMD_Descend;
+	commands["descendm"] = CMD_DescendM;
+	commands["train"] = CMD_Train;
+	commands["print"] = CMD_Print;
+	commands["draw"] = CMD_Draw;
 
 	std::cout << "--CONSOLE--\n";
 	while (true)
@@ -221,59 +250,60 @@ void Train(int A, int R, int M)
 
 bool DescendM(int M)
 {
+	int terminate = 0;
 	for (int i = 0; i < M; i++)
 	{
 		std::cout << M - i << std::endl;
-		if (!Descend())
+		terminate = Descend(terminate);
+		if (terminate >= Fractal2::N)
 			return false;
 	}
 	return true;
 }
 
-bool Descend()
+
+int Descend(int terminate)
 {
-	bool changed = false;
+	Pole gradient[Fractal2::N];
+	Pole* poles = fractal.GetPoles();
+
+	//calculate current energy
+	fractal.Iterate();
+	double E = optimizer.Energy();
+
+	std::cout << E << std::endl;
+
 	for (int i = 0; i < Fractal2::N; i++)
 	{
-		if (Descend(i))
-			changed = true;
-	}
-	return changed;
-}
+		//x
+		double gradx = optimizer.GradientX(i, E);
+		//y
+		double grady = optimizer.GradientY(i, E);
+		//exponent
+		int gradm = optimizer.GradientE(i, E);
 
-bool Descend(int i)
-{
-	bool changed = false;
-	////x
-	//double& x = fractal.GetPoles()[i].x;
-	//double gradx = optimizer.GradientX(i);
-	//if (gradx != 0)
-	//{
-	//	changed = true;
-	//	x += gradx;
-	//}
-	////y
-	//double& y = fractal.GetPoles()[i].y;
-	//double grady = optimizer.GradientY(i);
-	//if (grady != 0)
-	//{
-	//	changed = true;
-	//	y += grady;
-	//}
-	//exponent
-	int& m = fractal.GetPoles()[i].m;
-	int gradm = optimizer.GradientE(i);
-	if (gradm != 0)
-	{
-		changed = true;
-		m += gradm;
-	}
-	//iterate
-	fractal.Iterate();
-	double gradx = 0, grady = 0;
-	std::cout << i << ": " << optimizer.NormEnergy() << " += (" << gradx << ", " << grady << ", " << gradm << ")\n";
+		if (gradx == 0 && grady == 0 && gradm == 0)
+			terminate++;
+		else
+			terminate = 0;
+		gradient[i].x = gradx;
+		gradient[i].y = grady;
+		gradient[i].m = gradm;
 
-	return changed;
+		std::cout << i << " += (" << gradx << ", " << grady << ", " << gradm << ")\n";
+		if (terminate >= Fractal2::N)
+		{
+			std::cout << "terminate" << std::endl;
+			break;
+		}
+		
+	}
+
+	//add gradient
+	for (int i = 0; i < Fractal2::N; i++)
+		poles[i] += gradient[i];
+
+	return terminate;
 }
 
 void Print(double E)
@@ -327,24 +357,24 @@ void Print(double E)
 
 void Benchmark()
 {
-	std::mt19937 rng(123);
+	//std::mt19937 rng(123);
 
-	std::uniform_real_distribution<double> Distx(bounds.x0, bounds.x1);
-	std::uniform_real_distribution<double> Disty(bounds.y0, bounds.y1);
-	std::uniform_int_distribution<int> Distm(2, 8);
+	//std::uniform_real_distribution<double> Distx(bounds.x0, bounds.x1);
+	//std::uniform_real_distribution<double> Disty(bounds.y0, bounds.y1);
+	//std::uniform_int_distribution<int> Distm(2, 8);
 
-	for (int i = 0; i < Fractal2::N; i++)
-	{
-		fractal.GetPoles()[i] = Pole(Distx(rng), Disty(rng), Distm(rng));
-	}
-	fractal.out(0);
+	//for (int i = 0; i < Fractal2::N; i++)
+	//{
+	//	fractal.GetPoles()[i] = Pole(Distx(rng), Disty(rng), Distm(rng));
+	//}
+	//fractal.out(0);
 
-	auto b = std::chrono::steady_clock::now();
+	//auto b = std::chrono::steady_clock::now();
 
-	DescendM(1);
+	//DescendM(1);
 
-	auto e = std::chrono::steady_clock::now();
+	//auto e = std::chrono::steady_clock::now();
 
-	std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count() << " ms" << std::endl;
+	//std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(e - b).count() << " ms" << std::endl;
 }
 
