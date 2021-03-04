@@ -67,7 +67,6 @@ struct Complex
 
 	inline Complex operator^(const double P) const
 	{
-		//double A = exp(P * log(AbsSquared()) / 2);
 		double A = pow(AbsSquared(), P / 2);
 		double theta = atan2(y, x);
 		return Complex(A * cos(theta * P), A * sin(theta * P));

@@ -9,94 +9,253 @@ Optimizer optimizer(fractal);
 Drawer drawer(fractal);
 Randomizer random(fractal, optimizer, -2, 8);
 
-void test()
+str Step(deq arg)
 {
-	std::cout << "test" << std::endl;
+	if (arg.size() == 2)
+	{
+		try
+		{
+			int min = std::stod(arg.at(0));
+			int mom = std::stoi(arg.at(1));
+			optimizer.SetSteps(min, mom);
+		}
+		catch (const std::exception&)
+		{
+		}
+	}
+	else if (arg.size() == 3)
+	{
+		try
+		{
+			double x = std::stod(arg.at(0));
+			double y = std::stod(arg.at(1));
+			int m = std::stoi(arg.at(2));
+			optimizer.SetStepSize(x, y, m);
+		}
+		catch (const std::exception&)
+		{
+		}
+	}
+	return "steps: " + std::to_string(optimizer.GetMinSteps()) + "|" +
+		std::to_string(optimizer.GetMomentumSteps()) +
+		"\nstepsize: " + std::to_string(optimizer.GetStepX()) + "|" +
+		std::to_string(optimizer.GetStepY()) + "|" +
+		std::to_string(optimizer.GetStepM());
+}
+
+str Random(deq arg)
+{
+	if (arg.size() > 0)
+	{
+		try
+		{
+			int a = std::stoi(arg.front());
+			random(a);
+		}
+		catch (const std::exception&)
+		{
+		}
+	}
+	else
+	{
+		random(1);
+	}
+	return "done";
+}
+
+str Iterate(deq arg)
+{
+	fractal.Iterate();
+	return "done";
+}
+
+str Descend(deq arg)
+{
+	bool changed = false;
+	if (arg.size() > 0)
+	{
+		try
+		{
+			int i = std::stoi(arg.front());
+			changed = Descend(i);
+		}
+		catch (const std::exception&)
+		{
+		}
+	}
+	else
+	{
+		changed = Descend();
+	}
+	if (changed)
+		return "changed";
+	return "unchanged";
+}
+
+str DescendM(deq arg)
+{
+	bool changed = false;
+	if (arg.size() > 2)
+	{
+		try
+		{
+			int M = std::stoi(arg.at(0));
+			changed = DescendM(M);
+		}
+		catch (const std::exception&)
+		{
+		}
+	}
+	if (changed)
+		return "changed";
+	return "unchanged";
+}
+
+str Train(deq arg)
+{
+	if (arg.size() > 2)
+	{
+		try
+		{
+			int A = std::stoi(arg.front());
+			int R = std::stoi(arg.at(1));
+			int M = std::stoi(arg.at(2));
+			Train(A, R, M);
+		}
+		catch (const std::exception&)
+		{
+		}
+	}
+	return "done";
+}
+
+str Print(deq arg)
+{
+	double E = optimizer.NormEnergy();
+	if (arg.size() > 0 && arg.front() == "file")
+	{
+		fractal.Print(E);
+		return "printed to file";
+	}
+	fractal.out(E);
+	return "printed to console";
+}
+
+str Draw(deq arg)
+{
+	drawer.Draw();
+	return "";
 }
 
 int main()
 {
-	//console commands
-	typedef void (*fp)();
-	std::map<std::string, fp> commands;
-	commands.insert(std::pair<std::string, fp>("test", test));
-
 	//pre console start
 
 
+	//console start
+	std::map<str, fp> commands;
+	commands["step"] = Step;
+	commands["random"] = Random;
+	commands["iterate"] = Iterate;
+	commands["descend"] = Descend;
+	commands["train"] = Train;
+	commands["print"] = Print;
+	commands["draw"] = Draw;
+
+	std::cout << "--CONSOLE--\n";
 	while (true)
 	{
-		std::string cmd;
-		std::cin >> cmd;
-		if (commands.end() != commands.find(cmd))
+		str in;
+		std::getline(std::cin, in);
+		deq words = split(in, ' ');
+		if (words.size() > 0)
 		{
-			fp f = commands[cmd];
-			f();
+			std::map<str, fp>::iterator iter = commands.find(words.front());
+			if (iter != commands.end())
+			{
+				fp f = iter->second;
+				words.pop_front();
+				std::cout << f(words) << std::endl;
+			}
 		}
-
 	}
-
-	Descend1(30, 0.0);
 
 	return 0;
 }
 
-void Descend1(int A, int M)
+void Train(int A, int R, int M)
 {
 	for (int a = 0; a < A; a++)
 	{
 		std::cout << a << std::endl;
-		//false if should be terminated
-		bool running = true;
-		//counter of how many times nothing changed, if equal to 3*N => terminate
-		int unchanged = 0;
-
-		random(10);
-		Descend2(M);
+		random(R);
+		DescendM(M);
 		Print(optimizer.NormEnergy());
 	}
 }
 
-void Descend2(int M)
+bool DescendM(int M)
 {
 	for (int i = 0; i < M; i++)
 	{
 		std::cout << M - i << std::endl;
-		Descend3();
+		if (!Descend())
+			return false;
 	}
+	return true;
 }
 
-void Descend3()
+bool Descend()
 {
-	for (int j = 0; j < Fractal2::N; j++)
+	bool changed = false;
+	for (int i = 0; i < Fractal2::N; i++)
 	{
-		//x
-		double& x = fractal.GetPoles()[j].x;
-		double gradx = optimizer.GradientX(j);
-		if (gradx != 0)
-			x += gradx;
-		//y
-		double& y = fractal.GetPoles()[j].y;
-		double grady = optimizer.GradientY(j);
-		if (grady != 0)
-			y += grady;
-		//exponent
-		int& m = fractal.GetPoles()[j].m;
-		int gradm = optimizer.GradientE(j);
-		if (gradm != 0)
-			m += gradm;
-		//iterate
-		fractal.Iterate();
-		//NormEnergy() saves optimizer.energy internally so the Gradient can access it
-		std::cout << optimizer.NormEnergy() << ", " << j << " += " << gradm << std::endl;
+		if (Descend(i))
+			changed = true;
 	}
+	return changed;
+}
+
+bool Descend(int i)
+{
+	bool changed = false;
+	//x
+	double& x = fractal.GetPoles()[i].x;
+	double gradx = optimizer.GradientX(i);
+	if (gradx != 0)
+	{
+		changed = true;
+		x += gradx;
+	}
+	//y
+	double& y = fractal.GetPoles()[i].y;
+	double grady = optimizer.GradientY(i);
+	if (grady != 0)
+	{
+		changed = true;
+		y += grady;
+	}
+	//exponent
+	int& m = fractal.GetPoles()[i].m;
+	int gradm = optimizer.GradientE(i);
+	if (gradm != 0)
+	{
+		changed = true;
+		m += gradm;
+	}
+	//iterate
+	fractal.Iterate();
+	//NormEnergy() saves optimizer.energy internally so the Gradient can access it
+	std::cout << i << ": " << optimizer.NormEnergy() << " += (" << gradx << ", " << grady << ", " << gradm << ")\n";
+
+	return changed;
 }
 
 void Print(double E)
 {
 	if (E < Emin)
 	{
-		fractal.Print();
+		fractal.Print(E);
 		drawer.Draw();
 	}
 }

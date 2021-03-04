@@ -70,7 +70,7 @@ void Fractal2::Iterate()
 	}
 }
 
-void Fractal2::Print()
+void Fractal2::Print(double E)
 {
 	std::string s;
 	for (int i = 0;; i++)
@@ -93,6 +93,8 @@ void Fractal2::Print()
 
 	std::ofstream par;
 	par.open("data/parameters_" + s);
+	par << E << std::endl;
+	std::cout << E << std::endl;
 	for (int i = 0; i < N; i++)
 	{
 		par << poles[i].string() << std::endl;

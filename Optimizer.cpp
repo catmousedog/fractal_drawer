@@ -26,6 +26,9 @@ Optimizer::Optimizer(Fractal2& f) : f(f), desired()
 template<typename T>
 T Optimizer::GradientC(T& c, T step)
 {
+	if (step == 0)
+		return 0;
+
 	double C = c;
 	double E = energy, E1, E2;
 

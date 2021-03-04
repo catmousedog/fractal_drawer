@@ -60,7 +60,7 @@ public:
 	} dist;
 
 	//randomizes all in 'i' attempts and returns the best energy
-	double operator()(int i);
+	double operator()(int R);
 
 	//randomize exponents
 	void RandomizeE();

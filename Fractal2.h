@@ -3,8 +3,6 @@
 #include "Complex.h"
 #include <fstream>
 #include <mutex>
-//#include "CImg.h"
-//#include "Util.h"
 #include <iostream>
 
 class Fractal2
@@ -61,14 +59,19 @@ public:
 	void Iterate();
 
 	//print pixels and parameters to csv files
-	void Print();
+	void Print(double E);
 
 	//cout
-	void out()
+	void out(double E)
 	{
+		//for (int i = 0; i < N; i++)
+		//{
+		//	std::cout << "test(" << poles[i].string() << ");" << std::endl;
+		//}
+		std::cout << E << std::endl;
 		for (int i = 0; i < N; i++)
 		{
-			std::cout << "test(" << poles[i].string() << ");" << std::endl;
+			std::cout << poles[i].string() << std::endl;
 		}
 		std::cout << std::endl;
 	}

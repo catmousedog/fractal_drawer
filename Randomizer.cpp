@@ -2,7 +2,7 @@
 
 #include "Randomizer.h"
 
-double Randomizer::operator()(int i)
+double Randomizer::operator()(int R)
 {
 	//first cycle
 	RandomizeE();
@@ -12,7 +12,7 @@ double Randomizer::operator()(int i)
 	double Emin = op.Energy();
 
 	//other cycles
-	for (int j = 0; j < i - 1; j++)
+	for (int j = 0; j < R - 1; j++)
 	{
 		RandomizeE();
 		RandomizeP();
@@ -20,13 +20,9 @@ double Randomizer::operator()(int i)
 		double E = op.Energy();
 		if (E < Emin)
 		{
-			std::cout << i - j << ", " << E << std::endl;
+			std::cout << R - 1 - j << ": " << E << std::endl;
 			minPoles = f.poles;
 			Emin = E;
-		}
-		else
-		{
-			std::cout << i - j << std::endl;
 		}
 	}
 	for (int i = 0; i < Fractal2::N; i++)
@@ -34,7 +30,7 @@ double Randomizer::operator()(int i)
 		f.poles[i] = minPoles[i];
 	}
 	op.SetEnergy(Emin);
-	
+
 	return Emin;
 }
 

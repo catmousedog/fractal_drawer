@@ -15,26 +15,26 @@ private:
 	//inverse signed distance function
 	double desired[Fractal2::pixels_size];
 
-	//step function constant, higher means closer to a step function
-	double alpha = 1.0;
-
-	//max steps it should look to find a lower energy if no minimum was found
-	// [1, [
-	int minimum_steps = 2;
-
-	//max steps to take using momentum
-	// [0, [
-	int momentum_steps = 3;
-
 	//normalisation constant
 	double norm;
 
 	//current energy when last calculated
 	double energy = 0.0;
 
-	//stepsizes
+	//max steps it should look to find a lower energy if no minimum was found // [1, [
+	int minimum_steps = 2;
+
+	//max steps to take using momentum //[0, [
+	int momentum_steps = 3;
+
+	//stepsize exponent //[0, [
 	int stepm = 1;
-	double stepx = 0.1, stepy = 0.1;
+
+	//stepsize x //[0, [
+	double stepx = 0.1;
+
+	//stepsize y //[0, [
+	double stepy = 0.1;
 
 	//gradient for coordinate
 	template<typename T>
@@ -63,12 +63,28 @@ public:
 	//to set energy without recalculating it
 	void SetEnergy(double energy) { (*this).energy = energy; }
 
-	void setSteps(int m, double x, double y)
+	void SetSteps(int min, int mom)
 	{
-		stepm = m;
+		minimum_steps = min;
+		momentum_steps = mom;
+	}
+
+	int GetMinSteps() { return minimum_steps; }
+
+	int GetMomentumSteps() { return momentum_steps; }
+
+	void SetStepSize(double x, double y, int m)
+	{
 		stepx = x;
 		stepy = y;
+		stepm = m;
 	}
+
+	double GetStepX() { return stepx; }
+
+	double GetStepY() { return stepy; }
+
+	int GetStepM() { return stepm; }
 
 	friend class Drawer;
 };
