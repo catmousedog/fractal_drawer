@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vector.h"
+#include "Util.h"
 
 struct Complex
 {
@@ -132,7 +133,7 @@ struct Complex
 
 	inline std::string string()
 	{
-		return std::to_string(x) + ", " + std::to_string(y);
+		return to_string(x) + ", " + to_string(y);
 	}
 };
 
@@ -160,6 +161,13 @@ struct Pole : Complex
 		return q ^ (a * m);
 	}
 
+	inline Pole operator=(const Pole& p)
+	{
+		x = p.x;
+		y = p.y;
+		m = p.m;
+		return *this;
+	}
 	inline Pole operator+(const Vector& v)
 	{
 		return Pole(x + v.x, y + v.y, m);
@@ -180,38 +188,8 @@ struct Pole : Complex
 
 	inline std::string string()
 	{
-		return std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(m);
-		//return "poles.add(new Pole(" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(m) + "));";
+		
+		return to_string(x) + ", " + to_string(y) + ", " + to_string(m);
 	}
 
 };
-//
-//struct Top : Pole
-//{
-//	Top()
-//	{
-//	}
-//
-//	Top(double x, double y, int m) : Pole(x, y, abs(m))
-//	{
-//	}
-//
-//	Top(const Top& p) : Pole(p.x, p.y, abs(p.m))
-//	{
-//	}
-//};
-//
-//struct Bottom : Pole
-//{
-//	Bottom()
-//	{
-//	}
-//
-//	Bottom(double x, double y, int m) : Pole(x, y, -abs(m))
-//	{
-//	}
-//
-//	Bottom(const Bottom& p) : Pole(p.x, p.y, -abs(p.m))
-//	{
-//	}
-//};

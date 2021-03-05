@@ -1,7 +1,7 @@
 
 #include "Util.h"
 
-int compare(double E1, double E, double E2)
+int compare(const double E1, const double E, const double E2)
 {
 
 	if (E1 < E)
@@ -41,4 +41,11 @@ std::deque<std::string> split(const std::string& s, char delim) {
 	std::deque<std::string> elems;
 	split(s, delim, elems);
 	return elems;
+}
+
+std::string to_string(double d)
+{
+	std::ostringstream stm;
+	stm << std::setprecision(std::numeric_limits<double>::max_digits10) << d;
+	return stm.str();
 }

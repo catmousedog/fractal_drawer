@@ -4,11 +4,13 @@
 
 double Randomizer::operator()(int R)
 {
+	Pole minPoles[Fractal2::N];
 	//first cycle
 	RandomizeE();
 	RandomizeP();
+	for (int i = 0; i < Fractal2::N; i++)
+		minPoles[i] = f.poles[i];
 	f.Iterate();
-	Pole* minPoles = f.poles;
 	double Emin = op.Energy();
 	std::cout << R << ": " << Emin << std::endl;
 
@@ -22,24 +24,28 @@ double Randomizer::operator()(int R)
 		if (E < Emin)
 		{
 			std::cout << R - 1 - j << ": " << E << std::endl;
-			minPoles = f.poles;
+			for (int i = 0; i < Fractal2::N; i++)
+				minPoles[i] = f.poles[i];
+
 			Emin = E;
 		}
 	}
 	for (int i = 0; i < Fractal2::N; i++)
-	{
 		f.poles[i] = minPoles[i];
-	}
+	
+	f.Iterate(); //make sure pixels are correct
 	return Emin;
 }
 
 
 double Randomizer::RandomizeE(int R)
 {
+	Pole* minPoles = f.poles;
 	//first cycle
 	RandomizeE();
+	for (int i = 0; i < Fractal2::N; i++)
+		minPoles[i] = f.poles[i];
 	f.Iterate();
-	Pole* minPoles = f.poles;
 	double Emin = op.Energy();
 	std::cout << R << ": " << Emin << std::endl;
 
@@ -57,18 +63,19 @@ double Randomizer::RandomizeE(int R)
 		}
 	}
 	for (int i = 0; i < Fractal2::N; i++)
-	{
 		f.poles[i] = minPoles[i];
-	}
+
 	return Emin;
 }
 
 double Randomizer::RandomizeP(int R)
 {
+	Pole* minPoles = f.poles;
 	//first cycle
 	RandomizeP();
+	for (int i = 0; i < Fractal2::N; i++)
+		minPoles[i] = f.poles[i];
 	f.Iterate();
-	Pole* minPoles = f.poles;
 	double Emin = op.Energy();
 	std::cout << R << ": " << Emin << std::endl;
 
@@ -86,9 +93,8 @@ double Randomizer::RandomizeP(int R)
 		}
 	}
 	for (int i = 0; i < Fractal2::N; i++)
-	{
 		f.poles[i] = minPoles[i];
-	}
+
 	return Emin;
 }
 

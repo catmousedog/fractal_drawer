@@ -24,13 +24,14 @@ Optimizer::Optimizer(Fractal2& f) : f(f), desired()
 }
 
 template<typename T>
-T Optimizer::GradientC(T& c, T step, double E)
+T Optimizer::GradientC(T& c, T step)
 {
 	if (step == 0)
 		return 0;
 
 	double C = c;
-	double E1, E2;
+	f.Iterate();
+	double E = Energy(), E1, E2;
 
 	int grad = Max;
 	T dist = 0;
@@ -55,7 +56,7 @@ T Optimizer::GradientC(T& c, T step, double E)
 	{
 		double MomentumE = 0.0;
 		int j = 0;
-		for (int i = 1; i <= momentum_steps; i++)
+		for (int i = 1; i < momentum_steps + 1; i++)
 		{
 			c = C - dist - (i * step);
 			f.Iterate();
@@ -73,9 +74,9 @@ T Optimizer::GradientC(T& c, T step, double E)
 	{
 		double MomentumE = 0.0;
 		int j = 0;
-		for (int i = 1; i <= momentum_steps; i++)
+		for (int i = 1; i < momentum_steps + 1; i++)
 		{
-			c = C + dist + i * step;
+			c = C + dist + (i * step);
 			f.Iterate();
 			MomentumE = Energy();
 			if (MomentumE >= E2)
@@ -100,19 +101,19 @@ T Optimizer::GradientC(T& c, T step, double E)
 	}
 }
 
-int Optimizer::GradientE(int i, double E)
+int Optimizer::GradientE(int i)
 {
-	return GradientC<int>(f.poles[i].m, stepm, E);
+	return GradientC<int>(f.poles[i].m, stepm);
 }
 
-double Optimizer::GradientX(int i, double E)
+double Optimizer::GradientX(int i)
 {
-	return GradientC<double>(f.poles[i].x, stepx, E);
+	return GradientC<double>(f.poles[i].x, stepx);
 }
 
-double Optimizer::GradientY(int i, double E)
+double Optimizer::GradientY(int i)
 {
-	return GradientC<double>(f.poles[i].y, stepy, E);
+	return GradientC<double>(f.poles[i].y, stepy);
 }
 
 double Optimizer::Energy()

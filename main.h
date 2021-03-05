@@ -46,6 +46,4 @@ bool DescendM(int M);
 //returns false if nothing changed
 int Descend(int terminate);
 
-void Print(double E);
-
 void Benchmark();

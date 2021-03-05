@@ -25,7 +25,7 @@ inline void Fractal2::Func(const int j, Complex q)
 		if (q.AbsSquared() > bailout)
 		{
 			pixels[j] = (iterations - i) / (double)iterations;
-			potential[j] = 0.5 * log(q.AbsSquared()) * pow(degree, -i);
+			//potential[j] = 0.5 * log(q.AbsSquared()) * pow(degree, -i);
 			return;
 		}
 
@@ -41,7 +41,7 @@ inline void Fractal2::Func(const int j, Complex q)
 		q = R;
 	}
 	pixels[j] = 0.0;
-	potential[j] = 0.5 * log(q.AbsSquared()) * pow(degree, -iterations);
+	//potential[j] = 0.5 * log(q.AbsSquared()) * pow(degree, -iterations);
 }
 
 inline void Fractal2::SubIterate(int start, int end)

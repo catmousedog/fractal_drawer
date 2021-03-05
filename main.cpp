@@ -53,9 +53,9 @@ str CMD_Pole(deq arg)
 			double x = std::stod(arg.at(1));
 			double y = std::stod(arg.at(2));
 			int m = std::stoi(arg.at(3));
-			fractal.GetPoles()[i].x = x;
-			fractal.GetPoles()[i].y = y;
-			fractal.GetPoles()[i].m = m;
+			fractal.poles[i].x = x;
+			fractal.poles[i].y = y;
+			fractal.poles[i].m = m;
 		}
 		catch (const std::exception&)
 		{
@@ -111,9 +111,9 @@ str CMD_Iterate(deq arg)
 
 str CMD_Descend(deq arg)
 {
-	if (Descend(0) != 0)
-		return "changed";
-	return "unchanged";
+	if (Descend(0) >= Fractal2::N)
+		return "unchanged";
+	return "changed";
 }
 
 str CMD_DescendM(deq arg)
@@ -156,7 +156,7 @@ str CMD_Train(deq arg)
 str CMD_Print(deq arg)
 {
 	fractal.Iterate();
-	double E = optimizer.NormEnergy();
+	double E = optimizer.Energy();
 	if (arg.size() > 0 && arg.front() == "file")
 	{
 		fractal.Print(E);
@@ -202,7 +202,6 @@ int main()
 	//fractal.GetPoles()[23] = Pole(0.020000, 0.670000, -1.000000);
 	//fractal.GetPoles()[24] = Pole(0.410000, 0.670000, 1.000000);
 	//fractal.GetPoles()[25] = Pole(0.590000, 0.180000, -1.000000);
-	random(10);
 
 	//console start
 	std::map<str, fp> commands;
@@ -244,7 +243,12 @@ void Train(int A, int R, int M)
 		std::cout << a << std::endl;
 		random(R);
 		DescendM(M);
-		Print(optimizer.NormEnergy());
+		double E = optimizer.Energy();
+		if (E < Emin)
+		{
+			fractal.out(E);
+			fractal.Print(E);
+		}
 	}
 }
 
@@ -264,55 +268,38 @@ bool DescendM(int M)
 
 int Descend(int terminate)
 {
-	Pole gradient[Fractal2::N];
-	Pole* poles = fractal.GetPoles();
-
-	//calculate current energy
-	fractal.Iterate();
-	double E = optimizer.Energy();
-
-	std::cout << E << std::endl;
-
 	for (int i = 0; i < Fractal2::N; i++)
 	{
 		//x
-		double gradx = optimizer.GradientX(i, E);
+		double gradx = optimizer.GradientX(i);
+		fractal.poles[i].x += gradx;
 		//y
-		double grady = optimizer.GradientY(i, E);
+		double grady = optimizer.GradientY(i);
+		fractal.poles[i].y += grady;
 		//exponent
-		int gradm = optimizer.GradientE(i, E);
-
-		if (gradx == 0 && grady == 0 && gradm == 0)
-			terminate++;
-		else
-			terminate = 0;
-		gradient[i].x = gradx;
-		gradient[i].y = grady;
-		gradient[i].m = gradm;
+		int gradm = optimizer.GradientE(i);
+		fractal.poles[i].m += gradm;
 
 		std::cout << i << " += (" << gradx << ", " << grady << ", " << gradm << ")\n";
-		if (terminate >= Fractal2::N)
+
+		if (gradx == 0 && grady == 0 && gradm == 0)
 		{
-			std::cout << "terminate" << std::endl;
-			break;
+			terminate++;
+			if (terminate >= Fractal2::N)
+			{
+				std::cout << "terminate" << std::endl;
+				break;
+			}
 		}
-		
+		else
+			terminate = 0;
 	}
 
-	//add gradient
-	for (int i = 0; i < Fractal2::N; i++)
-		poles[i] += gradient[i];
+	//print
+	fractal.Iterate();
+	std::cout << optimizer.Energy() << std::endl;
 
 	return terminate;
-}
-
-void Print(double E)
-{
-	if (E < Emin)
-	{
-		fractal.Print(E);
-		drawer.Draw();
-	}
 }
 
 //ENERGY TEST

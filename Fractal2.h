@@ -7,7 +7,20 @@
 
 class Fractal2
 {
-private:
+public:
+
+	//amount of poles
+	static constexpr int N = 10;
+
+	//amount of pixels
+	static constexpr int p = 200, pixels_size = p * p;
+
+	//thread count
+	static constexpr int thread_count = 80;
+
+	//pixels per thread
+	static constexpr int ppt = pixels_size / thread_count;
+
 	//constant used in the fractal function as e^C
 	double C = 0;
 
@@ -20,18 +33,20 @@ private:
 	//temporary variable used during Iterate()
 	int degree;
 
-public:
-	//amount of poles
-	static constexpr int N = 12;
+	//array of all the coordinates inside the bounds
+	Complex coordinates[pixels_size];
 
-	//amount of pixels
-	static constexpr int p = 200, pixels_size = p * p;
+	//array of all iterated values inside the bounds
+	double pixels[pixels_size];
 
-	//thread count
-	static constexpr int thread_count = 80;
+	//array of all potentials inside the bounds
+	//double potential[pixels_size];
 
-	//pixels per thread
-	static constexpr int ppt = pixels_size / thread_count;
+	//poles
+	Pole poles[N];
+
+	//distance per pixel
+	double dx, dy;
 
 	//bounds in the complex plane
 	struct Box
@@ -48,7 +63,7 @@ public:
 		{
 			return y1 - y0;
 		}
-	};
+	} bounds;
 
 	Fractal2(int it, int bail, Box box);
 
@@ -73,12 +88,6 @@ public:
 	}
 
 	/* Getters & Setters */
-	Pole* GetPoles() { return poles; }
-
-	Complex* GetCoordinates() { return coordinates; }
-
-	double* GetPixels() { return pixels; }
-
 	int GetDegree()
 	{
 		int d = 0;
@@ -88,42 +97,20 @@ public:
 		return d;
 	}
 
-	double& GetC() { return C; }
-	int& GetTau() { return tau; }
-	int& GetBeta() { return beta; }
-
 private:
-	//distance per pixel
-	double dx, dy;
-
-	//area where the fractal is generated
-	Box bounds;
-
 	//thread lock
 	std::mutex mtx;
 
 	//threads
 	std::thread threads[thread_count];
 
-	//array of all the coordinates inside the bounds
-	Complex coordinates[pixels_size];
-
-	//array of all iterated values inside the bounds
-	double pixels[pixels_size];
-
-	//array of all potentials inside the bounds
-	double potential[pixels_size];
-
-	//poles
-	Pole poles[N];
-
 	/* Functions */
 	//Iterates over a portion of the total pixels
 	void SubIterate(int start, int end);
 
-	friend class Drawer;
-	friend class Optimizer;
-	friend class Randomizer;
+	//friend class Drawer;
+	//friend class Optimizer;
+	//friend class Randomizer;
 };
 
 

@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <deque>
+#include <iomanip>
 
 enum gradient
 {
@@ -17,3 +18,4 @@ void split(const std::string& s, char delim, std::deque<std::string>& elems);
 
 std::deque<std::string> split(const std::string& s, char delim);
 
+std::string to_string(double d);

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Fractal2.h"
-#include "Util.h"
 #include <cmath>
 
 class Optimizer
@@ -35,7 +34,7 @@ private:
 
 	//gradient for coordinate
 	template<typename T>
-	T GradientC(T& c, T step, double E);
+	T GradientC(T& c, T step);
 
 public:
 
@@ -45,11 +44,11 @@ public:
 
 	double NormEnergy() { return Energy() * norm; }
 
-	int GradientE(int i, double E);
+	int GradientE(int i);
 
-	double GradientX(int i, double E);
+	double GradientX(int i);
 
-	double GradientY(int i, double E);
+	double GradientY(int i);
 
 	//tau
 	void OptimizeT();
