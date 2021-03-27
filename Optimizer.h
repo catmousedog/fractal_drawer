@@ -9,10 +9,10 @@ class Optimizer
 private:
 
 	//fractal
-	Fractal2& f;
+	Fractal& f;
 
 	//inverse signed distance function
-	double desired[Fractal2::pixels_size];
+	double desired[Fractal::pixels_size];
 
 	//normalisation constant
 	double norm;

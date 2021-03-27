@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Optimizer.h"
+#include "Fractal.h"
 #include "CImg.h"
 #include <assert.h>
 #include <vector>
@@ -15,18 +15,17 @@ private:
 	const unsigned char white[3] = { 255, 255, 255 };
 	const unsigned char red[3] = { 255, 0, 0 };
 
-	Fractal2& f;
-	Optimizer& op;
+	Fractal& f;
 
 public:
-	Drawer(Fractal2& f, Optimizer& op) : f(f), op(op)
+	Drawer(Fractal& f) : f(f)
 	{
 	}
 
 	//create and draw the fractal on the new image
 	void Draw()
 	{
-		cimg_library::CImg<unsigned char> img(Fractal2::p, Fractal2::p, 1, 3, 255);
+		cimg_library::CImg<unsigned char> img(Fractal::p, Fractal::p, 1, 3, 255);
 		Draw(img);
 		img.display();
 	}
