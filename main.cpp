@@ -77,8 +77,8 @@ str CMD_C(deq arg)
 
 int main()
 {
-	Img();
-	//Console();
+	//Img();
+	Console();
 	return 0;
 }
 
@@ -87,23 +87,24 @@ void Img()
 	CImg<unsigned char> img(Fractal::p, Fractal::p, 1, 3, 255);
 	CImgDisplay disp(img);
 
-	// Main display loop
-	while (!disp.is_closed() && !disp.is_keyQ() && !disp.is_keyESC()) {
+	while (!disp.is_closed()) {
 
 		CImgDisplay::wait(disp);
 
-		// When clicking on the image
-		if (disp.button()) {
+		if (disp.button() == 0x1) {
 			int x = disp.mouse_x();
 			int y = disp.mouse_y();
+		}
+		else if (disp.button() == 0x2)
+		{
 
 		}
+
 	}
 }
 
 void Console()
 {
-	
 	//console start
 	std::map<str, fp> commands;
 	commands["print"] = CMD_Print;

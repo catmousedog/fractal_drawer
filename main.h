@@ -3,8 +3,6 @@
 #include "Drawer.h"
 #include <map>
 
-double Emin = 1.0;
-
 void Img();
 
 void Console();
