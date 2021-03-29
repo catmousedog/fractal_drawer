@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Complex.h"
+#include "leja.h"
 #include <fstream>
 #include <mutex>
 #include <iostream>
@@ -8,8 +9,6 @@
 class Fractal
 {
 public:
-	//amount of Leja points
-	static constexpr int N = 10;
 
 	//amount of pixels
 	static constexpr int p = 200, pixels_size = p * p;
@@ -29,8 +28,7 @@ public:
 	//iterated values at coordinates in order
 	double pixels[pixels_size];
 
-	//Leja points
-	Complex leja[N];
+	Leja leja;
 
 	//bounds in the complex plane
 	struct Box
@@ -46,6 +44,10 @@ public:
 		inline double Height()
 		{
 			return y1 - y0;
+		}
+		inline bool inside(double x, double y)
+		{
+			return x0 <= x && x <= x1 && y0 <= y && y <= y1;
 		}
 	} bounds;
 

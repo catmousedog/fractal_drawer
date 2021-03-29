@@ -3,7 +3,8 @@
 #include "Fractal.h"
 
 // Constructs the fractal and reads from desired.csv
-Fractal::Fractal(int it, int bail, Box box) : iterations(it), bailout(bail), bounds(box)
+Fractal::Fractal(int it, int bail, Box box) :
+	iterations(it), bailout(bail), bounds(box), leja()
 {
 	double dx = (double)(bounds.Width()) / (double)p;
 	double dy = (double)(bounds.Height()) / (double)p;
@@ -13,28 +14,6 @@ Fractal::Fractal(int it, int bail, Box box) : iterations(it), bailout(bail), bou
 		coordinates[t].x = bounds.x0 + (t / p) * dx;
 		coordinates[t].y = bounds.y0 + (t % p) * dy;
 	}
-
-	//read from image
-	std::ifstream des(".csv");
-	std::string line;
-
-	//first line is amount of relevant pixels (not -1)
-	std::getline(des, line);
-
-	//total / relevant counter
-	int t = 0, r = 0;
-	while (std::getline(des, line))
-	{
-		float v = std::stof(line);
-		if (v >= 0)
-		{
-			desired[r] = v;
-			r++;
-		}
-		t++;
-	}
-	des.close();
-
 }
 
 //Fractal function
@@ -50,6 +29,12 @@ inline void Fractal::Func(const int j, Complex q)
 
 		Complex R(1, 0);
 		/** f(z) **/
+		for (Complex p : leja.points)
+		{
+			R *= q - p;
+		}
+		R *= q;
+		R *= leja.C;
 		/**********/
 		q = R;
 	}
@@ -104,10 +89,11 @@ void Fractal::Print()
 
 	std::ofstream par;
 	par.open("data/parameters_" + s);
-	for (int i = 0; i < N; i++)
+	for (Complex p : leja.points)
 	{
-		//par << poles[i].string() << std::endl;
-		//std::cout << poles[i].string() << std::endl;
+		str s = p.string();
+		par << s << std::endl;
+		std::cout << s << std::endl;
 	}
 	par.close();
 }

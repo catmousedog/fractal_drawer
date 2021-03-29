@@ -73,28 +73,6 @@ struct Complex
 		return Complex(A * cos(theta * P), A * sin(theta * P));
 	}
 
-	//Complex operator^(const int P) const
-	//{
-	//	if (P > 0)
-	//	{
-	//		Complex c(*this);
-	//		for (int i = 0; i < P - 1; i++)
-	//			c *= *this;
-	//		return c;
-	//	}
-	//	else if (P == 0)
-	//	{
-	//		return Complex(1, 0);
-	//	}
-	//	else
-	//	{
-	//		Complex t(1, 0);
-	//		for (int i = 0; i < -P; i++)
-	//			t *= *this;
-	//		return Complex(1, 0) / t;
-	//	}
-	//}
-
 	inline Complex& operator=(const Complex& c)
 	{
 		x = c.x;
@@ -121,8 +99,13 @@ struct Complex
 		this->y = x * c.y + y * c.x;
 		this->x = tx;
 		return *this;
-		//*this = *this * c;
-		//return *this;
+	}
+
+	inline Complex& operator*=(const double a)
+	{
+		x *= a;
+		y *= a;
+		return *this;
 	}
 
 	inline Complex& operator/=(const Complex& c)

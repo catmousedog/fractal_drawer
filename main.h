@@ -1,17 +1,21 @@
 #pragma once
 
 #include "Drawer.h"
-#include <iostream>
 #include <map>
-#include <deque>
 
 double Emin = 1.0;
 
-/* COMMANDS */
-typedef std::deque<std::string> deq;
-typedef std::string str, (*fp)(deq);
+void Img();
 
+void Console();
+
+/* COMMANDS */
 str CMD_Print(deq arg);
 
 str CMD_Draw(deq arg);
 
+str CMD_LejaAdd(deq arg);
+
+str CMD_setS(deq arg);
+
+str CMD_C(deq arg);
