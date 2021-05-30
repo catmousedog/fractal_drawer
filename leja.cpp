@@ -1,41 +1,50 @@
 #include "leja.h"
 
-Leja::Leja()
+Leja::Leja(int N, double (*X)(double), double (*Y)(double))
 {
-	//read from image
-	std::ifstream des("boundary.csv");
-	std::string line;
+	////read from image
+	//std::ifstream des("boundary.csv");
+	//std::string line;
 
-	//counter
-	int t = 1;
-	while (std::getline(des, line))
+	////counter
+	//int t = 1;
+	//while (std::getline(des, line))
+	//{
+	//	deq d = split(line, ', ');
+	//	double x = std::stod(d.at(0));
+	//	double y = std::stod(d.at(1));
+	//	boundary.push_back(Complex(x, y));
+
+	//	t++;
+	//}
+	//des.close();
+
+	for (int i = 0; i < N; i++)
 	{
-		deq d = split(line, ', ');
-		double x = std::stod(d.at(0));
-		double y = std::stod(d.at(1));
-		boundary.push_back(Complex(x, y));
-
-		t++;
+		double t = i / (double)N;
+		boundary.push_back(Complex(X(t), Y(t)));
 	}
-	des.close();
 
 	points.push_back(boundary.front());
 }
 
-void Leja::add()
+void Leja::add(int N)
 {
-	double max = -1;
-	Complex out(0, 0);
-	for (Complex c : boundary)
+	for (int i = 0; i < N; i++)
 	{
-		double m = func(c);
-		if (m > max)
+		double max = -1;
+		Complex out(0, 0);
+		for (Complex c : boundary)
 		{
-			max = m;
-			out = c;
+			double m = func(c);
+			if (m > max)
+			{
+				max = m;
+				out = c;
+			}
 		}
+		points.push_back(out);
 	}
-	points.push_back(out);
 	setConstant();
 }
 

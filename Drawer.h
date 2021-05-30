@@ -18,22 +18,25 @@ private:
 
 	Fractal& f;
 
+	CImgDisplay dsp;
+
 public:
-	Drawer(Fractal& f) : f(f)
+	Drawer(Fractal& f) : f(f), dsp(Fractal::p, Fractal::p, 0)
 	{
 	}
 
-	//create and draw the fractal on the new image
-	void Draw()
-	{
-		CImg<unsigned char> img(Fractal::p, Fractal::p, 1, 3, 255);
-		Draw(img);
-		img.display();
-	}
-
-	//draw the fractal on the given image
-	void Draw(CImg<unsigned char>& img);
+	void Draw();
 
 	void Graph(std::vector<double> x, std::vector<double> y, double xmin, double xmax, double ymin, double ymax);
+
+	bool IsClosed()
+	{
+		return dsp.is_closed();
+	}
+
+	CImgDisplay& GetDisplay()
+	{
+		return dsp;
+	}
 };
 

@@ -6,6 +6,11 @@
 # data files
 *.csv
 
+#images
+*.png
+*.jpg
+*.jpeg
+
 #solution files
 *.sln
 *.vcxproj
