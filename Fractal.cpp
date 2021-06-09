@@ -2,12 +2,9 @@
 
 #include "Fractal.h"
 
-#define PI 3.1415926
-#define TAU 2*PI
-
 // Constructs the fractal and reads from desired.csv
 Fractal::Fractal(int it, int bail, Box box) :
-	iterations(it), bailout(bail), bounds(box), lejas()
+	iterations(it), bailout(bail), bounds(box), leja()
 {
 	double dx = (double)(bounds.Width()) / (double)p;
 	double dy = (double)(bounds.Height()) / (double)p;
@@ -17,26 +14,6 @@ Fractal::Fractal(int it, int bail, Box box) :
 		coordinates[t].x = bounds.x0 + (t / p) * dx;
 		coordinates[t].y = bounds.y0 + (t % p) * dy;
 	}
-
-	lejas.push_back(Leja(1000,
-		[](double t) -> double
-		{
-			return cos(TAU * t);
-		},
-		[](double t) -> double
-		{
-			return -1 + 0.5 * sin(TAU * t) + 0.5 * cos(TAU * t);
-		}));
-
-	//lejas.push_back(Leja(1000,
-	//	[](double t) -> double
-	//	{
-	//		return cos(TAU * t);
-	//	},
-	//	[](double t) -> double
-	//	{
-	//		return 1 - 0.5 * sin(TAU * t) - 0.5 * cos(TAU * t);
-	//	}));
 }
 
 //Fractal function
@@ -50,21 +27,15 @@ inline void Fractal::Func(const int j, Complex q)
 			return;
 		}
 
-		Complex S(0, 0);
+		Complex R(1, 0);
 		/** f(z) **/
-		for (Leja leja : lejas)
+		for (Complex p : leja.points)
 		{
-			Complex R(1, 0);
-			for (Complex p : leja.points)
-			{
-				R *= q - p;
-			}
-			R *= q;
-			R *= leja.C;
-			S += R;
+			R *= q - p;
 		}
+		R *= leja.C;
 		/**********/
-		q = S;
+		q *= R;
 	}
 	pixels[j] = 0.0;
 }
@@ -117,15 +88,11 @@ void Fractal::Print()
 
 	std::ofstream par;
 	par.open("data/parameters_" + s);
-	for (Leja leja : lejas) {
-		par << "LEJA" << std::endl;
-		std::cout << "LEJA" << std::endl;
-		for (Complex p : leja.points)
-		{
-			str s = p.string();
-			par << s << std::endl;
-			std::cout << s << std::endl;
-		}
+	for (Complex p : leja.points)
+	{
+		str s = p.string();
+		par << s << std::endl;
+		std::cout << s << std::endl;
 	}
 	par.close();
 }

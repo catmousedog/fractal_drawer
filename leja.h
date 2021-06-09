@@ -15,7 +15,9 @@ public:
 
 	double s = 0.3;
 
-	Leja(int N, double (*X)(double), double(*Y)(double));
+	Leja();
+
+	void addBoundary(int N, double (*X)(double), double (*Y)(double));
 
 	void add(int N);
 

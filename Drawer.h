@@ -16,12 +16,12 @@ private:
 	static constexpr unsigned char red[3] = { 255, 0, 0 };
 	static constexpr unsigned char blue[3] = { 0, 0, 255 };
 
-	Fractal& f;
+	Fractal& fractal;
 
 	CImgDisplay dsp;
 
 public:
-	Drawer(Fractal& f) : f(f), dsp(Fractal::p, Fractal::p, 0)
+	Drawer(Fractal& f) : fractal(f), dsp(Fractal::p, Fractal::p, 0)
 	{
 	}
 

@@ -11,7 +11,7 @@ class Fractal
 public:
 
 	//amount of pixels
-	static constexpr int p = 300, pixels_size = p * p;
+	static constexpr int p = 600, pixels_size = p * p;
 
 	//thread count
 	static constexpr int thread_count = 80;
@@ -28,7 +28,7 @@ public:
 	//iterated values at coordinates in order
 	double pixels[pixels_size];
 
-	std::vector<Leja> lejas;
+	Leja leja;
 
 	//bounds in the complex plane
 	struct Box

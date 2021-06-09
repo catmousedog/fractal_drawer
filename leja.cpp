@@ -1,31 +1,40 @@
 #include "leja.h"
 
-Leja::Leja(int N, double (*X)(double), double (*Y)(double))
+#define PI 3.1415926
+#define TAU 2*PI
+
+Leja::Leja()
 {
-	////read from image
-	//std::ifstream des("boundary.csv");
-	//std::string line;
+	auto X1 = [](double t) -> double
+	{
+		return pow(sin(TAU * t), 3.0);
+	};
+	auto Y1 = [](double t) -> double
+	{
+		return cos(TAU * t) - cos(2 * TAU * t);
+	};
+	addBoundary(1000, X1, Y1);
 
-	////counter
-	//int t = 1;
-	//while (std::getline(des, line))
-	//{
-	//	deq d = split(line, ', ');
-	//	double x = std::stod(d.at(0));
-	//	double y = std::stod(d.at(1));
-	//	boundary.push_back(Complex(x, y));
+	auto X2 = [](double t) -> double
+	{
+		return cos(TAU * t);
+	};
+	auto Y2 = [](double t) -> double
+	{
+		return -4 + sin(TAU * t) - 0.5 * cos(TAU * t);
+	};
+	addBoundary(1000, X2, Y2);
 
-	//	t++;
-	//}
-	//des.close();
+	points.push_back(boundary.front());
+}
 
+void Leja::addBoundary(int N, double (*X)(double), double (*Y)(double))
+{
 	for (int i = 0; i < N; i++)
 	{
 		double t = i / (double)N;
 		boundary.push_back(Complex(X(t), Y(t)));
 	}
-
-	points.push_back(boundary.front());
 }
 
 void Leja::add(int N)

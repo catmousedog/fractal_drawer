@@ -1,9 +1,10 @@
 #pragma once
 
 #include "main.h"
+#define cimg_use_png 1
 #include "CImg.h"
 
-double a = 2;
+double a = 5;
 Fractal::Box bounds(-a, -a, a, a);
 Fractal fractal(20, 10000, bounds);
 Drawer drawer(fractal);
@@ -11,10 +12,7 @@ Drawer drawer(fractal);
 str CMD_Print(deq arg)
 {
 	fractal.Print();
-	for (Leja leja : fractal.lejas)
-	{
-		std::cout << to_string(leja.points.size()) << std::endl;
-	}
+	std::cout << to_string(fractal.leja.points.size()) << std::endl;
 	return "done";
 }
 
@@ -22,20 +20,14 @@ str CMD_LejaAdd(deq arg)
 {
 	if (arg.size() == 0)
 	{
-		for (Leja leja : fractal.lejas)
-		{
-			leja.add(1);
-		}
+		fractal.leja.add(1);
 	}
 	else
 	{
 		try
 		{
 			int m = std::stoi(arg.front());
-			for (Leja leja : fractal.lejas)
-			{
-				leja.add(m);
-			}
+			fractal.leja.add(m);
 		}
 		catch (const std::exception&)
 		{
@@ -43,29 +35,22 @@ str CMD_LejaAdd(deq arg)
 		}
 	}
 
-	return "done";
+	return to_string(fractal.leja.points.size());
 }
 
 str CMD_setS(deq arg)
 {
 	if (arg.size() == 0)
 	{
-		str s = "";
-		for (Leja leja : fractal.lejas)
-		{
-			s += to_string(leja.s);
-		}
+		return to_string(fractal.leja.s);
 	}
 	else
 	{
 		try
 		{
 			double s = std::stod(arg.front());
-			for (Leja leja : fractal.lejas)
-			{
-				leja.s = s;
-				leja.setConstant();
-			}
+			fractal.leja.s = s;
+			fractal.leja.setConstant();
 		}
 		catch (const std::exception&)
 		{
@@ -79,6 +64,8 @@ str CMD_setS(deq arg)
 
 int main()
 {
+	CImg<unsigned char> img("C:/Users/lauwe/source/repos/FractalDrawer/FractalDrawer/test.png");
+
 #if CONSOLE
 	std::map<str, fp> commands;
 	commands["print"] = CMD_Print;
@@ -138,7 +125,7 @@ int main()
 			drawer.Draw();
 		}
 #endif
-	}
+}
 #endif
 	return 0;
 }
