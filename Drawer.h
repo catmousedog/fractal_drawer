@@ -27,8 +27,6 @@ public:
 
 	void Draw();
 
-	void Graph(std::vector<double> x, std::vector<double> y, double xmin, double xmax, double ymin, double ymax);
-
 	bool IsClosed()
 	{
 		return dsp.is_closed();

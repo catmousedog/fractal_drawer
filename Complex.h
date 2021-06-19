@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Vector.h"
 #include "Util.h"
 
 struct Complex
@@ -8,6 +7,10 @@ struct Complex
 	double x, y;
 
 	Complex() : x(0), y(0)
+	{
+	}
+
+	Complex(double a) : x(cos(a)), y(sin(a))
 	{
 	}
 
@@ -41,12 +44,12 @@ struct Complex
 		return Complex(x, -y);
 	}
 
-	inline Complex operator+(const Complex& v) const
+	inline Complex operator+(const Complex v) const
 	{
 		return Complex(v.x + x, v.y + y);
 	}
 
-	inline Complex operator-(const Complex& v) const
+	inline Complex operator-(const Complex v) const
 	{
 		return Complex(v.x - x, v.y - y);
 	}
@@ -56,12 +59,12 @@ struct Complex
 		return Complex(x * a, y * a);
 	}
 
-	inline Complex operator*(const Complex& c) const
+	inline Complex operator*(const Complex c) const
 	{
 		return Complex(x * c.x - y * c.y, x * c.y + y * c.x);
 	}
 
-	inline Complex operator/(const Complex& c) const
+	inline Complex operator/(const Complex c) const
 	{
 		return (*this * (~c)) * (1 / c.AbsSquared());
 	}
@@ -73,27 +76,27 @@ struct Complex
 		return Complex(A * cos(theta * P), A * sin(theta * P));
 	}
 
-	inline Complex& operator=(const Complex& c)
+	inline Complex& operator=(const Complex c)
 	{
 		x = c.x;
 		y = c.y;
 		return *this;
 	}
-	inline Complex& operator+=(const Complex& c)
+	inline Complex& operator+=(const Complex c)
 	{
 		x += c.x;
 		y += c.y;
 		return *this;
 	}
 
-	inline Complex& operator-=(const Complex& c)
+	inline Complex& operator-=(const Complex c)
 	{
 		x -= c.x;
 		y -= c.y;
 		return *this;
 	}
 
-	inline Complex& operator*=(const Complex& c)
+	inline Complex& operator*=(const Complex c)
 	{
 		double tx = x * c.x - y * c.y;
 		this->y = x * c.y + y * c.x;
@@ -108,7 +111,7 @@ struct Complex
 		return *this;
 	}
 
-	inline Complex& operator/=(const Complex& c)
+	inline Complex& operator/=(const Complex c)
 	{
 		*this = *this / c;
 		return *this;

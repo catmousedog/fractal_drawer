@@ -4,7 +4,7 @@
 
 // Constructs the fractal and reads from desired.csv
 Fractal::Fractal(int it, int bail, Box box) :
-	iterations(it), bailout(bail), bounds(box), leja()
+	iterations(it), bailout(bail), bounds(box), region(), pixels()
 {
 	double dx = (double)(bounds.Width()) / (double)p;
 	double dy = (double)(bounds.Height()) / (double)p;
@@ -23,19 +23,13 @@ inline void Fractal::Func(const int j, Complex q)
 	{
 		if (q.AbsSquared() > bailout)
 		{
-			pixels[j] = (iterations - i) / (double)iterations;
+			pixels[j] = ((double)iterations - i) / (double)iterations;
 			return;
 		}
 
-		Complex R(1, 0);
 		/** f(z) **/
-		for (Complex p : leja.points)
-		{
-			R *= q - p;
-		}
-		R *= leja.C;
+		q *= region.w(q);
 		/**********/
-		q *= R;
 	}
 	pixels[j] = 0.0;
 }
@@ -88,7 +82,7 @@ void Fractal::Print()
 
 	std::ofstream par;
 	par.open("data/parameters_" + s);
-	for (Complex p : leja.points)
+	for (Complex p : region.coefficients)
 	{
 		str s = p.string();
 		par << s << std::endl;

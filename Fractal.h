@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Complex.h"
-#include "leja.h"
+#include "region.h"
 #include <fstream>
 #include <mutex>
 #include <iostream>
@@ -28,7 +28,7 @@ public:
 	//iterated values at coordinates in order
 	double pixels[pixels_size];
 
-	Leja leja;
+	Region region;
 
 	//bounds in the complex plane
 	struct Box
@@ -54,7 +54,7 @@ public:
 	Fractal(int it, int bail, Box box);
 
 	//the fractal function
-	inline void Func(int i, Complex c);
+	inline void Func(const int i, Complex c);
 
 	//iterates over all the pixels and assigns their value
 	void Iterate();

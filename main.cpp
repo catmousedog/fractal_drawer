@@ -1,33 +1,32 @@
 #pragma once
 
 #include "main.h"
-#define cimg_use_png 1
-#include "CImg.h"
 
-double a = 5;
+double a = 12;
 Fractal::Box bounds(-a, -a, a, a);
 Fractal fractal(20, 10000, bounds);
 Drawer drawer(fractal);
 
 str CMD_Print(deq arg)
 {
-	fractal.Print();
-	std::cout << to_string(fractal.leja.points.size()) << std::endl;
+	//fractal.Print();
+	for (Complex c : fractal.region.coefficients)
+	{
+		std::cout << c.string() << std::endl;
+	}
+	std::cout << fractal.region.coefficients.size() << std::endl;
 	return "done";
 }
 
-str CMD_LejaAdd(deq arg)
+str CMD_CoeffAdd(deq arg)
 {
-	if (arg.size() == 0)
-	{
-		fractal.leja.add(1);
-	}
-	else
+	if (arg.size() == 2)
 	{
 		try
 		{
-			int m = std::stoi(arg.front());
-			fractal.leja.add(m);
+			double x = std::stod(arg.front());
+			double y = std::stod(arg.back());
+			fractal.region.AddCoefficient(Complex(x, y));
 		}
 		catch (const std::exception&)
 		{
@@ -35,42 +34,47 @@ str CMD_LejaAdd(deq arg)
 		}
 	}
 
-	return to_string(fractal.leja.points.size());
+	return fractal.region.coefficients.back().string();
 }
 
-str CMD_setS(deq arg)
+str CMD_SetN(deq arg)
 {
+	int N = 0;
 	if (arg.size() == 0)
 	{
-		return to_string(fractal.leja.s);
+		N = fractal.region.points.size();
 	}
 	else
 	{
 		try
 		{
-			double s = std::stod(arg.front());
-			fractal.leja.s = s;
-			fractal.leja.setConstant();
+			N = std::stoi(arg.front());
+			fractal.region.SetPoints(N);
 		}
 		catch (const std::exception&)
 		{
 			return "except";
 		}
 	}
-	return "done";
+	return std::to_string(N);
 }
 
 #define CONSOLE true
 
 int main()
 {
-	CImg<unsigned char> img("C:/Users/lauwe/source/repos/FractalDrawer/FractalDrawer/test.png");
+	//for (double n = 1; n <= 5; n++)
+	//{
+	//	fractal.region.AddCoefficient(Complex(log(2*n) / n, 0.0));
+	//}
+	fractal.region.AddCoefficient(Complex(-0.10080645161290391, 3.214285714285716));
+	fractal.region.AddCoefficient(Complex(2.52016129032258, 0.16233766233766223));
 
 #if CONSOLE
 	std::map<str, fp> commands;
 	commands["print"] = CMD_Print;
-	commands["add"] = CMD_LejaAdd;
-	commands["s"] = CMD_setS;
+	commands["add"] = CMD_CoeffAdd;
+	commands["n"] = CMD_SetN;
 
 	drawer.Draw();
 
@@ -123,10 +127,10 @@ int main()
 			prev = now;
 			fractal.leja.add();
 			drawer.Draw();
+			}
+#endif
 		}
 #endif
-}
-#endif
 	return 0;
-}
+	}
 
