@@ -27,6 +27,7 @@ str CMD_CoeffAdd(deq arg)
 			double x = std::stod(arg.front());
 			double y = std::stod(arg.back());
 			fractal.region.AddCoefficient(Complex(x, y));
+			drawer.Draw();
 		}
 		catch (const std::exception&)
 		{
@@ -50,6 +51,7 @@ str CMD_SetN(deq arg)
 		{
 			N = std::stoi(arg.front());
 			fractal.region.SetPoints(N);
+			drawer.Draw();
 		}
 		catch (const std::exception&)
 		{
@@ -57,6 +59,34 @@ str CMD_SetN(deq arg)
 		}
 	}
 	return std::to_string(N);
+}
+
+str CMD_SetCA(deq arg)
+{
+	Complex CA;
+	if (arg.size() == 0)
+	{
+		CA = fractal.region.CA;
+	}
+	else 
+	{
+		try
+		{
+			double x = std::stod(arg.front());
+			double y = 0;
+			if (arg.size() > 1)
+				y = std::stod(arg.back());
+			CA = Complex(x, y);
+			fractal.region.setCA(CA);
+			drawer.Draw();
+		}
+		catch (const std::exception&)
+		{
+			return "except";
+		}
+		
+	}
+	return CA.string();
 }
 
 #define CONSOLE true
@@ -67,14 +97,22 @@ int main()
 	//{
 	//	fractal.region.AddCoefficient(Complex(log(2*n) / n, 0.0));
 	//}
-	fractal.region.AddCoefficient(Complex(-0.10080645161290391, 3.214285714285716));
-	fractal.region.AddCoefficient(Complex(2.52016129032258, 0.16233766233766223));
+	fractal.region.AddCoefficient(Complex(0.8246937381859091, 3.690060027651251));
+	fractal.region.AddCoefficient(Complex(1.178902595987121, 0.6354877005955134));
+	fractal.region.AddCoefficient(Complex(-0.8648782093482568, -0.7947303857150059));
+	fractal.region.AddCoefficient(Complex(1.5605068121540981, 1.1735034742121042));
+	fractal.region.AddCoefficient(Complex(0.9391367617250453, -0.07934521179576949));
+	fractal.region.AddCoefficient(Complex(1.4108436439453311, 0.23882646476667074));
+	fractal.region.AddCoefficient(Complex(0.2653298508938929, 0.5880367577014516));
+	fractal.region.AddCoefficient(Complex(-0.14579423978993555, 0.2298225326387807));
+	fractal.region.AddCoefficient(Complex(-0.22845836027157843, 0.005623617647601732));
 
 #if CONSOLE
 	std::map<str, fp> commands;
 	commands["print"] = CMD_Print;
 	commands["add"] = CMD_CoeffAdd;
 	commands["n"] = CMD_SetN;
+	commands["ca"] = CMD_SetCA;
 
 	drawer.Draw();
 
@@ -92,7 +130,6 @@ int main()
 				fp f = iter->second;
 				words.pop_front();
 				str message = f(words);
-				drawer.Draw();
 				std::cout << message << std::endl;
 			}
 		}
@@ -127,9 +164,9 @@ int main()
 			prev = now;
 			fractal.leja.add();
 			drawer.Draw();
-			}
-#endif
 		}
+#endif
+}
 #endif
 	return 0;
 	}

@@ -12,7 +12,7 @@ public:
 
 	int N = 10;
 
-	Complex CA;
+	Complex CA = Complex(1, 0);
 
 	void AddCoefficient(const Complex c);
 
@@ -21,6 +21,8 @@ public:
 	Complex w(const Complex z) const;
 
 	Complex phi(const Complex z) const;
+
+	void setCA(const Complex CA);
 
 };
 
