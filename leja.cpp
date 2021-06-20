@@ -1,80 +1,38 @@
 #include "leja.h"
 
 #define PI 3.1415926
-#define TAU 2*PI
+#define T 2*PI*t
 
 Leja::Leja()
 {
 	auto X1 = [](double t) -> double
 	{
-		return pow(sin(TAU * t), 3.0);
+		return sin(T) + cos(4*T);
 	};
 	auto Y1 = [](double t) -> double
 	{
-		return cos(TAU * t) - cos(2 * TAU * t);
+		return 3 * (cos(T) + sin(T));
 	};
-	addBoundary(1000, X1, Y1);
+	regions.push_back(Region(2000, X1, Y1));
 
 	auto X2 = [](double t) -> double
 	{
-		return cos(TAU * t);
+		return sin(T) - 5;
 	};
 	auto Y2 = [](double t) -> double
 	{
-		return -4 + sin(TAU * t) - 0.5 * cos(TAU * t);
+		return cos(T);
 	};
-	addBoundary(1000, X2, Y2);
+	regions.push_back(Region(2000, X2, Y2));
 
-	points.push_back(boundary.front());
+
 }
 
-void Leja::addBoundary(int N, double (*X)(double), double (*Y)(double))
+void Leja::Add(int N)
 {
-	for (int i = 0; i < N; i++)
+	this->N += N;
+	for (Region& region : regions)
 	{
-		double t = i / (double)N;
-		boundary.push_back(Complex(X(t), Y(t)));
+		region.Add(N);
 	}
-}
-
-void Leja::add(int N)
-{
-	for (int i = 0; i < N; i++)
-	{
-		double max = -1;
-		Complex out(0, 0);
-		for (Complex c : boundary)
-		{
-			double m = func(c);
-			if (m > max)
-			{
-				max = m;
-				out = c;
-			}
-		}
-		points.push_back(out);
-	}
-	setConstant();
-}
-
-void Leja::setConstant()
-{
-	C = exp(-(signed int)points.size() * s / 2.0);
-	double prod = 1;
-	Complex last = points.back();
-	for (int i = 0; i < points.size() - 1; i++)
-	{
-		prod *= sqrt((last - points.at(i)).AbsSquared());
-	}
-	C /= prod;
-}
-
-double Leja::func(Complex z)
-{
-	double prod = 1.0;
-	for (Complex c : points)
-	{
-		prod *= sqrt((z - c).AbsSquared());
-	}
-	return prod;
 }

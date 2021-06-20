@@ -27,15 +27,15 @@ inline void Fractal::Func(const int j, Complex q)
 			return;
 		}
 
-		Complex R(1, 0);
 		/** f(z) **/
-		for (Complex p : leja.points)
+		Complex S(0, 0);
+		for (Leja::Region& region : leja.regions)
 		{
-			R *= q - p;
+			S += ~region.Omega(q);
 		}
-		R *= leja.C;
+		S = ~S;
 		/**********/
-		q *= R;
+		q *= S;
 	}
 	pixels[j] = 0.0;
 }
@@ -88,11 +88,16 @@ void Fractal::Print()
 
 	std::ofstream par;
 	par.open("data/parameters_" + s);
-	for (Complex p : leja.points)
+	for (Leja::Region& region : leja.regions)
 	{
-		str s = p.string();
-		par << s << std::endl;
-		std::cout << s << std::endl;
+		par << std::endl;
+		std::cout << std::endl;
+		for (Complex p : region.leja)
+		{
+			str s = p.string();
+			par << s << std::endl;
+			std::cout << s << std::endl;
+		}
 	}
 	par.close();
 }

@@ -4,7 +4,7 @@
 #define cimg_use_png 1
 #include "CImg.h"
 
-double a = 5;
+double a = 6;
 Fractal::Box bounds(-a, -a, a, a);
 Fractal fractal(20, 10000, bounds);
 Drawer drawer(fractal);
@@ -12,7 +12,7 @@ Drawer drawer(fractal);
 str CMD_Print(deq arg)
 {
 	fractal.Print();
-	std::cout << to_string(fractal.leja.points.size()) << std::endl;
+	std::cout << "N= " << to_string(fractal.leja.N) << std::endl;
 	return "done";
 }
 
@@ -20,14 +20,16 @@ str CMD_LejaAdd(deq arg)
 {
 	if (arg.size() == 0)
 	{
-		fractal.leja.add(1);
+		fractal.leja.Add(1);
 	}
 	else
 	{
 		try
 		{
 			int m = std::stoi(arg.front());
-			fractal.leja.add(m);
+			fractal.leja.Add(m);
+			std::cout << fractal.leja.regions.front().leja.size() << std::endl;
+			drawer.Draw();
 		}
 		catch (const std::exception&)
 		{
@@ -35,22 +37,30 @@ str CMD_LejaAdd(deq arg)
 		}
 	}
 
-	return to_string(fractal.leja.points.size());
+	return to_string(fractal.leja.N);
 }
 
 str CMD_setS(deq arg)
 {
 	if (arg.size() == 0)
 	{
-		return to_string(fractal.leja.s);
+		str s;
+		for (Leja::Region& region : fractal.leja.regions)
+		{
+			s += to_string(region.s) + "\n";
+		}
+		return s;
 	}
 	else
 	{
 		try
 		{
 			double s = std::stod(arg.front());
-			fractal.leja.s = s;
-			fractal.leja.setConstant();
+			for (Leja::Region& region : fractal.leja.regions)
+			{
+				region.setConstant(s);
+			}
+			drawer.Draw();
 		}
 		catch (const std::exception&)
 		{
@@ -64,8 +74,6 @@ str CMD_setS(deq arg)
 
 int main()
 {
-	CImg<unsigned char> img("C:/Users/lauwe/source/repos/FractalDrawer/FractalDrawer/test.png");
-
 #if CONSOLE
 	std::map<str, fp> commands;
 	commands["print"] = CMD_Print;
@@ -88,12 +96,10 @@ int main()
 				fp f = iter->second;
 				words.pop_front();
 				str message = f(words);
-				drawer.Draw();
 				std::cout << message << std::endl;
 			}
 		}
 	}
-
 #else
 #define INTERACTIVE true
 	fractal.Iterate();
@@ -114,7 +120,7 @@ int main()
 		{
 			fractal.leja.s -= 0.01;
 			fractal.leja.setConstant();
-		}
+	}
 		drawer.Draw();
 #else
 		auto now = std::chrono::steady_clock::now();
