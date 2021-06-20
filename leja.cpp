@@ -1,62 +1,38 @@
 #include "leja.h"
 
+#define PI 3.1415926
+#define T 2*PI*t
+
 Leja::Leja()
 {
-	//read from image
-	std::ifstream des("boundary.csv");
-	std::string line;
-
-	//counter
-	int t = 1;
-	while (std::getline(des, line))
+	auto X1 = [](double t) -> double
 	{
-		deq d = split(line, ', ');
-		double x = std::stod(d.at(0));
-		double y = std::stod(d.at(1));
-		boundary.push_back(Complex(x, y));
+		return sin(T) + cos(4*T);
+	};
+	auto Y1 = [](double t) -> double
+	{
+		return 3 * (cos(T) + sin(T));
+	};
+	regions.push_back(Region(2000, X1, Y1));
 
-		t++;
-	}
-	des.close();
+	auto X2 = [](double t) -> double
+	{
+		return sin(T) - 5;
+	};
+	auto Y2 = [](double t) -> double
+	{
+		return cos(T);
+	};
+	regions.push_back(Region(2000, X2, Y2));
 
-	points.push_back(boundary.front());
+
 }
 
-void Leja::add()
+void Leja::Add(int N)
 {
-	double max = -1;
-	Complex out(0, 0);
-	for (Complex c : boundary)
+	this->N += N;
+	for (Region& region : regions)
 	{
-		double m = func(c);
-		if (m > max)
-		{
-			max = m;
-			out = c;
-		}
+		region.Add(N);
 	}
-	points.push_back(out);
-	setConstant();
-}
-
-void Leja::setConstant()
-{
-	C = exp(-(signed int)points.size() * s / 2.0);
-	double prod = 1;
-	Complex last = points.back();
-	for (int i = 0; i < points.size() - 1; i++)
-	{
-		prod *= sqrt((last - points.at(i)).AbsSquared());
-	}
-	C /= prod;
-}
-
-double Leja::func(Complex z)
-{
-	double prod = 1.0;
-	for (Complex c : points)
-	{
-		prod *= sqrt((z - c).AbsSquared());
-	}
-	return prod;
 }

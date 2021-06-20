@@ -11,7 +11,7 @@ class Fractal
 public:
 
 	//amount of pixels
-	static constexpr int p = 200, pixels_size = p * p;
+	static constexpr int p = 600, pixels_size = p * p;
 
 	//thread count
 	static constexpr int thread_count = 80;

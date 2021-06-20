@@ -16,24 +16,25 @@ private:
 	static constexpr unsigned char red[3] = { 255, 0, 0 };
 	static constexpr unsigned char blue[3] = { 0, 0, 255 };
 
-	Fractal& f;
+	Fractal& fractal;
+
+	CImgDisplay dsp;
 
 public:
-	Drawer(Fractal& f) : f(f)
+	Drawer(Fractal& f) : fractal(f), dsp(Fractal::p, Fractal::p, 0)
 	{
 	}
 
-	//create and draw the fractal on the new image
-	void Draw()
+	void Draw();
+
+	bool IsClosed()
 	{
-		CImg<unsigned char> img(Fractal::p, Fractal::p, 1, 3, 255);
-		Draw(img);
-		img.display();
+		return dsp.is_closed();
 	}
 
-	//draw the fractal on the given image
-	void Draw(CImg<unsigned char>& img);
-
-	void Graph(std::vector<double> x, std::vector<double> y, double xmin, double xmax, double ymin, double ymax);
+	CImgDisplay& GetDisplay()
+	{
+		return dsp;
+	}
 };
 

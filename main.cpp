@@ -1,42 +1,35 @@
 #pragma once
 
 #include "main.h"
+#define cimg_use_png 1
+#include "CImg.h"
 
-double a = 2;
+double a = 6;
 Fractal::Box bounds(-a, -a, a, a);
 Fractal fractal(20, 10000, bounds);
 Drawer drawer(fractal);
 
 str CMD_Print(deq arg)
 {
-	fractal.Iterate();
 	fractal.Print();
+	std::cout << "N= " << to_string(fractal.leja.N) << std::endl;
 	return "done";
-}
-
-str CMD_Draw(deq arg)
-{
-	fractal.Iterate();
-	drawer.Draw();
-	return "";
 }
 
 str CMD_LejaAdd(deq arg)
 {
 	if (arg.size() == 0)
 	{
-		fractal.leja.add();
+		fractal.leja.Add(1);
 	}
 	else
 	{
 		try
 		{
 			int m = std::stoi(arg.front());
-			for (int i = 0; i < m; i++)
-			{
-				fractal.leja.add();
-			}
-			fractal.leja.setConstant();
+			fractal.leja.Add(m);
+			std::cout << fractal.leja.regions.front().leja.size() << std::endl;
+			drawer.Draw();
 		}
 		catch (const std::exception&)
 		{
@@ -44,77 +37,53 @@ str CMD_LejaAdd(deq arg)
 		}
 	}
 
-	return "done";
+	return to_string(fractal.leja.N);
 }
 
 str CMD_setS(deq arg)
 {
 	if (arg.size() == 0)
 	{
-		std::cout << fractal.leja.s << std::endl;
+		str s;
+		for (Leja::Region& region : fractal.leja.regions)
+		{
+			s += to_string(region.s) + "\n";
+		}
+		return s;
 	}
 	else
 	{
 		try
 		{
 			double s = std::stod(arg.front());
-			fractal.leja.s = s;
-			fractal.leja.setConstant();
-			return to_string(s);
+			for (Leja::Region& region : fractal.leja.regions)
+			{
+				region.setConstant(s);
+			}
+			drawer.Draw();
 		}
 		catch (const std::exception&)
 		{
 			return "except";
 		}
 	}
-	return "";
+	return "done";
 }
 
-str CMD_C(deq arg)
-{
-	return to_string(fractal.leja.C);
-}
+#define CONSOLE true
 
 int main()
 {
-	//Img();
-	Console();
-	return 0;
-}
-
-void Img()
-{
-	CImg<unsigned char> img(Fractal::p, Fractal::p, 1, 3, 255);
-	CImgDisplay disp(img);
-
-	while (!disp.is_closed()) {
-
-		CImgDisplay::wait(disp);
-
-		if (disp.button() == 0x1) {
-			int x = disp.mouse_x();
-			int y = disp.mouse_y();
-		}
-		else if (disp.button() == 0x2)
-		{
-
-		}
-
-	}
-}
-
-void Console()
-{
-	//console start
+#if CONSOLE
 	std::map<str, fp> commands;
 	commands["print"] = CMD_Print;
-	commands["draw"] = CMD_Draw;
 	commands["add"] = CMD_LejaAdd;
 	commands["s"] = CMD_setS;
-	commands["c"] = CMD_C;
 
-	std::cout << "--CONSOLE--\n";
-	while (true)
+	drawer.Draw();
+
+	std::cout << "--CONSOLE--" << std::endl;
+	while (!drawer.IsClosed())
 	{
 		str in;
 		std::getline(std::cin, in);
@@ -126,8 +95,44 @@ void Console()
 			{
 				fp f = iter->second;
 				words.pop_front();
-				std::cout << f(words) << std::endl;
+				str message = f(words);
+				std::cout << message << std::endl;
 			}
 		}
 	}
+#else
+#define INTERACTIVE true
+	fractal.Iterate();
+	drawer.Draw();
+
+	auto prev = std::chrono::steady_clock::now();
+	while (!drawer.IsClosed())
+	{
+#if INTERACTIVE
+		CImgDisplay::wait(drawer.GetDisplay());
+
+		if (drawer.GetDisplay().is_keyARROWUP())
+		{
+			fractal.leja.s += 0.01;
+			fractal.leja.setConstant();
+		}
+		else if (drawer.GetDisplay().is_keyARROWDOWN())
+		{
+			fractal.leja.s -= 0.01;
+			fractal.leja.setConstant();
+	}
+		drawer.Draw();
+#else
+		auto now = std::chrono::steady_clock::now();
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(now - prev).count() > 1E3)
+		{
+			prev = now;
+			fractal.leja.add();
+			drawer.Draw();
+		}
+#endif
 }
+#endif
+	return 0;
+}
+
