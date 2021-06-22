@@ -1,33 +1,22 @@
 #include "Region.h"
 
-
 #pragma once
 
-Region::Region(std::vector<Complex>& boundary) : boundary(boundary)
+Region::Region(std::vector<Complex>& leja, int N, double s) : leja(leja)
 {
-	leja.push_back(boundary.front());
-	N = 1;
+	if (N <= leja.size())
+		this->N = N;
+	else
+		this->N = leja.size();
+	setC(s);
 }
 
-Region::Region(int N, double (*X)(double), double (*Y)(double))
+void Region::SetN(int N)
 {
-	for (int i = 0; i < N; i++)
-	{
-		double t = i / (double)N;
-		boundary.push_back(Complex(X(t), Y(t)));
-	}
-	leja.push_back(boundary.front());
-	N = 1;
-}
-
-Region::Region(std::vector<Complex>& leja) : leja(leja)
-{
-	N = leja.size();
-}
-
-void Region::SetN(int N) 
-{
-	this->N = N;
+	if (N <= leja.size())
+		this->N = N;
+	else
+		this->N = leja.size();
 	setC(s);
 }
 

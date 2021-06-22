@@ -1,10 +1,7 @@
 #pragma once
 
-#include "Complex.h"
 #include "leja.h"
-#include <fstream>
 #include <mutex>
-#include <iostream>
 
 class Fractal
 {
@@ -54,13 +51,10 @@ public:
 	Fractal(int it, int bail, Box box);
 
 	//the fractal function
-	inline void Func(int i, Complex c);
+	void Func(int i, Complex c);
 
 	//iterates over all the pixels and assigns their value
 	void Iterate();
-
-	//print pixels and parameters to csv files
-	void Print();
 
 private:
 	//thread lock

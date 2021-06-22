@@ -1,82 +1,98 @@
 #pragma once
 
 #include "main.h"
-#define cimg_use_png 1
-#include "CImg.h"
 
-double a = 6;
+double a = 10;
 Fractal::Box bounds(-a, -a, a, a);
 Fractal fractal(20, 10000, bounds);
 Drawer drawer(fractal);
 
 str CMD_Print(deq arg)
 {
-	fractal.Print();
-	std::cout << "N= " << to_string(fractal.leja.N) << std::endl;
+	std::cout << fractal.leja.GetN() << std::endl;
+	std::cout << fractal.leja.GetS() << std::endl;
 	return "done";
 }
 
 str CMD_SetN(deq arg)
 {
-	if (arg.size() == 2)
+	try
 	{
-		try
+		if (arg.size() > 0)
 		{
-			int r = std::stoi(arg.front());
+			int r = 0;
 			int N = std::stoi(arg.back());
+			if (arg.size() == 2)
+				r = std::stoi(arg.front());
 			fractal.leja.regions.at(r).SetN(N);
 			drawer.Draw();
 		}
-		catch (const std::exception&)
-		{
-			return "except";
-		}
+	}
+	catch (const std::exception&)
+	{
+		return "except";
 	}
 
-	return "";
+	return fractal.leja.GetN();
 }
 
 str CMD_setS(deq arg)
 {
-	if (arg.size() == 0)
+	try
 	{
-		str s;
-		for (Leja::Region& region : fractal.leja.regions)
+		if (arg.size() > 0)
 		{
-			s += to_string(region.s) + "\n";
-		}
-		return s;
-	}
-	else
-	{
-		try
-		{
-			double s = std::stod(arg.front());
-			for (Leja::Region& region : fractal.leja.regions)
-			{
-				region.setConstant(s);
-			}
+			int r = 0;
+			double s = std::stod(arg.back());
+			if (arg.size() == 2)
+				r = std::stoi(arg.front());
+			fractal.leja.regions.at(r).setC(s);
 			drawer.Draw();
 		}
-		catch (const std::exception&)
-		{
-			return "except";
-		}
 	}
-	return "done";
-}
+	catch (const std::exception&)
+	{
+		return "except";
+	}
 
-#define CONSOLE true
+	return fractal.leja.GetS();
+}
 
 int main()
 {
-#if CONSOLE
+	//
+	int j = 1;
+	std::ifstream segment;
+	segment.open("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\segment_" + std::to_string(j) + ".txt");
+
+	std::vector<Complex> points;
+	str line;
+	int i = 0;
+	while (std::getline(segment, line))
+	{
+		deq d = split(line, ',');
+		try
+		{
+			double x = std::stod(d.front());
+			double y = std::stod(d.back());
+			points.push_back(Complex(x, y));
+		}
+		catch (const std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
+			return -1;
+		}
+		i++;
+	}
+	fractal.leja.regions.push_back(Region(points, 10, 0.1));
+	drawer.Draw();
+	//
+	
+
 	std::map<str, fp> commands;
 	commands["print"] = CMD_Print;
-	commands["add"] = CMD_SetN;
+	commands["n"] = CMD_SetN;
 	commands["s"] = CMD_setS;
-
-	drawer.Draw();
 
 	std::cout << "--CONSOLE--" << std::endl;
 	while (!drawer.IsClosed())
@@ -96,39 +112,6 @@ int main()
 			}
 		}
 	}
-#else
-#define INTERACTIVE true
-	fractal.Iterate();
-	drawer.Draw();
-
-	auto prev = std::chrono::steady_clock::now();
-	while (!drawer.IsClosed())
-	{
-#if INTERACTIVE
-		CImgDisplay::wait(drawer.GetDisplay());
-
-		if (drawer.GetDisplay().is_keyARROWUP())
-		{
-			fractal.leja.s += 0.01;
-			fractal.leja.setConstant();
-		}
-		else if (drawer.GetDisplay().is_keyARROWDOWN())
-		{
-			fractal.leja.s -= 0.01;
-			fractal.leja.setConstant();
-	}
-		drawer.Draw();
-#else
-		auto now = std::chrono::steady_clock::now();
-		if (std::chrono::duration_cast<std::chrono::milliseconds>(now - prev).count() > 1E3)
-		{
-			prev = now;
-			fractal.leja.add();
-			drawer.Draw();
-		}
-#endif
-}
-#endif
 	return 0;
 }
 

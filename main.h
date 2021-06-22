@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Drawer.h"
+#include <iostream>
 #include <map>
-
-std::vector<Complex> leja(200);
+#include "Drawer.h"
 
 /* COMMANDS */
 str CMD_Print(deq arg);

@@ -20,7 +20,7 @@ void Drawer::Draw()
 	img.draw_axes((float)fractal.bounds.x0, (float)fractal.bounds.x1, (float)fractal.bounds.y1,
 		(float)fractal.bounds.y0, gray, 1.0f, 5, 5, 0, 0, ~0u, ~0u, 8);
 
-	for (Leja::Region& region : fractal.leja.regions)
+	for (Region& region : fractal.leja.regions)
 	{
 		for (Complex& b : region.boundary)
 		{
@@ -28,8 +28,9 @@ void Drawer::Draw()
 			int y = (int)(Fractal::p - Fractal::p * (b.y - fractal.bounds.y0) / fractal.bounds.Height());
 			img.draw_point(x, y, red, 0.3f);
 		}
-		for (Complex& p : region.leja)
+		for (int i = 0; i < region.N; i++)
 		{
+			Complex& p = region.leja.at(i);
 			int x = (int)(Fractal::p * (p.x - fractal.bounds.x0) / fractal.bounds.Width());
 			int y = (int)(Fractal::p - Fractal::p * (p.y - fractal.bounds.y0) / fractal.bounds.Height());
 			img.draw_circle(x, y, 2, blue, 1.0f);

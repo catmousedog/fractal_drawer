@@ -3,18 +3,19 @@
 #include "Complex.h"
 #include <vector>
 
-
 class Region
 {
-	friend class Leja;
-
 public:
 
-	Region(std::vector<Complex>& boundary);
+	//the wanted size of Leja points, must be greater or equal to the size of the vector leja
+	int N;
 
-	Region(int N, double (*X)(double), double (*Y)(double));
+	double s;
 
-	Region(std::vector<Complex>& leja);
+	std::vector<Complex> boundary;
+	std::vector<Complex> leja;
+
+	Region(std::vector<Complex>& leja, int N, double s);
 
 	void SetN(int N);
 
@@ -25,13 +26,8 @@ public:
 	Complex Omega(const Complex z) const;
 
 private:
-
-	std::vector<Complex> boundary;
-	std::vector<Complex> leja;
-
-	//the wanted size of Leja points, must be greater or equal to the size of the vector leja
-	int N;
-	double C = 1, s;
+	
+	double C = 1;
 
 	double LejaDistance(Complex z) const;
 };

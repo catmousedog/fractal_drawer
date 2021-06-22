@@ -2,9 +2,8 @@
 
 #include "Fractal.h"
 
-// Constructs the fractal and reads from desired.csv
 Fractal::Fractal(int it, int bail, Box box) :
-	iterations(it), bailout(bail), bounds(box), leja()
+	iterations(it), bailout(bail), bounds(box), leja(), pixels()
 {
 	double dx = (double)(bounds.Width()) / (double)p;
 	double dy = (double)(bounds.Height()) / (double)p;
@@ -17,7 +16,7 @@ Fractal::Fractal(int it, int bail, Box box) :
 }
 
 //Fractal function
-inline void Fractal::Func(const int j, Complex q)
+void Fractal::Func(const int j, Complex q)
 {
 	for (int i = 0; i < iterations; i++)
 	{
@@ -40,7 +39,7 @@ inline void Fractal::Func(const int j, Complex q)
 	pixels[j] = 0.0;
 }
 
-inline void Fractal::SubIterate(int start, int end)
+void Fractal::SubIterate(int start, int end)
 {
 	for (int i = start; i < end; i++)
 	{
@@ -65,12 +64,13 @@ void Fractal::Iterate()
 	}
 }
 
+/*
 void Fractal::Print()
 {
 	std::string s;
 	for (int i = 0;; i++)
 	{
-		std::ifstream pot("data/pixels_" + std::to_string(i) + ".csv");
+		std::ofstream pot("data/pixels_" + std::to_string(i) + ".csv");
 		if (!pot.good())
 		{
 			s = std::to_string(i) + ".csv";
@@ -88,7 +88,7 @@ void Fractal::Print()
 
 	std::ofstream par;
 	par.open("data/parameters_" + s);
-	for (Leja::Region& region : leja.regions)
+	for (Region& region : leja.regions)
 	{
 		par << std::endl;
 		std::cout << std::endl;
@@ -101,3 +101,4 @@ void Fractal::Print()
 	}
 	par.close();
 }
+*/

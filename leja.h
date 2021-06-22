@@ -9,6 +9,8 @@ public:
 
 	std::vector<Region> regions;
 
+	str GetN();
+
 	str GetS();
 
 };
