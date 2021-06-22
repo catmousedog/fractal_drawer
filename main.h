@@ -4,6 +4,10 @@
 #include <map>
 #include "Drawer.h"
 
+void LoadLejaPoints(str file);
+
+void LoadCoefficients(str file);
+
 /* COMMANDS */
 str CMD_Print(deq arg);
 

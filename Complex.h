@@ -12,6 +12,11 @@ struct Complex
 	Complex(double x_, double y_) : x(x_), y(y_)
 	{
 	}
+	Complex(double t)
+	{
+		x = cos(t);
+		y = sin(t);
+	}
 	Complex(const Complex& c)
 	{
 		x = c.x;
