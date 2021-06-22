@@ -16,19 +16,15 @@ str CMD_Print(deq arg)
 	return "done";
 }
 
-str CMD_LejaAdd(deq arg)
+str CMD_SetN(deq arg)
 {
-	if (arg.size() == 0)
-	{
-		fractal.leja.Add(1);
-	}
-	else
+	if (arg.size() == 2)
 	{
 		try
 		{
-			int m = std::stoi(arg.front());
-			fractal.leja.Add(m);
-			std::cout << fractal.leja.regions.front().leja.size() << std::endl;
+			int r = std::stoi(arg.front());
+			int N = std::stoi(arg.back());
+			fractal.leja.regions.at(r).SetN(N);
 			drawer.Draw();
 		}
 		catch (const std::exception&)
@@ -37,7 +33,7 @@ str CMD_LejaAdd(deq arg)
 		}
 	}
 
-	return to_string(fractal.leja.N);
+	return "";
 }
 
 str CMD_setS(deq arg)
@@ -77,7 +73,7 @@ int main()
 #if CONSOLE
 	std::map<str, fp> commands;
 	commands["print"] = CMD_Print;
-	commands["add"] = CMD_LejaAdd;
+	commands["add"] = CMD_SetN;
 	commands["s"] = CMD_setS;
 
 	drawer.Draw();

@@ -29,7 +29,7 @@ inline void Fractal::Func(const int j, Complex q)
 
 		/** f(z) **/
 		Complex S(0, 0);
-		for (Leja::Region& region : leja.regions)
+		for (Region& region : leja.regions)
 		{
 			S += ~region.Omega(q);
 		}
