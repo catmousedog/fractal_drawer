@@ -60,12 +60,13 @@ str CMD_setS(deq arg)
 
 int main()
 {
+	LoadCoefficients("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\coeff\\segment_.txt");
 	for (int i = 0; i < 2; i++)
 	{
-		LoadCoefficients("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\segment_" + to_string(i) + ".txt");
-		//LoadLejaPoints("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\segment_" + to_string(i) + ".txt");
+		//LoadCoefficients("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\coeff\\segment_" + to_string(i) + ".txt");
+		//LoadLejaPoints("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\leja\\segment_" + to_string(i) + ".txt");
 	}
-	
+
 	//origin
 	std::vector<Complex> coeff;
 	coeff.push_back(Complex(1, 0));
@@ -103,6 +104,9 @@ int main()
 	return 0;
 }
 
+#define OFFSETX -5
+#define OFFSETY 5
+
 void LoadLejaPoints(str file)
 {
 	std::ifstream segment;
@@ -115,8 +119,8 @@ void LoadLejaPoints(str file)
 		deq d = split(line, ',');
 		try
 		{
-			double x = std::stod(d.front());
-			double y = std::stod(d.back());
+			double x = std::stod(d.front()) + OFFSETX;
+			double y = std::stod(d.back()) + OFFSETY;
 			points.push_back(Complex(x, y));
 		}
 		catch (const std::exception& e)

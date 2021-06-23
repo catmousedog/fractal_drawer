@@ -20,7 +20,8 @@ void Fractal::Func(const int j, Complex q)
 {
 	for (int i = 0; i < iterations; i++)
 	{
-		if (q.AbsSquared() > bailout)
+		double z = q.AbsSquared();
+		if (z > bailout || isnan(z))
 		{
 			pixels[j] = (iterations - i) / (double)iterations;
 			return;

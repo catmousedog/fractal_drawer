@@ -73,23 +73,23 @@ void Region::SetC(double s)
 	C /= prod;
 }
 
-Complex Region::Omega(const Complex z) const
+Complex Region::Omega(const Complex q) const
 {
 	Complex R(1, 0);
 	for (int i = 0; i < N; i++)
 	{
-		R *= z - leja.at(i);
+		R *= q - leja.at(i);
 	}
 	R *= C;
 	return R;
 }
 
-double Region::LejaDistance(Complex z) const
+double Region::LejaDistance(Complex q) const
 {
 	double prod = 1.0;
 	for (Complex c : leja)
 	{
-		prod *= sqrt((z - c).AbsSquared());
+		prod *= sqrt((q - c).AbsSquared());
 	}
 	return prod;
 }

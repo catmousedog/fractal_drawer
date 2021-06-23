@@ -105,6 +105,10 @@ struct Complex
 		*this = *this / c;
 		return *this;
 	}
+	inline bool operator<(const Complex c)
+	{
+		
+	}
 	inline std::string string()
 	{
 		return to_string(x) + ", " + to_string(y);
