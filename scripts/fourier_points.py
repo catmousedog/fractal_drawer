@@ -165,7 +165,7 @@ if __name__ == '__main__':
     ax.axis([-a, a, -a, a])
     ax.hlines(0, -100, 100, 'g')
     ax.vlines(0, -100, 100, 'g')
-    offset = 2
+    offset = 4
     ax.imshow(img, extent=[offset - 2.1818 * a, offset + 2.1818 * a, -a, a])
 
     plt.show()

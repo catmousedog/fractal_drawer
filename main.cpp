@@ -2,8 +2,9 @@
 
 #include "main.h"
 
-double a = 25;
-Fractal::Box bounds(-a, -a, a, a);
+double a = 20;
+double X = 0, Y = 15;
+Fractal::Box bounds(X - a, Y - a, X + a, Y + a);
 Fractal fractal(20, 10000, bounds);
 Drawer drawer(fractal);
 
@@ -71,8 +72,8 @@ str CMD_setS(deq arg)
 }
 
 Complex offset(-10, 12);
-Complex offsets[] = { Complex(0, 0), Complex(0, 0) , Complex(0, 0), Complex(10, 0), Complex(10, 0), Complex(10, 0),
-					Complex(18, 0), Complex(18, 0), Complex(18, 0), Complex(28, 0), Complex(28, 0), Complex(28, 0) };
+Complex offsets[] = { Complex(0, 0), Complex(0, 0) , Complex(0, 0), Complex(0, 0), Complex(0, 0), Complex(0, 0),
+					Complex(10, 0), Complex(10, 0), Complex(10, 0), Complex(28, 0), Complex(28, 0), Complex(28, 0) };
 
 str path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
 
@@ -80,18 +81,17 @@ int main()
 {
 	//LoadCoefficients(path + "coeff\\segment_.txt", Complex() + offset);
 	//LoadLejaPoints(path + "leja\\segment_.txt", offset);
-	for (int i = 0; i <= 11; i++)
+	for (int i = 6; i <= 7; i++)
 	{
-		//LoadCoefficients(path + "coeff\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
-		LoadLejaPoints(path + "leja\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
+		LoadCoefficients(path + "coeff\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
+		//LoadLejaPoints(path + "leja\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
 	}
 
 	//origin
 	std::vector<Complex> coeff;
 	coeff.push_back(Complex(1, 0));
 	coeff.push_back(Complex(0, 0));
-	Region region = Region(coeff, Complex(0, 0), 0.1);
-	region.AddN(20);
+	Region region = Region(coeff, Complex(0, 0), 0.01);
 	fractal.leja.regions.push_back(region);
 	//
 
