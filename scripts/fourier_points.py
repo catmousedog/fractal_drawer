@@ -140,21 +140,21 @@ def on_key(event):
     if event.key == 't':
         toggle = not toggle
     if event.key == ' ':
-        file = open("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\coeff\\segment_.txt", "w")
+        file = open("C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\coeff\\segment_.txt", "w")
         for c in coeff:
             file.write(printComp(c))
         file.close()
 
         leja.set_boundary(f)
         leja.set_points(200)
-        file = open("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\leja\\segment_.txt", "w")
+        file = open("C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\leja\\segment_.txt", "w")
         for l in leja.leja:
             file.write(printComp(l))
         file.close()
 
 
 if __name__ == '__main__':
-    img = plt.imread("name2.png")
+    img = plt.imread("C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\scripts\\name2.png")
     fig, ax = plt.subplots()
     fig.canvas.mpl_connect('button_press_event', on_click)
     fig.canvas.mpl_connect('button_release_event', on_release)
