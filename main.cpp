@@ -2,7 +2,7 @@
 
 #include "main.h"
 
-double a = 15;
+double a = 25;
 Fractal::Box bounds(-a, -a, a, a);
 Fractal fractal(20, 10000, bounds);
 Drawer drawer(fractal);
@@ -20,11 +20,17 @@ str CMD_SetN(deq arg)
 	{
 		if (arg.size() > 0)
 		{
-			int r = 0;
 			int N = std::stoi(arg.back());
-			if (arg.size() == 2)
-				r = std::stoi(arg.front());
-			fractal.leja.regions.at(r).SetN(N);
+			if (arg.size() == 1)
+			{
+				for (Region& region : fractal.leja.regions)
+					region.SetN(N);
+			}
+			else if (arg.size() == 2)
+			{
+				int r = std::stoi(arg.front());
+				fractal.leja.regions.at(r).SetN(N);
+			}
 			drawer.Draw();
 		}
 	}
@@ -42,11 +48,17 @@ str CMD_setS(deq arg)
 	{
 		if (arg.size() > 0)
 		{
-			int r = 0;
 			double s = std::stod(arg.back());
-			if (arg.size() == 2)
-				r = std::stoi(arg.front());
-			fractal.leja.regions.at(r).SetC(s);
+			if (arg.size() == 1)
+			{
+				for (Region& region : fractal.leja.regions)
+					region.SetC(s);
+			}
+			else if (arg.size() == 2)
+			{
+				int r = std::stoi(arg.front());
+				fractal.leja.regions.at(r).SetC(s);
+			}
 			drawer.Draw();
 		}
 	}
@@ -58,20 +70,27 @@ str CMD_setS(deq arg)
 	return fractal.leja.GetS();
 }
 
+Complex offset(-10, 12);
+Complex offsets[] = { Complex(0, 0), Complex(0, 0) , Complex(0, 0), Complex(10, 0), Complex(10, 0), Complex(10, 0),
+					Complex(18, 0), Complex(18, 0), Complex(18, 0), Complex(28, 0), Complex(28, 0), Complex(28, 0) };
+
+str path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
+
 int main()
 {
-	LoadCoefficients("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\coeff\\segment_.txt");
-	for (int i = 0; i < 2; i++)
+	//LoadCoefficients(path + "coeff\\segment_.txt", Complex() + offset);
+	//LoadLejaPoints(path + "leja\\segment_.txt", offset);
+	for (int i = 0; i <= 11; i++)
 	{
-		//LoadCoefficients("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\coeff\\segment_" + to_string(i) + ".txt");
-		//LoadLejaPoints("C:\\Users\\Gebruiker\\Desktop\\CPP\\data\\leja\\segment_" + to_string(i) + ".txt");
+		//LoadCoefficients(path + "coeff\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
+		LoadLejaPoints(path + "leja\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
 	}
 
 	//origin
 	std::vector<Complex> coeff;
 	coeff.push_back(Complex(1, 0));
 	coeff.push_back(Complex(0, 0));
-	Region region = Region(coeff, 0.1);
+	Region region = Region(coeff, Complex(0, 0), 0.1);
 	region.AddN(20);
 	fractal.leja.regions.push_back(region);
 	//
@@ -104,10 +123,7 @@ int main()
 	return 0;
 }
 
-#define OFFSETX -5
-#define OFFSETY 5
-
-void LoadLejaPoints(str file)
+void LoadLejaPoints(str file, Complex offset)
 {
 	std::ifstream segment;
 	segment.open(file);
@@ -119,19 +135,19 @@ void LoadLejaPoints(str file)
 		deq d = split(line, ',');
 		try
 		{
-			double x = std::stod(d.front()) + OFFSETX;
-			double y = std::stod(d.back()) + OFFSETY;
-			points.push_back(Complex(x, y));
+			double x = std::stod(d.front());
+			double y = std::stod(d.back());
+			points.push_back(Complex(x, y) + offset);
 		}
 		catch (const std::exception& e)
 		{
 			std::cout << e.what() << std::endl;
 		}
 	}
-	fractal.leja.regions.push_back(Region(points, 10, 0.1));
+	fractal.leja.regions.push_back(Region(points, 30, 0.04));
 }
 
-void LoadCoefficients(str file)
+void LoadCoefficients(str file, Complex offset)
 {
 	std::ifstream segment;
 	segment.open(file);
@@ -152,7 +168,7 @@ void LoadCoefficients(str file)
 			std::cout << e.what() << std::endl;
 		}
 	}
-	fractal.leja.regions.push_back(Region(coeff, 0.1));
+	fractal.leja.regions.push_back(Region(coeff, offset, 0.01));
 }
 
 

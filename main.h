@@ -4,9 +4,9 @@
 #include <map>
 #include "Drawer.h"
 
-void LoadLejaPoints(str file);
+void LoadLejaPoints(str file, Complex offset);
 
-void LoadCoefficients(str file);
+void LoadCoefficients(str file, Complex offset);
 
 /* COMMANDS */
 str CMD_Print(deq arg);

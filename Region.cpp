@@ -10,7 +10,7 @@ Region::Region(std::vector<Complex>& leja, int N, double s) : leja(leja)
 	SetC(s);
 }
 
-Region::Region(std::vector<Complex>& coeff, double s)
+Region::Region(std::vector<Complex>& coeff, const Complex offset, double s)
 {
 	int B = 10000;
 	int C = coeff.size();
@@ -20,7 +20,10 @@ Region::Region(std::vector<Complex>& coeff, double s)
 		Complex point;
 		for (int c = 0; c < C; c++)
 		{
-			point += coeff[c] * Complex(2 * PI * (C / 2 - c) * t);
+			Complex z = coeff[c] * Complex(2 * PI * (C / 2 - c) * t);
+			if (c == C / 2)
+				z += offset;
+			point += z;
 		}
 		boundary.push_back(point);
 	}
