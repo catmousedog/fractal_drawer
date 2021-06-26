@@ -72,18 +72,21 @@ str CMD_setS(deq arg)
 }
 
 Complex offset(-10, 12);
-Complex offsets[] = { Complex(0, 0), Complex(0, 0) , Complex(0, 0), Complex(0, 0), Complex(0, 0), Complex(0, 0),
-					Complex(10, 0), Complex(10, 0), Complex(10, 0), Complex(28, 0), Complex(28, 0), Complex(28, 0) };
+Complex offsets[] = {
+					Complex(0, 0), Complex(0, 0) , Complex(0, 0), Complex(0, 0), Complex(0, 0), Complex(0, 0),
+					Complex(10, 0), Complex(10, 0), Complex(10, 0), Complex(10, 0),
+					Complex(20, 0), Complex(20, 0), Complex(20, 0),
+					Complex(28, 0), Complex(28, 0), Complex(28, 0), Complex(28, 0) };
 
 str path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
 
 int main()
 {
 	//LoadCoefficients(path + "coeff\\segment_.txt", Complex() + offset);
-	//LoadLejaPoints(path + "leja\\segment_.txt", offset);
-	for (int i = 6; i <= 7; i++)
+	LoadLejaPoints(path + "leja\\segment_.txt", offset);
+	for (int i = 11; i <= 12; i++)
 	{
-		LoadCoefficients(path + "coeff\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
+		//LoadCoefficients(path + "coeff\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
 		//LoadLejaPoints(path + "leja\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
 	}
 
