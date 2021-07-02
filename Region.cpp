@@ -4,13 +4,7 @@
 
 #define PI 3.1415926
 
-Region::Region(std::vector<Complex>& leja, int N, double s) : leja(leja)
-{
-	this->s = s;
-	SetN(N);  //SetC also
-}
-
-Region::Region(std::vector<Complex>& coeff, const Complex offset, double s)
+void Region::SetBoundary(std::vector<Complex> coeff, const Complex offset)
 {
 	int B = 10000;
 	int C = coeff.size();
@@ -27,9 +21,26 @@ Region::Region(std::vector<Complex>& coeff, const Complex offset, double s)
 		}
 		boundary.push_back(point);
 	}
-	leja.push_back(boundary.front());
-	N = 1;
-	SetC(s);
+}
+
+Region::Region(std::vector<Complex> leja, int N, double s) : leja(leja)
+{
+	this->s = s;
+	SetN(N);
+}
+
+Region::Region(std::vector<Complex> coeff, const Complex offset, double s)
+{
+	SetBoundary(coeff, offset);
+	this->s = s;
+	SetN(1);
+}
+
+Region::Region(std::vector<Complex> coeff, const Complex offset, std::vector<Complex> leja, int N, double s) : leja(leja)
+{
+	SetBoundary(coeff, offset);
+	this->s = s;
+	SetN(N);
 }
 
 void Region::SetN(int N)

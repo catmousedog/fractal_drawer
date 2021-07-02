@@ -3,9 +3,10 @@
 str Leja::GetN()
 {
 	str s;
-	for (Region& region : regions)
+	for (int i = 0; i < regions.size(); i++)
 	{
-		s += to_string(region.N) + "\n";
+		s += std::to_string(i) + ":\t" + std::to_string(regions.at(i).N) + "\n";
+		s += "-------------------------------\n";
 	}
 	return s;
 }
@@ -13,9 +14,10 @@ str Leja::GetN()
 str Leja::GetS()
 {
 	str s;
-	for (Region& region : regions)
+	for (int i = 0; i < regions.size(); i++)
 	{
-		s += to_string(region.s) + "\n";
+		s += std::to_string(i) + ":\t" + std::to_string(regions.at(i).s) + "\n";
+		s += "-------------------------------\n";
 	}
 	return s;
 }

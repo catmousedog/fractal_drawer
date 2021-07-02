@@ -17,19 +17,27 @@ def leja():
                 coord = [float(s) for s in line.split(',')]
                 leja.append(complex(coord[0], coord[1]))
 
-        with open(path + "data\\leja\\segment_" + str(_i) + ".txt", "w") as file
+        with open(path + "data\\leja\\segment_" + str(_i) + ".txt", "w") as file:
             for point in leja:
                 file.write(printComp(point + offset + offsets[_i]))
 
 
 def coeff():
     for _i in range(18):
-        coeff = path + "data\\coeff\\segment_"
-        C = file_len(coeff + str(_i) + ".txt")
-        with open(coeff + str(_i) + ".txt", "r") as file:
-            for i, line in enumerate(file):
-                coord = [float(s) for s in line.split(',')]
-                leja.append(complex(coord[0], coord[1]))
+        coeff = []
+        C = file_len(path + "data\\coeff\\segment_" + str(_i) + ".txt")
+
+        with open(path + "data\\coeff\\segment_" + str(_i) + ".txt", "r") as file:
+            for _j, line in enumerate(file):
+                coords = [float(s) for s in line.split(',')]
+                c = complex(coords[0], coords[1])
+                if _j == C // 2:
+                    c += offset + offsets[_i]
+                coeff.append(c)
+
+        with open(path + "data\\coeff\\segment_" + str(_i) + ".txt", "w") as file:
+            for c in coeff:
+                file.write(printComp(c))
 
 
 if __name__ == '__main__':
@@ -40,6 +48,8 @@ if __name__ == '__main__':
         complex(20, 0), complex(20, 0), complex(20, 0), complex(20, 0),
         complex(28.5, 0), complex(28.5, 0), complex(28.5, 0), complex(28.5, 0)]
 
-    path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\"
+    # path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\"
+    path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\"
 
     # leja()
+    # coeff()

@@ -8,12 +8,13 @@ import re
 tau = 2 * pi * 1j
 
 #
-a = 10
+a = 20
 P = 0
 poles = np.empty(0, dtype=complex)
 C = 1
 coeff = np.zeros(C, dtype=complex)
 T = np.linspace(0, 1, 200)
+offset = 0 + 15j
 PLOT = None
 COEFF = None
 POLES = None
@@ -134,10 +135,10 @@ def on_scroll(event):
 
 toggle = False
 
-path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\"
+# path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\"
 
 
-# path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\scripts\\"
+path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\"
 
 
 def on_key(event):
@@ -146,15 +147,18 @@ def on_key(event):
         toggle = not toggle
     if event.key == ' ':
         file = open(path + "data\\coeff\\segment_.txt", "w")
-        for c in coeff:
-            file.write(printComp(c))
+        for i, c in enumerate(coeff):
+            if i is c // 2:
+                file.write(printComp(c + offset))
+            else:
+                file.write(printComp(c))
         file.close()
 
         leja.set_boundary(f)
         leja.set_points(200)
         file = open(path + "data\\leja\\segment_.txt", "w")
         for l in leja.leja:
-            file.write(printComp(l))
+            file.write(printComp(l + offset))
         file.close()
 
 
@@ -170,7 +174,6 @@ if __name__ == '__main__':
     ax.axis([-a, a, -a, a])
     ax.hlines(0, -100, 100, 'g')
     ax.vlines(0, -100, 100, 'g')
-    offset = -6
-    ax.imshow(img, extent=[offset - 2.1818 * a, offset + 2.1818 * a, -a, a])
+    ax.imshow(img, extent=[offset.real - 2.1818 * a, offset.real + 2.1818 * a, offset.imag - a, offset.imag + a])
 
     plt.show()

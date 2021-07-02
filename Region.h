@@ -15,9 +15,11 @@ public:
 	std::vector<Complex> boundary;
 	std::vector<Complex> leja;
 
-	Region(std::vector<Complex>& leja, int N, double s);
+	Region(std::vector<Complex> leja, int N, double s);
 
-	Region(std::vector < Complex>& coeff, const Complex offset, double s);
+	Region(std::vector <Complex> coeff, const Complex offset, double s);
+
+	Region(std::vector<Complex> coeff, const Complex offset, std::vector<Complex> leja, int N, double s);
 
 	void SetN(int N);
 
@@ -32,6 +34,8 @@ private:
 	double C = 1;
 
 	double LejaDistance(Complex z) const;
+
+	void SetBoundary(std::vector<Complex> coeff, const Complex offset);
 };
 
 

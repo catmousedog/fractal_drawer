@@ -6,12 +6,29 @@
 
 Complex offset(-5, 0);
 
-//str path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
-str path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
+str path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
+//str path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
 
-void LoadLejaPoints(str file, Complex offset);
+str GetPathCoeff(int i)
+{
+	return path + "coeff\\segment_" + to_string(i) + ".txt";
+}
 
-void LoadCoefficients(str file, Complex offset);
+str GetPathLeja(int i)
+{
+	return path + "leja\\segment_" + to_string(i) + ".txt";
+}
+
+std::vector<Complex> GetLejaPoints(str file);
+
+std::vector<Complex> GetCoefficients(str file);
+
+void LoadLejaPoints(int i);
+
+void LoadCoefficients(int i);
+
+void LoadLejaWithBoundary(int i);
+
 
 /* COMMANDS */
 str CMD_Draw(deq arg);
