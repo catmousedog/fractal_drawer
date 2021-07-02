@@ -6,8 +6,8 @@
 
 Region::Region(std::vector<Complex>& leja, int N, double s) : leja(leja)
 {
-	SetN(N);
-	SetC(s);
+	this->s = s;
+	SetN(N);  //SetC also
 }
 
 Region::Region(std::vector<Complex>& coeff, const Complex offset, double s)

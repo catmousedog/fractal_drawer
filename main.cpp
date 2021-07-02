@@ -2,11 +2,17 @@
 
 #include "main.h"
 
-double a = 20;
+double a = 23;
 double X = 0, Y = 15;
 Fractal::Box bounds(X - a, Y - a, X + a, Y + a);
 Fractal fractal(20, 10000, bounds);
 Drawer drawer(fractal);
+
+str CMD_Draw(deq arg)
+{
+	drawer.Draw();
+	return "done";
+}
 
 str CMD_Print(deq arg)
 {
@@ -43,7 +49,7 @@ str CMD_SetN(deq arg)
 	return fractal.leja.GetN();
 }
 
-str CMD_setS(deq arg)
+str CMD_SetS(deq arg)
 {
 	try
 	{
@@ -71,23 +77,48 @@ str CMD_setS(deq arg)
 	return fractal.leja.GetS();
 }
 
-Complex offset(-10, 12);
-Complex offsets[] = {
-					Complex(0, 0), Complex(0, 0) , Complex(0, 0), Complex(0, 0), Complex(0, 0), Complex(0, 0),
-					Complex(10, 0), Complex(10, 0), Complex(10, 0), Complex(10, 0),
-					Complex(20, 0), Complex(20, 0), Complex(20, 0),
-					Complex(28, 0), Complex(28, 0), Complex(28, 0), Complex(28, 0) };
+str CMD_Save(deq arg)
+{
+	std::ofstream parameters;
+	parameters.open(path + "parameters.txt");
+	for (Region& region : fractal.leja.regions)
+	{
+		parameters << region.s << "," << region.N << std::endl;
+	}
+	return "done";
+}
 
-str path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
+str CMD_Load(deq arg)
+{
+	std::ifstream parameters;
+	parameters.open(path + "parameters.txt");
+	str line;
+	for (int i = 0; std::getline(parameters, line); i++)
+	{
+		deq d = split(line, ',');
+		try
+		{
+			double s = std::stod(d.front());
+			int N = std::stoi(d.back());
+			fractal.leja.regions.at(i).s = s;
+			fractal.leja.regions.at(i).SetN(N); //SetC
+		}
+		catch (const std::exception & e)
+		{
+			std::cout << e.what() << std::endl;
+		}
+	}
+	return "done";
+}
 
 int main()
 {
 	//LoadCoefficients(path + "coeff\\segment_.txt", Complex() + offset);
-	LoadLejaPoints(path + "leja\\segment_.txt", offset);
-	for (int i = 11; i <= 12; i++)
+	//LoadLejaPoints(path + "leja\\segment_.txt", offset);
+	for (int i = 0; i <= 17; i++)
 	{
-		//LoadCoefficients(path + "coeff\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
-		//LoadLejaPoints(path + "leja\\segment_" + to_string(i) + ".txt", offsets[i] + offset);
+		//LoadCoefficients(path + "coeff\\segment_" + to_string(i) + ".txt", offset);
+		//LoadLejaPoints(path + "leja\\segment_" + to_string(i) + ".txt", offset);
 	}
 
 	//origin
@@ -101,9 +132,12 @@ int main()
 	drawer.Draw();
 
 	std::map<str, fp> commands;
+	commands["draw"] = CMD_Draw;
 	commands["print"] = CMD_Print;
 	commands["n"] = CMD_SetN;
-	commands["s"] = CMD_setS;
+	commands["s"] = CMD_SetS;
+	commands["save"] = CMD_Save;
+	commands["load"] = CMD_Load;
 
 	std::cout << "--CONSOLE--" << std::endl;
 	while (!drawer.IsClosed())
@@ -142,12 +176,12 @@ void LoadLejaPoints(str file, Complex offset)
 			double y = std::stod(d.back());
 			points.push_back(Complex(x, y) + offset);
 		}
-		catch (const std::exception& e)
+		catch (const std::exception & e)
 		{
 			std::cout << e.what() << std::endl;
 		}
 	}
-	fractal.leja.regions.push_back(Region(points, 30, 0.04));
+	fractal.leja.regions.push_back(Region(points, 0, -1));
 }
 
 void LoadCoefficients(str file, Complex offset)
@@ -166,7 +200,7 @@ void LoadCoefficients(str file, Complex offset)
 			double y = std::stod(d.back());
 			coeff.push_back(Complex(x, y));
 		}
-		catch (const std::exception& e)
+		catch (const std::exception & e)
 		{
 			std::cout << e.what() << std::endl;
 		}

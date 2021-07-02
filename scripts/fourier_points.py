@@ -134,27 +134,32 @@ def on_scroll(event):
 
 toggle = False
 
+path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\"
+
+
+# path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\scripts\\"
+
 
 def on_key(event):
     global toggle
     if event.key == 't':
         toggle = not toggle
     if event.key == ' ':
-        file = open("C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\coeff\\segment_.txt", "w")
+        file = open(path + "data\\coeff\\segment_.txt", "w")
         for c in coeff:
             file.write(printComp(c))
         file.close()
 
         leja.set_boundary(f)
         leja.set_points(200)
-        file = open("C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\leja\\segment_.txt", "w")
+        file = open(path + "data\\leja\\segment_.txt", "w")
         for l in leja.leja:
             file.write(printComp(l))
         file.close()
 
 
 if __name__ == '__main__':
-    img = plt.imread("C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\scripts\\name2.png")
+    img = plt.imread(path + "scripts\\name2.png")
     fig, ax = plt.subplots()
     fig.canvas.mpl_connect('button_press_event', on_click)
     fig.canvas.mpl_connect('button_release_event', on_release)
