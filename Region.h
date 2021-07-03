@@ -10,7 +10,7 @@ public:
 	//the wanted size of Leja points, must be greater or equal to the size of the vector leja
 	int N;
 
-	double s;
+	double s, C = 1;
 
 	std::vector<Complex> boundary;
 	std::vector<Complex> leja;
@@ -31,7 +31,7 @@ public:
 
 private:
 
-	double C = 1;
+	//str path;
 
 	double LejaDistance(Complex z) const;
 

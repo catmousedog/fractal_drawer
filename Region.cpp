@@ -77,9 +77,18 @@ void Region::AddN(int N)
 void Region::SetC(double s)
 {
 	this->s = s;
-	C = exp(-(signed int)leja.size() * s / 2.0);
+	Complex last;
+	if (N == 0)
+	{
+		C = 1E10;
+		return;
+	}
+	else
+	{
+		last = leja.at(N - 1);
+	}
+	C = exp(-N * s / 2.0);
 	double prod = 1;
-	Complex last = leja.back();
 	for (int i = 0; i < N - 1; i++)
 	{
 		prod *= sqrt((last - leja.at(i)).AbsSquared());
@@ -90,9 +99,9 @@ void Region::SetC(double s)
 Complex Region::Omega(const Complex q) const
 {
 	Complex R(1, 0);
-	for (int i = 0; i < N; i++)
+	for (const Complex& point : leja)
 	{
-		R *= q - leja.at(i);
+		R *= q - point;
 	}
 	R *= C;
 	return R;

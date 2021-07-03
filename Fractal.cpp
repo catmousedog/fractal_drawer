@@ -27,7 +27,7 @@ void Fractal::Func(const int j, Complex q)
 			return;
 		}
 
-		/** f(z) **/
+		/** w(z) **/
 		Complex S(0, 0);
 		for (Region& region : leja.regions)
 		{
@@ -65,41 +65,17 @@ void Fractal::Iterate()
 	}
 }
 
-/*
-void Fractal::Print()
+
+void Fractal::Save()
 {
-	std::string s;
-	for (int i = 0;; i++)
+	for (int i = 0; i < leja.regions.size(); i++)
 	{
-		std::ofstream pot("data/pixels_" + std::to_string(i) + ".csv");
-		if (!pot.good())
+		std::ofstream file;
+		file.open("data\\leja\\segment_" + std::to_string(i) + ".txt");
+		for (Complex p : leja.regions.at(i).leja)
 		{
-			s = std::to_string(i) + ".csv";
-			break;
+			file << p.string() << std::endl;
 		}
+		file.close();
 	}
-
-	std::ofstream pix;
-	pix.open("data/pixels_" + s);
-	for (int i = 0; i < pixels_size; i++)
-	{
-		pix << pixels[i] << std::endl;
-	}
-	pix.close();
-
-	std::ofstream par;
-	par.open("data/parameters_" + s);
-	for (Region& region : leja.regions)
-	{
-		par << std::endl;
-		std::cout << std::endl;
-		for (Complex p : region.leja)
-		{
-			str s = p.string();
-			par << s << std::endl;
-			std::cout << s << std::endl;
-		}
-	}
-	par.close();
 }
-*/

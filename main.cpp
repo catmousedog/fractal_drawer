@@ -2,10 +2,12 @@
 
 #include "main.h"
 
-double a = 22;
-double X = 0, Y = 12;
+//double a = 20;
+//double X = 0, Y = 12;
+double a = 4;
+double X = 0, Y = 0;
 Fractal::Box bounds(X - a, Y - a, X + a, Y + a);
-Fractal fractal(20, 10000, bounds);
+Fractal fractal(25, 100000000, bounds);
 Drawer drawer(fractal);
 
 str CMD_Draw(deq arg)
@@ -77,14 +79,49 @@ str CMD_SetS(deq arg)
 	return fractal.leja.GetS();
 }
 
+str CMD_Random(deq arg)
+{
+	if (fractal.leja.regions.size() > 0)
+	{
+		fractal.leja.regions.back().leja.clear();
+		fractal.leja.regions.pop_back();
+	}
+
+	int R = 10;
+	try
+	{
+		if (arg.size() != 0)
+		{
+			R = std::stoi(arg.front());
+		}
+	}
+	catch (const std::exception&)
+	{
+		std::cout << "except" << std::endl;
+	}
+
+	std::mt19937 gen(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+	std::uniform_real_distribution<> dis(-5, 5);
+	std::vector<Complex> leja;
+	for (int i = 0; i < R; i++)
+	{
+		leja.push_back(Complex(dis(gen), dis(gen)));
+	}
+	Region region = Region(leja, leja.size(), 0.05);
+	fractal.leja.regions.push_back(region);
+	drawer.Draw();
+	return "done";
+}
+
 str CMD_Save(deq arg)
 {
 	std::ofstream parameters;
 	parameters.open(path + "parameters.txt");
 	for (Region& region : fractal.leja.regions)
 	{
-		parameters << region.s << "," << region.N << std::endl;
+		parameters << region.N << "," << region.s << "," << region.C << std::endl;
 	}
+	fractal.Save();
 	return "done";
 }
 
@@ -98,8 +135,8 @@ str CMD_Load(deq arg)
 		deq d = split(line, ',');
 		try
 		{
-			double s = std::stod(d.front());
-			int N = std::stoi(d.back());
+			int N = std::stoi(d.at(0));
+			double s = std::stod(d.at(1));
 			fractal.leja.regions.at(i).s = s;
 			fractal.leja.regions.at(i).SetN(N); //SetC
 		}
@@ -114,23 +151,18 @@ str CMD_Load(deq arg)
 
 int main()
 {
-	for (int i = 0; i <= 17; i++)
+	for (int i = 2; i <= 2; i++)
 	{
 		//LoadCoefficients(i);
-		//LoadLejaPoints(i);
-		LoadLejaWithBoundary(i);
+		LoadLejaPoints(i);
+		//LoadLejaWithBoundary(i);
 	}
 
 	//origin
-	std::vector<Complex> coeff;
-	coeff.push_back(Complex(1, 0));
-	coeff.push_back(Complex(-2, 0));
-	Region region = Region(coeff, Complex(), 0.01);
-	region.SetN(10);
-	fractal.leja.regions.push_back(region);
+	//CMD_Random(split("", ' '));
 	//
 
-	drawer.Draw();
+	//drawer.Draw();
 
 	std::map<str, fp> commands;
 	commands["draw"] = CMD_Draw;
@@ -139,6 +171,7 @@ int main()
 	commands["s"] = CMD_SetS;
 	commands["save"] = CMD_Save;
 	commands["load"] = CMD_Load;
+	commands["random"] = CMD_Random;
 
 	std::cout << "--CONSOLE--" << std::endl;
 	while (!drawer.IsClosed())

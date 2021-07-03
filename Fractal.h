@@ -56,6 +56,8 @@ public:
 	//iterates over all the pixels and assigns their value
 	void Iterate();
 
+	void Save();
+
 private:
 	//thread lock
 	std::mutex mtx;

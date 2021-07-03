@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backend_bases import MouseButton
 import numpy as np
 import leja
+import os
 from math import pi, e
-import re
 
 tau = 2 * pi * 1j
 
@@ -14,37 +14,45 @@ poles = np.empty(0, dtype=complex)
 C = 1
 coeff = np.zeros(C, dtype=complex)
 T = np.linspace(0, 1, 200)
-offset = 0 + 15j
+offset = 0 + 0j
 PLOT = None
 COEFF = None
 POLES = None
 
+other_coeffs = []
+OTHER_PLOTS = []
 
-#
+# path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\"
+
+
+path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\"
+
+
+def coeffPath(i):
+    return path + "data\\coeff\\segment_" + str(i) + ".txt"
+
+
+def lejaPath(i):
+    return path + "data\\leja\\segment_" + str(i) + ".txt"
+
 
 def printComp(z) -> str:
     return str(z.real) + "," + str(z.imag) + "\n"
 
 
-def k(_k):
-    return C // 2 - _k  # [C/2, -C/2[
-    # return 2 - _k # [a, a-C[
-    # return 1 - _k  # [1, 1-C[
-
-
-def f(t) -> complex:
+def f(c, t) -> complex:
     sum = complex(0, 0)
-    for _k in range(C):
-        sum += coeff[_k] * e ** (tau * k(_k) * t)
+    for k in range(len(c)):
+        sum += c[k] * e ** (tau * (len(c) // 2 - k) * t)
     return sum
 
 
 def integrate():
-    for _k in range(C):
+    for k in range(C):
         sum = complex(0, 0)
-        for _n in range(P):
-            sum += poles[_n] * e ** -(tau * _n * k(_k) / P)
-        coeff[_k] = sum / P
+        for n in range(P):
+            sum += poles[n] * e ** -(tau * n * (len(coeff) // 2 - k) / P)
+        coeff[k] = sum / P
 
 
 def get_nearest(z: complex) -> int:
@@ -59,28 +67,37 @@ def get_nearest(z: complex) -> int:
 
 
 def clear():
-    global PLOT
+    global PLOT, POLES, COEFF, OTHER_PLOTS
     if PLOT is not None:
         for point in PLOT:
             point.remove()
-    global POLES
     if POLES is not None:
         for point in POLES:
             point.remove()
-    global COEFF
     if COEFF is not None:
         for point in COEFF:
             point.remove()
+    for plot in OTHER_PLOTS:
+        if plot is not None:
+            for point in plot:
+                point.remove()
+    OTHER_PLOTS = []
 
 
 def draw(event):
     clear()
     integrate()
-    points = f(T)
+
+    points = f(coeff, T)
     global PLOT, COEFF, POLES
     PLOT = ax.plot(points.real, points.imag, 'black')
     COEFF = ax.plot(coeff.real, coeff.imag, 'b+')
     POLES = ax.plot(poles.real, poles.imag, 'yx')
+
+    for c in other_coeffs:
+        points = f(c, T)
+        OTHER_PLOTS.append(ax.plot(points.real, points.imag, 'green'))
+
     event.canvas.draw()
 
 
@@ -135,31 +152,42 @@ def on_scroll(event):
 
 toggle = False
 
-# path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\"
-
-
-path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\"
-
 
 def on_key(event):
-    global toggle
+    global toggle, other_coeffs
     if event.key == 't':
         toggle = not toggle
     if event.key == ' ':
-        file = open(path + "data\\coeff\\segment_.txt", "w")
-        for i, c in enumerate(coeff):
-            if i is c // 2:
-                file.write(printComp(c + offset))
-            else:
-                file.write(printComp(c))
-        file.close()
+        i = 0
+        while os.path.exists(coeffPath(i)):
+            i += 1
+        with open(coeffPath(i), "w") as file:
+            for i, c in enumerate(coeff):
+                if i is len(coeff) // 2:
+                    file.write(printComp(c + offset))
+                else:
+                    file.write(printComp(c))
 
-        leja.set_boundary(f)
-        leja.set_points(200)
-        file = open(path + "data\\leja\\segment_.txt", "w")
-        for l in leja.leja:
-            file.write(printComp(l + offset))
-        file.close()
+        # i = 0
+        # while not os.path.exists(lejaPath(i)):
+        #     i += 1
+        # with open(lejaPath(i), "w") as file:
+        #     leja.set_boundary(lambda z: f(coeff, z))
+        #     leja.set_points(200)
+        #     for l in leja.leja:
+        #         file.write(printComp(l + offset))
+
+    if event.key == 'i':
+        other_coeffs = []
+        i = 0
+        while os.path.exists(coeffPath(i)):
+            other_coeffs.append([])
+            with open(coeffPath(i), 'r') as file:
+                for line in file:
+                    coords = [float(s) for s in line.split(',')]
+                    c = complex(coords[0], coords[1])
+                    other_coeffs[i].append(c)
+            i += 1
 
 
 if __name__ == '__main__':
