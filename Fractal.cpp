@@ -2,8 +2,7 @@
 
 #include "Fractal.h"
 
-Fractal::Fractal(int it, int bail, Box box) :
-	iterations(it), bailout(bail), bounds(box), leja(), pixels()
+Fractal::Fractal(int it, double bail, Box box) : iterations(it), bailout(bail), bounds(box), leja(), pixels()
 {
 	double dx = (double)(bounds.Width()) / (double)p;
 	double dy = (double)(bounds.Height()) / (double)p;

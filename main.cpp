@@ -2,12 +2,12 @@
 
 #include "main.h"
 
-double a = 20;
-double X = 0, Y = 12 + offset.y;
+double a = 11;
+double X = 0, Y = 6 + offset.y;
 //double a = 4;
 //double X = 0, Y = 0;
 Fractal::Box bounds(X - a, Y - a, X + a, Y + a);
-Fractal fractal(25, 1E8, bounds);
+Fractal fractal(25, 1E10, bounds);
 Drawer drawer(fractal);
 
 str CMD_Draw(deq arg)
@@ -151,7 +151,7 @@ str CMD_Load(deq arg)
 
 int main()
 {
-	for (int i = 0; i <= 1; i++)
+	for (int i = 0; i <= 17; i++)
 	{
 		//LoadCoefficients(i);
 		//LoadLejaPoints(i);
@@ -162,7 +162,7 @@ int main()
 	std::vector<Complex> leja;
 	leja.push_back(Complex(1, 0));
 	leja.push_back(Complex(-2, 1));
-	Region region(leja, leja.size(), 0.1);
+	Region region(leja, 3, 0.1);
 	fractal.leja.regions.push_back(region);
 	//
 

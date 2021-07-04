@@ -17,7 +17,9 @@ public:
 	static constexpr int ppt = pixels_size / thread_count;
 
 	//fractal properties
-	int iterations, bailout;
+	int iterations;
+
+	double bailout;
 
 	//coordinates inside the bounds in order
 	Complex coordinates[pixels_size];
@@ -48,7 +50,7 @@ public:
 		}
 	} bounds;
 
-	Fractal(int it, int bail, Box box);
+	Fractal(int it, double bail, Box box);
 
 	//the fractal function
 	void Func(int i, Complex c);

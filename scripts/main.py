@@ -11,8 +11,8 @@ def file_len(fname):
 
 def leja():
     for _i in range(18):
+        leja = []
         with open(path + "data\\leja\\segment_" + str(_i) + ".txt", "r") as file:
-            leja = []
             for line in file.readlines():
                 coord = [float(s) for s in line.split(',')]
                 leja.append(complex(coord[0], coord[1]))
@@ -40,6 +40,20 @@ def coeff():
                 file.write(printComp(c))
 
 
+def scale(p, a):
+    for _i in range(18):
+        content = []
+        with open(path + "data\\" + p + "\\segment_" + str(_i) + ".txt", "r") as file:
+            for _j, line in enumerate(file):
+                coords = [float(s) for s in line.split(',')]
+                c = complex(coords[0], coords[1])
+                content.append(c * a)
+
+        with open(path + "data\\" + p + "\\segment_" + str(_i) + ".txt", "w") as file:
+            for c in content:
+                file.write(printComp(c))
+
+
 if __name__ == '__main__':
     offset = complex(-10, 12)
     offsets = [
@@ -53,3 +67,5 @@ if __name__ == '__main__':
 
     # leja()
     # coeff()
+    scale("coeff", 0.5)
+    scale("leja", 0.5)

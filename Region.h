@@ -23,17 +23,17 @@ public:
 
 	void SetN(int N);
 
-	void AddN(int N);
-
 	void SetC(double s);
 
-	Complex Omega(const Complex z) const;
+	Complex Omega(const Complex& q) const;
 
 private:
 
 	//str path;
 
-	double LejaDistance(Complex z) const;
+	void AddN(int N);
+
+	double LejaDistance(const Complex& q) const;
 
 	void SetBoundary(std::vector<Complex> coeff, const Complex offset);
 };

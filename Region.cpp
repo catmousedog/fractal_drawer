@@ -45,11 +45,11 @@ Region::Region(std::vector<Complex> coeff, const Complex offset, std::vector<Com
 
 void Region::SetN(int N)
 {
+	this->N = N;
 	if (N > leja.size())
 	{
 		AddN(N - leja.size());
 	}
-	this->N = N;
 	SetC(s);
 }
 
@@ -70,8 +70,6 @@ void Region::AddN(int N)
 		}
 		leja.push_back(out);
 	}
-	this->N += N;
-	SetC(s);
 }
 
 void Region::SetC(double s)
@@ -80,7 +78,6 @@ void Region::SetC(double s)
 	Complex last;
 	if (N == 0)
 	{
-		C = 1E10;
 		return;
 	}
 	else
@@ -96,18 +93,18 @@ void Region::SetC(double s)
 	C /= prod;
 }
 
-Complex Region::Omega(const Complex q) const
+Complex Region::Omega(const Complex& q) const
 {
 	Complex R(1, 0);
-	for (const Complex& point : leja)
+	for (int i = 0; i < N; i++)
 	{
-		R *= q - point;
+		R *= q - leja.at(i);
 	}
 	R *= C;
 	return R;
 }
 
-double Region::LejaDistance(Complex q) const
+double Region::LejaDistance(const Complex& q) const
 {
 	double prod = 1.0;
 	for (const Complex& c : leja)

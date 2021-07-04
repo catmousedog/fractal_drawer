@@ -6,6 +6,10 @@
 # data files
 *.csv
 
+#temporary data files
+data/coeff/
+data/leja/
+
 #solution files
 *.sln
 *.vcxproj
