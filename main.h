@@ -5,7 +5,7 @@
 #include <random>
 #include "Drawer.h"
 
-Complex offset(0, 20);
+Complex offset(0, 0);
 
 str path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
 //str path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";

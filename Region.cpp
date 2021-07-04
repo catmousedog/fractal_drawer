@@ -110,7 +110,7 @@ Complex Region::Omega(const Complex q) const
 double Region::LejaDistance(Complex q) const
 {
 	double prod = 1.0;
-	for (Complex c : leja)
+	for (const Complex& c : leja)
 	{
 		prod *= sqrt((q - c).AbsSquared());
 	}

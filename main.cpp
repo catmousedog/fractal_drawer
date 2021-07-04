@@ -2,12 +2,12 @@
 
 #include "main.h"
 
-//double a = 20;
-//double X = 0, Y = 12;
-double a = 4;
-double X = 0, Y = 0;
+double a = 20;
+double X = 0, Y = 12 + offset.y;
+//double a = 4;
+//double X = 0, Y = 0;
 Fractal::Box bounds(X - a, Y - a, X + a, Y + a);
-Fractal fractal(25, 100000000, bounds);
+Fractal fractal(25, 1E8, bounds);
 Drawer drawer(fractal);
 
 str CMD_Draw(deq arg)
@@ -151,18 +151,26 @@ str CMD_Load(deq arg)
 
 int main()
 {
-	for (int i = 2; i <= 2; i++)
+	for (int i = 0; i <= 1; i++)
 	{
 		//LoadCoefficients(i);
-		LoadLejaPoints(i);
-		//LoadLejaWithBoundary(i);
+		//LoadLejaPoints(i);
+		LoadLejaWithBoundary(i);
 	}
 
 	//origin
-	//CMD_Random(split("", ' '));
+	std::vector<Complex> leja;
+	leja.push_back(Complex(1, 0));
+	leja.push_back(Complex(-2, 1));
+	Region region(leja, leja.size(), 0.1);
+	fractal.leja.regions.push_back(region);
 	//
 
-	//drawer.Draw();
+	//auto begin = std::chrono::steady_clock::now();
+	//fractal.leja.regions.front().SetN(10);
+	drawer.Draw();
+	//auto end = std::chrono::steady_clock::now();
+	//std::cout << (end - begin).count() << std::endl;
 
 	std::map<str, fp> commands;
 	commands["draw"] = CMD_Draw;
