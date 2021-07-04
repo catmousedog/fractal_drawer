@@ -7,8 +7,8 @@
 *.csv
 
 #temporary data files
-data/coeff/
-data/leja/
+data/coeff/*
+data/leja/*
 
 #solution files
 *.sln
