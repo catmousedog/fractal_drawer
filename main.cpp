@@ -2,8 +2,9 @@
 
 #include "main.h"
 
-double a = 11;
-double X = 0, Y = 6 + offset.y;
+Complex offset(0, 0);
+double a = 2;
+double X = 0 + offset.x, Y = 0 + offset.y;
 //double a = 4;
 //double X = 0, Y = 0;
 Fractal::Box bounds(X - a, Y - a, X + a, Y + a);
@@ -155,16 +156,19 @@ int main()
 	{
 		//LoadCoefficients(i);
 		//LoadLejaPoints(i);
-		LoadLejaWithBoundary(i);
+		//LoadLejaWithBoundary(i);
 	}
 
 	//origin
 	std::vector<Complex> leja;
 	leja.push_back(Complex(1, 0));
-	leja.push_back(Complex(-2, 1));
-	Region region(leja, 3, 0.1);
+	//leja.push_back(Complex(-2, 1));
+	Region region(leja, leja.size(), 0.1);
 	fractal.leja.regions.push_back(region);
 	//
+
+	std::cout << fractal.leja.regions.front().Omega(Complex(0.5, 0.5)).string() << std::endl;
+	//return 0;
 
 	//auto begin = std::chrono::steady_clock::now();
 	//fractal.leja.regions.front().SetN(10);

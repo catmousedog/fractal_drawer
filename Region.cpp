@@ -96,20 +96,19 @@ void Region::SetC(double s)
 Complex Region::Omega(const Complex& q) const
 {
 	Complex R(1, 0);
-	for (int i = 0; i < N; i++)
+	for (const Complex& l : leja)
 	{
-		R *= q - leja.at(i);
+		R *= q - l;
 	}
-	R *= C;
-	return R;
+	return R * C;
 }
 
 double Region::LejaDistance(const Complex& q) const
 {
 	double prod = 1.0;
-	for (const Complex& c : leja)
+	for (const Complex& l : leja)
 	{
-		prod *= sqrt((q - c).AbsSquared());
+		prod *= sqrt((q - l).AbsSquared());
 	}
 	return prod;
 }

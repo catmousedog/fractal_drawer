@@ -40,11 +40,11 @@ struct Complex
 	}
 	inline Complex operator+(const Complex v) const
 	{
-		return Complex(v.x + x, v.y + y);
+		return Complex(x + v.x, y + v.y);
 	}
 	inline Complex operator-(const Complex v) const
 	{
-		return Complex(v.x - x, v.y - y);
+		return Complex(x - v.x, y - v.y);
 	}
 	inline Complex operator*(const double a) const
 	{
@@ -107,7 +107,7 @@ struct Complex
 	}
 	inline bool operator<(const Complex c)
 	{
-		
+
 	}
 	inline std::string string()
 	{
