@@ -152,7 +152,7 @@ str CMD_Load(deq arg)
 
 int main()
 {
-	for (int i = 0; i <= 0; i++)
+	for (int i = 0; i <= 17; i++)
 	{
 		//LoadCoefficients(i);
 		//LoadLejaPoints(i);

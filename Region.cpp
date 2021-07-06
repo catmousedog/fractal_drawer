@@ -4,7 +4,7 @@
 
 #define PI 3.1415926
 
-void Region::SetBoundary(std::vector<Complex> coeff, const Complex offset)
+void Region::SetBoundary(const Complex offset)
 {
 	int B = 10000;
 	int C = coeff.size();
@@ -14,10 +14,9 @@ void Region::SetBoundary(std::vector<Complex> coeff, const Complex offset)
 		Complex point;
 		for (int c = 0; c < C; c++)
 		{
-			Complex z = coeff[c] * Complex(2 * PI * (C / 2 - c) * t);
 			if (c == C / 2)
-				z += offset;
-			point += z;
+				coeff[c] += offset;
+			point += coeff[c] * Complex(2 * PI * (C / 2 - c) * t);
 		}
 		boundary.push_back(point);
 	}
@@ -29,16 +28,17 @@ Region::Region(std::vector<Complex> leja, int N, double s) : leja(leja)
 	SetN(N);
 }
 
-Region::Region(std::vector<Complex> coeff, const Complex offset, double s)
+Region::Region(std::vector<Complex> coeff, const Complex offset, double s) : coeff(coeff)
 {
-	SetBoundary(coeff, offset);
+	SetBoundary(offset);
 	this->s = s;
 	SetN(1);
 }
 
-Region::Region(std::vector<Complex> coeff, const Complex offset, std::vector<Complex> leja, int N, double s) : leja(leja)
+Region::Region(std::vector<Complex> coeff, const Complex offset, std::vector<Complex> leja, int N, double s)
+	: leja(leja), coeff(coeff)
 {
-	SetBoundary(coeff, offset);
+	SetBoundary(offset);
 	this->s = s;
 	SetN(N);
 }

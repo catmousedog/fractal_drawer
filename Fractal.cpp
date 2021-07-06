@@ -77,4 +77,14 @@ void Fractal::Save()
 		}
 		file.close();
 	}
+	for (int i = 0; i < leja.regions.size(); i++)
+	{
+		std::ofstream file;
+		file.open("data\\coeff\\segment_" + std::to_string(i) + ".txt");
+		for (Complex c : leja.regions.at(i).coeff)
+		{
+			file << c.string() << std::endl;
+		}
+		file.close();
+	}
 }
