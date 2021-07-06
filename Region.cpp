@@ -96,9 +96,9 @@ void Region::SetC(double s)
 Complex Region::Omega(const Complex& q) const
 {
 	Complex R(1, 0);
-	for (const Complex& l : leja)
+	for (int i = 0; i < N; i++)
 	{
-		R *= q - l;
+		R *= q - leja.at(i);
 	}
 	return R * C;
 }

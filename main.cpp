@@ -3,7 +3,7 @@
 #include "main.h"
 
 Complex offset(0, 0);
-double a = 2;
+double a = 15;
 double X = 0 + offset.x, Y = 0 + offset.y;
 //double a = 4;
 //double X = 0, Y = 0;
@@ -152,23 +152,19 @@ str CMD_Load(deq arg)
 
 int main()
 {
-	for (int i = 0; i <= 17; i++)
+	for (int i = 0; i <= 0; i++)
 	{
 		//LoadCoefficients(i);
 		//LoadLejaPoints(i);
-		//LoadLejaWithBoundary(i);
+		LoadLejaWithBoundary(i);
 	}
 
 	//origin
 	std::vector<Complex> leja;
 	leja.push_back(Complex(1, 0));
-	//leja.push_back(Complex(-2, 1));
 	Region region(leja, leja.size(), 0.1);
 	fractal.leja.regions.push_back(region);
 	//
-
-	std::cout << fractal.leja.regions.front().Omega(Complex(0.5, 0.5)).string() << std::endl;
-	//return 0;
 
 	//auto begin = std::chrono::steady_clock::now();
 	//fractal.leja.regions.front().SetN(10);
