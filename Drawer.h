@@ -21,6 +21,9 @@ private:
 	CImgDisplay dsp;
 
 public:
+
+	bool DrawPoints = true;
+
 	Drawer(Fractal& f) : fractal(f), dsp(Fractal::p, Fractal::p, 0)
 	{
 	}

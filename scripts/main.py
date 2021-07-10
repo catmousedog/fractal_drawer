@@ -67,5 +67,5 @@ if __name__ == '__main__':
 
     # leja()
     # coeff()
-    scale("coeff", 0.5)
-    scale("leja", 0.5)
+    # scale("coeff", 0.5)
+    # scale("leja", 0.5)

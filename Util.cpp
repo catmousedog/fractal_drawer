@@ -1,6 +1,15 @@
 
 #include "Util.h"
 
+str GetPathCoeff(int i)
+{
+	return "data\\coeff\\segment_" + to_string(i) + ".txt";
+}
+
+str GetPathLeja(int i)
+{
+	return "data\\leja\\segment_" + to_string(i) + ".txt";
+}
 
 int sgn(double v)
 {

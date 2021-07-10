@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Complex.h"
+#include <fstream>
 #include <vector>
 
 class Region
@@ -13,14 +14,14 @@ public:
 	double s, C = 1;
 
 	std::vector<Complex> boundary;
-	std::vector<Complex> leja;
+	std::vector<Complex> points;
 	std::vector<Complex> coeff;
 
 	Region(std::vector<Complex> leja, int N, double s);
 
-	Region(std::vector <Complex> coeff, const Complex offset, double s);
+	Region(std::vector <Complex> coeff, double s);
 
-	Region(std::vector<Complex> coeff, const Complex offset, std::vector<Complex> leja, int N, double s);
+	Region(std::vector<Complex> coeff, std::vector<Complex> leja, int N, double s);
 
 	void SetN(int N);
 
@@ -28,15 +29,15 @@ public:
 
 	Complex Omega(const Complex& q) const;
 
-private:
+	void CalculateLeja(int i);
 
-	//str path;
+private:
 
 	void AddN(int N);
 
 	double LejaDistance(const Complex& q) const;
 
-	void SetBoundary(const Complex offset);
+	void SetBoundary();
 };
 
 

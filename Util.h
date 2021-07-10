@@ -8,6 +8,10 @@
 typedef std::deque<std::string> deq;
 typedef std::string str, (*fp)(deq);
 
+str GetPathCoeff(int i);
+
+str GetPathLeja(int i);
+
 int sgn(double v);
 
 void split(const str& s, char delim, deq& elems);

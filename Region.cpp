@@ -4,7 +4,7 @@
 
 #define PI 3.1415926
 
-void Region::SetBoundary(const Complex offset)
+void Region::SetBoundary()
 {
 	int B = 10000;
 	int C = coeff.size();
@@ -14,43 +14,87 @@ void Region::SetBoundary(const Complex offset)
 		Complex point;
 		for (int c = 0; c < C; c++)
 		{
-			if (c == C / 2)
-				coeff[c] += offset;
 			point += coeff[c] * Complex(2 * PI * (C / 2 - c) * t);
 		}
 		boundary.push_back(point);
 	}
 }
 
-Region::Region(std::vector<Complex> leja, int N, double s) : leja(leja)
+Region::Region(std::vector<Complex> leja, int N, double s) : points(leja)
 {
 	this->s = s;
 	SetN(N);
 }
 
-Region::Region(std::vector<Complex> coeff, const Complex offset, double s) : coeff(coeff)
+Region::Region(std::vector<Complex> coeff, double s) : coeff(coeff)
 {
-	SetBoundary(offset);
+	SetBoundary();
 	this->s = s;
 	SetN(1);
 }
 
-Region::Region(std::vector<Complex> coeff, const Complex offset, std::vector<Complex> leja, int N, double s)
-	: leja(leja), coeff(coeff)
+Region::Region(std::vector<Complex> coeff, std::vector<Complex> leja, int N, double s) : points(leja), coeff(coeff)
 {
-	SetBoundary(offset);
+	SetBoundary();
 	this->s = s;
 	SetN(N);
 }
 
 void Region::SetN(int N)
 {
-	this->N = N;
-	if (N > leja.size())
+	if (N > points.size())
 	{
-		AddN(N - leja.size());
+		this->N = points.size();
+	}
+	else
+	{
+		this->N = N;
 	}
 	SetC(s);
+}
+
+
+void Region::SetC(double s)
+{
+	this->s = s;
+	Complex last;
+	if (N == 0)
+	{
+		return;
+	}
+	else
+	{
+		last = points.at(N - 1);
+	}
+	C = exp(-N * s / 2.0);
+	double prod = 1;
+	for (int i = 0; i < N - 1; i++)
+	{
+		prod *= sqrt((last - points.at(i)).AbsSquared());
+	}
+	C /= prod;
+}
+
+Complex Region::Omega(const Complex& q) const
+{
+	Complex R(1, 0);
+	for (int i = 0; i < N; i++)
+	{
+		R *= q - points.at(i);
+	}
+	return R * C;
+}
+
+void Region::CalculateLeja(int i)
+{
+	AddN(200);
+	std::ofstream LejaFile;
+	LejaFile.open(GetPathLeja(i));
+	for (Complex& l : points)
+	{
+		LejaFile << l.string() << std::endl;
+	}
+	LejaFile.close();
 }
 
 void Region::AddN(int N)
@@ -68,45 +112,14 @@ void Region::AddN(int N)
 				out = b;
 			}
 		}
-		leja.push_back(out);
+		points.push_back(out);
 	}
-}
-
-void Region::SetC(double s)
-{
-	this->s = s;
-	Complex last;
-	if (N == 0)
-	{
-		return;
-	}
-	else
-	{
-		last = leja.at(N - 1);
-	}
-	C = exp(-N * s / 2.0);
-	double prod = 1;
-	for (int i = 0; i < N - 1; i++)
-	{
-		prod *= sqrt((last - leja.at(i)).AbsSquared());
-	}
-	C /= prod;
-}
-
-Complex Region::Omega(const Complex& q) const
-{
-	Complex R(1, 0);
-	for (int i = 0; i < N; i++)
-	{
-		R *= q - leja.at(i);
-	}
-	return R * C;
 }
 
 double Region::LejaDistance(const Complex& q) const
 {
 	double prod = 1.0;
-	for (const Complex& l : leja)
+	for (const Complex& l : points)
 	{
 		prod *= sqrt((q - l).AbsSquared());
 	}

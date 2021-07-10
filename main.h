@@ -5,28 +5,19 @@
 #include <random>
 #include "Drawer.h"
 
-str path = "C:\\Users\\Gebruiker\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
-//str path = "C:\\Users\\lauwe\\source\\repos\\FractalDrawer\\FractalDrawer\\data\\";
+bool Console = true;
 
-str GetPathCoeff(int i)
-{
-	return path + "coeff\\segment_" + to_string(i) + ".txt";
-}
-
-str GetPathLeja(int i)
-{
-	return path + "leja\\segment_" + to_string(i) + ".txt";
-}
+double shift = 1;
 
 std::vector<Complex> GetLejaPoints(str file);
 
 std::vector<Complex> GetCoefficients(str file);
 
-void LoadLejaPoints(int i);
+void LoadLejaPoints(int i, bool origin);
 
-void LoadCoefficients(int i);
+void LoadCoefficients(int i, bool origin);
 
-void LoadLejaWithBoundary(int i);
+void LoadLejaWithBoundary(int i, bool origin);
 
 
 /* COMMANDS */
@@ -38,9 +29,17 @@ str CMD_SetN(deq arg);
 
 str CMD_SetS(deq arg);
 
+str CMD_DrawPoints(deq arg);
+
 str CMD_Random(deq arg);
 
 str CMD_Save(deq arg);
 
 str CMD_Load(deq arg);
+
+str CMD_CalculateLeja(deq arg);
+
+str CMD_Benchmark(deq arg);
+
+str CMD_Console(deq arg);
 

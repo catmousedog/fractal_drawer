@@ -1,13 +1,22 @@
 #pragma once
 
-#include <fstream>
 #include "Region.h"
 
 class Leja
 {
 public:
 
-	std::vector<Region> regions;
+	~Leja();
+
+	std::vector<Region*> regions;
+
+	std::vector<Region*> name;
+
+	std::vector<Region*> origins;
+
+	void AddRegion(Region* const region, bool origin);
+
+	void Shift(const Complex shift);
 
 	str GetN();
 

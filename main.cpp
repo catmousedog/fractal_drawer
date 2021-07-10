@@ -2,13 +2,11 @@
 
 #include "main.h"
 
-Complex offset(0, 0);
-double a = 15;
-double X = 0 + offset.x, Y = 0 + offset.y;
-//double a = 4;
+//double a = 8;
 //double X = 0, Y = 0;
-Fractal::Box bounds(X - a, Y - a, X + a, Y + a);
-Fractal fractal(25, 1E10, bounds);
+//Fractal::Box bounds(X, Y, a);
+//Fractal fractal(50, 1E10, bounds);
+Fractal fractal(50, 1E10);
 Drawer drawer(fractal);
 
 str CMD_Draw(deq arg)
@@ -33,13 +31,13 @@ str CMD_SetN(deq arg)
 			int N = std::stoi(arg.back());
 			if (arg.size() == 1)
 			{
-				for (Region& region : fractal.leja.regions)
-					region.SetN(N);
+				for (Region* region : fractal.leja.name)
+					region->SetN(N);
 			}
 			else if (arg.size() == 2)
 			{
 				int r = std::stoi(arg.front());
-				fractal.leja.regions.at(r).SetN(N);
+				fractal.leja.regions.at(r)->SetN(N);
 			}
 			drawer.Draw();
 		}
@@ -61,13 +59,13 @@ str CMD_SetS(deq arg)
 			double s = std::stod(arg.back());
 			if (arg.size() == 1)
 			{
-				for (Region& region : fractal.leja.regions)
-					region.SetC(s);
+				for (Region* region : fractal.leja.name)
+					region->SetC(s);
 			}
 			else if (arg.size() == 2)
 			{
 				int r = std::stoi(arg.front());
-				fractal.leja.regions.at(r).SetC(s);
+				fractal.leja.regions.at(r)->SetC(s);
 			}
 			drawer.Draw();
 		}
@@ -80,11 +78,18 @@ str CMD_SetS(deq arg)
 	return fractal.leja.GetS();
 }
 
+str CMD_DrawPoints(deq arg)
+{
+	drawer.DrawPoints = !drawer.DrawPoints;
+	drawer.Draw();
+	return "done";
+}
+
 str CMD_Random(deq arg)
 {
 	if (fractal.leja.regions.size() > 0)
 	{
-		fractal.leja.regions.back().leja.clear();
+		fractal.leja.regions.back()->points.clear();
 		fractal.leja.regions.pop_back();
 	}
 
@@ -109,61 +114,62 @@ str CMD_Random(deq arg)
 		leja.push_back(Complex(dis(gen), dis(gen)));
 	}
 	Region region = Region(leja, leja.size(), 0.05);
-	fractal.leja.regions.push_back(region);
+	fractal.leja.regions.push_back(&region);
 	drawer.Draw();
 	return "done";
 }
 
 str CMD_Save(deq arg)
 {
-	std::ofstream parameters;
-	parameters.open(path + "parameters.txt");
-	for (Region& region : fractal.leja.regions)
-	{
-		parameters << region.N << "," << region.s << "," << region.C << std::endl;
-	}
 	fractal.Save();
 	return "done";
 }
 
 str CMD_Load(deq arg)
 {
-	std::ifstream parameters;
-	parameters.open(path + "parameters.txt");
-	str line;
-	for (int i = 0; std::getline(parameters, line); i++)
-	{
-		deq d = split(line, ',');
-		try
-		{
-			int N = std::stoi(d.at(0));
-			double s = std::stod(d.at(1));
-			fractal.leja.regions.at(i).s = s;
-			fractal.leja.regions.at(i).SetN(N); //SetC
-		}
-		catch (const std::exception& e)
-		{
-			std::cout << e.what() << std::endl;
-		}
-	}
+	fractal.Load();
 	drawer.Draw();
 	return "done";
 }
 
+str CMD_CalculateLeja(deq arg)
+{
+	fractal.Save();
+	for (int i = 0; i < fractal.leja.regions.size(); i++)
+	{
+		fractal.leja.regions.at(i)->CalculateLeja(i);
+	}
+	return "done";
+}
+
+str CMD_Benchmark(deq arg)
+{
+	auto begin = std::chrono::steady_clock::now();
+	fractal.leja.regions.front()->SetN(10);
+	drawer.Draw();
+	auto end = std::chrono::steady_clock::now();
+	return std::to_string((end - begin).count());
+}
+
+str CMD_Console(deq arg)
+{
+	Console = !Console;
+	return "--KEYBOARD--";
+}
+
 int main()
 {
-	for (int i = 0; i <= 17; i++)
+	for (int i = 0; i <= 18; i++)
 	{
-		//LoadCoefficients(i);
-		//LoadLejaPoints(i);
-		LoadLejaWithBoundary(i);
+		//LoadCoefficients(i, false);
+		//LoadLejaPoints(i, false);
+		LoadLejaWithBoundary(i, false);
 	}
 
-	//origin
+	//initial origin
 	std::vector<Complex> leja;
-	leja.push_back(Complex(1, 0));
-	Region region(leja, leja.size(), 0.1);
-	fractal.leja.regions.push_back(region);
+	leja.push_back(Complex(20.979154, -4.479418));
+	fractal.leja.AddRegion(new Region(leja, leja.size(), 5.9), true);
 	//
 
 	//auto begin = std::chrono::steady_clock::now();
@@ -180,22 +186,107 @@ int main()
 	commands["save"] = CMD_Save;
 	commands["load"] = CMD_Load;
 	commands["random"] = CMD_Random;
+	commands["draw"] = CMD_DrawPoints;
+	commands["calc"] = CMD_CalculateLeja;
+	commands["console"] = CMD_Console;
 
 	std::cout << "--CONSOLE--" << std::endl;
 	while (!drawer.IsClosed())
 	{
-		str in;
-		std::getline(std::cin, in);
-		deq words = split(in, ' ');
-		if (words.size() > 0)
+		if (Console)
 		{
-			std::map<str, fp>::iterator iter = commands.find(words.front());
-			if (iter != commands.end())
+			str in;
+			std::getline(std::cin, in);
+			deq words = split(in, ' ');
+			if (words.size() > 0)
 			{
-				fp f = iter->second;
-				words.pop_front();
-				str message = f(words);
-				std::cout << message << std::endl;
+				std::map<str, fp>::iterator iter = commands.find(words.front());
+				if (iter != commands.end())
+				{
+					fp f = iter->second;
+					words.pop_front();
+					str message = f(words);
+					std::cout << message << std::endl;
+				}
+			}
+		}
+		else
+		{
+			CImgDisplay::wait(drawer.GetDisplay());
+
+			if (drawer.GetDisplay().is_keyESC())
+			{
+				Console = !Console;
+				std::cout << "--CONSOLE--" << std::endl;
+			}
+			else if (drawer.GetDisplay().is_keySHIFTLEFT())
+			{
+				shift *= 1.1;
+				std::cout << shift << std::endl;
+			}
+			else if (drawer.GetDisplay().is_keyCTRLLEFT())
+			{
+				shift *= 0.9;
+				std::cout << shift << std::endl;
+			}
+			//MOVE NAME
+			else if (drawer.GetDisplay().is_keyARROWUP())
+			{
+				fractal.leja.Shift(Complex(0, shift));
+				drawer.Draw();
+			}
+			else if (drawer.GetDisplay().is_keyARROWLEFT())
+			{
+				fractal.leja.Shift(Complex(-shift, 0));
+				drawer.Draw();
+			}
+			else if (drawer.GetDisplay().is_keyARROWDOWN())
+			{
+				fractal.leja.Shift(Complex(0, -shift));
+				drawer.Draw();
+			}
+			else if (drawer.GetDisplay().is_keyARROWRIGHT())
+			{
+				fractal.leja.Shift(Complex(shift, 0));
+				drawer.Draw();
+			}
+			//MOVE BOUNDS
+			else if (drawer.GetDisplay().is_keyI())
+			{
+				fractal.bounds.Shift(Complex(0, shift));
+				fractal.SetCoordinates();
+				drawer.Draw();
+			}
+			else if (drawer.GetDisplay().is_keyJ())
+			{
+				fractal.bounds.Shift(Complex(-shift, 0));
+				fractal.SetCoordinates();
+				drawer.Draw();
+			}
+			else if (drawer.GetDisplay().is_keyK())
+			{
+				fractal.bounds.Shift(Complex(0, -shift));
+				fractal.SetCoordinates();
+				drawer.Draw();
+			}
+			else if (drawer.GetDisplay().is_keyL())
+			{
+				fractal.bounds.Shift(Complex(shift, 0));
+				fractal.SetCoordinates();
+				drawer.Draw();
+			}
+			//SCALE BOUNDS
+			else if (drawer.GetDisplay().is_keyU())
+			{
+				fractal.bounds.Scale(1.1);
+				fractal.SetCoordinates();
+				drawer.Draw();
+			}
+			else if (drawer.GetDisplay().is_keyO())
+			{
+				fractal.bounds.Scale(0.9);
+				fractal.SetCoordinates();
+				drawer.Draw();
 			}
 		}
 	}
@@ -216,13 +307,14 @@ std::vector<Complex> GetLejaPoints(str file)
 		{
 			double x = std::stod(d.front());
 			double y = std::stod(d.back());
-			points.push_back(Complex(x, y) + offset);
+			points.push_back(Complex(x, y));
 		}
 		catch (const std::exception& e)
 		{
 			std::cout << e.what() << std::endl;
 		}
 	}
+	segment.close();
 	return points;
 }
 
@@ -247,20 +339,21 @@ std::vector<Complex> GetCoefficients(str file)
 			std::cout << e.what() << std::endl;
 		}
 	}
+	segment.close();
 	return coeff;
 }
 
-void LoadLejaPoints(int i)
+void LoadLejaPoints(int i, bool origin)
 {
-	fractal.leja.regions.push_back(Region(GetLejaPoints(GetPathLeja(i)), 0, -1));
+	fractal.leja.AddRegion(new Region(GetLejaPoints(GetPathLeja(i)), 0, -1), origin);
 }
 
-void LoadCoefficients(int i)
+void LoadCoefficients(int i, bool origin)
 {
-	fractal.leja.regions.push_back(Region(GetCoefficients(GetPathCoeff(i)), offset, -1));
+	fractal.leja.AddRegion(new Region(GetCoefficients(GetPathCoeff(i)), -1), origin);
 }
 
-void LoadLejaWithBoundary(int i)
+void LoadLejaWithBoundary(int i, bool origin)
 {
-	fractal.leja.regions.push_back(Region(GetCoefficients(GetPathCoeff(i)), offset, GetLejaPoints(GetPathLeja(i)), 0, -1));
+	fractal.leja.AddRegion(new Region(GetCoefficients(GetPathCoeff(i)), GetLejaPoints(GetPathLeja(i)), 0, -1), origin);
 }
