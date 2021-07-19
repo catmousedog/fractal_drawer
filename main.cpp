@@ -2,11 +2,7 @@
 
 #include "main.h"
 
-//double a = 8;
-//double X = 0, Y = 0;
-//Fractal::Box bounds(X, Y, a);
-//Fractal fractal(50, 1E10, bounds);
-Fractal fractal(50, 1E10);
+Fractal fractal(100, 1E10);
 Drawer drawer(fractal);
 
 str CMD_Draw(deq arg)
@@ -157,6 +153,8 @@ str CMD_Console(deq arg)
 	return "--KEYBOARD--";
 }
 
+double scale = 0.7;
+
 int main()
 {
 	for (int i = 0; i <= 18; i++)
@@ -168,15 +166,134 @@ int main()
 
 	//initial origin
 	std::vector<Complex> leja;
-	leja.push_back(Complex(20.979154, -4.479418));
-	fractal.leja.AddRegion(new Region(leja, leja.size(), 5.9), true);
-	//
 
-	//auto begin = std::chrono::steady_clock::now();
-	//fractal.leja.regions.front().SetN(10);
+	//////////////////1
+	//leja.push_back(Complex(-10.000000, 0.000000));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 5.000000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(31.163894, -7.410710));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.400000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(-1.763714, -20.519333));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.100000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(25.065012, -23.027710));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 6.000000), true);
+	//leja.clear();
+	//////////////////
+
+	//////////////////2
+	//leja.push_back(Complex(-8.624648, 3.163936));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 5.000000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(41.958030, 0.976577));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 6.000000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(18.952345, -22.183864));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.100000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(-42.004567, -17.634841));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.100000), true);
+	//leja.clear();
+	//////////////////
+
+	//////////////////3
+	//leja.push_back(Complex(-30.772960, -3.624878));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 5.800000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(31.621544, 15.871715));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 6.200000), true);
+	//leja.clear();
+	//////////////////
+
+	//////////////////4
+	//leja.push_back(Complex(-28.873997, -10.745991));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 5.800000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(31.621544, 15.871715));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 6.200000), true);
+	//leja.clear();
+	//////////////////
+
+	//////////////////5
+	//leja.push_back(Complex(0.750000, 1.100000));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.700000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(10.000000, -3.900000));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.500000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(-7.700000, -0.300000));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.200000), true);
+	//leja.clear();
+	//////////////////
+
+	//////////////////6
+	//leja.push_back(Complex(0.750000, 1.100000));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.700000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(10.000000, -3.900000));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.500000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(-7.650000, 0.100000));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.200000), true);
+	//leja.clear();
+	//////////////////
+
+	//////////////////7
+	//leja.push_back(Complex(0.750000, 1.100000));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.700000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(10.000000, -3.900000));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.500000), true);
+	//leja.clear();
+
+	//leja.push_back(Complex(-7.500000, -0.150000));
+	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.200000), true);
+	//leja.clear();
+	//////////////////
+
+	//////////////////8
+	leja.push_back(Complex(4.250000, -1.200000));
+	fractal.leja.AddRegion(new Region(leja, leja.size(), 2.400000), true);
+	leja.clear();
+
+	leja.push_back(Complex(6.650000, 6.350000));
+	fractal.leja.AddRegion(new Region(leja, leja.size(), 0.200000), true);
+	leja.clear();
+
+	leja.push_back(Complex(15.500000, 0.750000));
+	fractal.leja.AddRegion(new Region(leja, leja.size(), 0.100000), true);
+	leja.clear();
+
+	leja.push_back(Complex(12.250000, -6.450000));
+	fractal.leja.AddRegion(new Region(leja, leja.size(), 0.300000), true);
+	leja.clear();
+	//////////////////
+
+
+	Console = false;
+
+
+	for (Region* region : fractal.leja.name)
+	{
+		region->s = 0.1;
+		region->SetN(10);
+	}
+
 	drawer.Draw();
-	//auto end = std::chrono::steady_clock::now();
-	//std::cout << (end - begin).count() << std::endl;
 
 	std::map<str, fp> commands;
 	commands["draw"] = CMD_Draw;
@@ -278,13 +395,13 @@ int main()
 			//SCALE BOUNDS
 			else if (drawer.GetDisplay().is_keyU())
 			{
-				fractal.bounds.Scale(1.1);
+				fractal.bounds.Scale(0.5);
 				fractal.SetCoordinates();
 				drawer.Draw();
 			}
 			else if (drawer.GetDisplay().is_keyO())
 			{
-				fractal.bounds.Scale(0.9);
+				fractal.bounds.Scale(2);
 				fractal.SetCoordinates();
 				drawer.Draw();
 			}
@@ -307,7 +424,7 @@ std::vector<Complex> GetLejaPoints(str file)
 		{
 			double x = std::stod(d.front());
 			double y = std::stod(d.back());
-			points.push_back(Complex(x, y));
+			points.push_back(Complex(x, y) * scale);
 		}
 		catch (const std::exception& e)
 		{
@@ -332,7 +449,7 @@ std::vector<Complex> GetCoefficients(str file)
 		{
 			double x = std::stod(d.front());
 			double y = std::stod(d.back());
-			coeff.push_back(Complex(x, y));
+			coeff.push_back(Complex(x, y) * scale);
 		}
 		catch (const std::exception& e)
 		{
