@@ -153,7 +153,7 @@ str CMD_Console(deq arg)
 	return "--KEYBOARD--";
 }
 
-double scale = 0.7;
+double scale = 1;
 
 int main()
 {
@@ -166,104 +166,6 @@ int main()
 
 	//initial origin
 	std::vector<Complex> leja;
-
-	//////////////////1
-	//leja.push_back(Complex(-10.000000, 0.000000));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 5.000000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(31.163894, -7.410710));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.400000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(-1.763714, -20.519333));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.100000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(25.065012, -23.027710));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 6.000000), true);
-	//leja.clear();
-	//////////////////
-
-	//////////////////2
-	//leja.push_back(Complex(-8.624648, 3.163936));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 5.000000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(41.958030, 0.976577));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 6.000000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(18.952345, -22.183864));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.100000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(-42.004567, -17.634841));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.100000), true);
-	//leja.clear();
-	//////////////////
-
-	//////////////////3
-	//leja.push_back(Complex(-30.772960, -3.624878));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 5.800000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(31.621544, 15.871715));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 6.200000), true);
-	//leja.clear();
-	//////////////////
-
-	//////////////////4
-	//leja.push_back(Complex(-28.873997, -10.745991));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 5.800000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(31.621544, 15.871715));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 6.200000), true);
-	//leja.clear();
-	//////////////////
-
-	//////////////////5
-	//leja.push_back(Complex(0.750000, 1.100000));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.700000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(10.000000, -3.900000));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.500000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(-7.700000, -0.300000));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.200000), true);
-	//leja.clear();
-	//////////////////
-
-	//////////////////6
-	//leja.push_back(Complex(0.750000, 1.100000));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.700000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(10.000000, -3.900000));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.500000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(-7.650000, 0.100000));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.200000), true);
-	//leja.clear();
-	//////////////////
-
-	//////////////////7
-	//leja.push_back(Complex(0.750000, 1.100000));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 0.700000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(10.000000, -3.900000));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.500000), true);
-	//leja.clear();
-
-	//leja.push_back(Complex(-7.500000, -0.150000));
-	//fractal.leja.AddRegion(new Region(leja, leja.size(), 3.200000), true);
-	//leja.clear();
-	//////////////////
 
 	//////////////////8
 	leja.push_back(Complex(4.250000, -1.200000));
@@ -283,9 +185,7 @@ int main()
 	leja.clear();
 	//////////////////
 
-
 	Console = false;
-
 
 	for (Region* region : fractal.leja.name)
 	{
